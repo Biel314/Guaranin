@@ -6,6 +6,7 @@ import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
+import jakarta.persistence.OneToMany
 import jakarta.persistence.OneToOne
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
@@ -38,6 +39,9 @@ class Usuario {
     @OneToOne(cascade = [(CascadeType.ALL)])
     var mascote: Mascote? = null
 
+    @OneToMany(cascade = [(CascadeType.ALL)])
+    val metas: MutableList<MetasEDesafios> = mutableListOf()
 
-
+    @OneToMany(cascade = [(CascadeType.ALL)])
+    val historicoSesses: MutableList<HistoricoSessoesUso> = mutableListOf()
 }
