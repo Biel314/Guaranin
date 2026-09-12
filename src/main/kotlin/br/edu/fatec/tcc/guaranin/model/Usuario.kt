@@ -29,7 +29,6 @@ class Usuario(
     var password: String? = null,
 
     @OneToOne(cascade = [(CascadeType.ALL)])
-    @Column(name = "id_mascote")
     var mascote: Mascote? = null,
 
     @OneToMany(cascade = [(CascadeType.ALL)])
