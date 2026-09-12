@@ -1,4 +1,3 @@
 package br.edu.fatec.tcc.guaranin.model
 
-class HistoricoSessoesUso {
-}
+data class HistoricoSessoesUso (var id: Long? = null)
