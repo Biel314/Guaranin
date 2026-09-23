@@ -14,7 +14,6 @@ data class UsuarioUpdateDTO(
     @Size(max = 255, message = "O login deve ter no máximo 255 caracteres")
     var login: String?,
 
-    @NotBlank(message = "A senha é obrigatória")
     @Size(min = 8, max = 72, message = "A senha deve ter entre 8 e 72 caracteres")
     @Pattern(
         regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,72}$",
