@@ -61,6 +61,7 @@ interface UsuarioMapper {
      * @param usuario entidade existente a ser atualizada.
      */
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "password", ignore = true)
     fun updateEntityFromDTO(dto: UsuarioUpdateDTO, @MappingTarget usuario: Usuario)
 
 }
