@@ -17,10 +17,9 @@ class URLMonitorada {
 
     @NotBlank
     @Size(max = 255)
-    @Column(name = "url", nullable = false, length = 255)
+    @Column(name = "url", nullable = false, length = 255, unique = true)
     var url: String = ""
 
-    @NotBlank
     @Size(max = 50)
     @Column(name = "ip_address", nullable = false, length = 50)
     var ipAddress: String = ""
