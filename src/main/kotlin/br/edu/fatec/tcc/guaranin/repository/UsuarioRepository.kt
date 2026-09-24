@@ -32,5 +32,5 @@ interface UsuarioRepository : JpaRepository<Usuario, Long> {
      * @return um [Optional] contendo o usuário encontrado, ou vazio
      * caso nenhum usuário possua o login informado.
      */
-    fun findByLogin(login: String?): Optional<Usuario?>?
+    fun findByLogin(login: String?): Optional<Usuario>
 }

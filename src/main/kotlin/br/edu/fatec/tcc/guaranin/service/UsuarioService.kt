@@ -9,6 +9,7 @@ import br.edu.fatec.tcc.guaranin.repository.UsuarioRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.beans.Encoder
 
 @Service
@@ -18,17 +19,21 @@ class UsuarioService(
     private val passwordEncoder: Encoder
 ) {
 
+    @Transactional(readOnly = true)
     fun findByEmail(email: String): UsuarioResponseDTO {
         return usuarioMapper.toResponseDTO(
             usuarioRepository.findByLogin(email)
-                .orElseThrow { UsuarioNotFoundException() })
+                .orElseThrow { UsuarioNotFoundException() }
+        )
     }
 
+    @Transactional(readOnly = true)
     fun findAll(pageable: Pageable): Page<UsuarioResponseDTO> {
         return usuarioRepository.findAll(pageable)
             .map { usuarioMapper.toResponseDTO(it) }
     }
 
+    @Transactional
     fun create(usuarioCreateDTO: UsuarioCreateDTO): UsuarioResponseDTO {
         val usuario = usuarioMapper.toEntity(usuarioCreateDTO)
         //TODO Define password criptography
@@ -38,6 +43,7 @@ class UsuarioService(
         )
     }
 
+    @Transactional
     fun update(usuarioUpdateDTO: UsuarioUpdateDTO): UsuarioResponseDTO {
         val usuario = usuarioRepository.findById(usuarioUpdateDTO.id)
             .orElseThrow { UsuarioNotFoundException() }
@@ -52,6 +58,7 @@ class UsuarioService(
         )
     }
 
+    @Transactional
     fun delete(id: Long): UsuarioResponseDTO {
         val usuario = usuarioRepository.findById(id)
             .orElseThrow { UsuarioNotFoundException() }
