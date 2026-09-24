@@ -73,6 +73,7 @@
         <java.version>21</java.version>
         <kotlin.version>2.3.21</kotlin.version>
         <mapstruct.version>1.6.3</mapstruct.version>
+        <commons-validator.version>1.11.0</commons-validator.version>
     </properties>
     <dependencies>
         <dependency>
@@ -127,6 +128,14 @@
             <artifactId>mapstruct</artifactId>
             <version>${mapstruct.version}</version>
         </dependency>
+
+        <!-- Source: https://mvnrepository.com/artifact/commons-validator/commons-validator -->
+        <dependency>
+            <groupId>commons-validator</groupId>
+            <artifactId>commons-validator</artifactId>
+            <version>${commons-validator.version}</version>
+        </dependency>
+
 
     </dependencies>
 
