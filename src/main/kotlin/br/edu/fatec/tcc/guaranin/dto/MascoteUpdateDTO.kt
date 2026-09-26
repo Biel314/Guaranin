@@ -3,12 +3,13 @@ package br.edu.fatec.tcc.guaranin.dto
 import br.edu.fatec.tcc.guaranin.model.Estado
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Pattern
 import jakarta.validation.constraints.Size
 import java.util.UUID
 
 data class MascoteUpdateDTO (
-
+    @NotNull
     var id: UUID?,
 
     @NotBlank(message = "O e-nome é obrigatório")
@@ -17,5 +18,5 @@ data class MascoteUpdateDTO (
 
     var estado: Estado,
 
-    var pontosVida: UByte
+    var pontosVida: Int
 ) {}
