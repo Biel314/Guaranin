@@ -9,7 +9,7 @@ data class MascoteCreateDTO (
     @Size(max = 255, message = "O nome deve possuir no máximo 255 caracteres")
     val nome: String,
 
-    val estado: Estado = Estado.VIVO,
+    val estado: Estado,
 
-    val pontosVida: Int = 7
+    val pontosVida: Int
 ) {}
