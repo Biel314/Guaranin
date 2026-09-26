@@ -62,7 +62,8 @@ interface MascoteMapper {
      * @param usuario entidade existente a ser atualizada.
      */
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "password", ignore = true)
+    @Mapping(target = "nome", ignore = true)
+    @Mapping(target = "estado", ignore = true)
     fun updateEntityFromDTO(dto: MascoteUpdateDTO, @MappingTarget mascote: Mascote)
 
 }
