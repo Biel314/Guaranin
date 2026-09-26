@@ -61,30 +61,6 @@
 
         </div>
 
-        <div class="form-group"
-             style="margin-top: 20px;">
-
-            <label for="mascoteId">
-                Mascote:
-            </label>
-
-            <select id="mascoteId"
-                    name="mascoteId">
-
-                <option value="">
-                    - Selecione um mascote -
-                </option>
-
-                <option th:each="mascote : ${mascotes}"
-                        th:value="${mascote.id}"
-                        th:text="${mascote.nome}"
-                        th:selected="${usuario?.mascote?.id == mascote.id}">
-                </option>
-
-            </select>
-
-        </div>
-
         <div style="margin-top: 20px;">
 
             <input type="submit"
