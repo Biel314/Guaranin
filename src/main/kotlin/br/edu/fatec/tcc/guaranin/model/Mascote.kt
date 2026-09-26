@@ -1,6 +1,8 @@
 package br.edu.fatec.tcc.guaranin.model
 
 import jakarta.persistence.*
+import jakarta.validation.constraints.Max
+import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.Size
 import java.util.UUID
 
@@ -19,10 +21,18 @@ class Mascote(
     var nome: String? = null,
 
     @Column(nullable = false)
-    var estado: Estado ?= null,
+    var estado: Estado,
 
     @Column(nullable = false)
-    var pontosVida: UByte = 7u
+    @Min (
+        value = 0,
+        message = "pontos de vida não podem ser menor que 0"
+    )
+    @Max(
+        value = 7,
+        message = "pontos de vida não podem passar de 7"
+    )
+    var pontosVida: Int
 ) {
-    constructor() : this(null, "")
+    constructor() : this(null, "",Estado.VIVO, 7)
 }
