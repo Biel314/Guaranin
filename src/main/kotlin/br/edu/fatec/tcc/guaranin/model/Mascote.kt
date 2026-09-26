@@ -18,7 +18,11 @@ class Mascote(
     )
     var nome: String? = null,
 
-    var estado: Estado ?= null
+    @Column(nullable = false)
+    var estado: Estado ?= null,
+
+    @Column(nullable = false)
+    var pontosVida: UByte = 7u
 ) {
     constructor() : this(null, "")
 }
