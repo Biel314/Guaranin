@@ -16,7 +16,7 @@ import java.beans.Encoder
 class UsuarioService(
     private val usuarioRepository: UsuarioRepository,
     private val usuarioMapper: UsuarioMapper,
-    private val passwordEncoder: Encoder
+    //private val passwordEncoder: Encoder
 ) {
 
     @Transactional(readOnly = true)
@@ -37,7 +37,7 @@ class UsuarioService(
     fun create(usuarioCreateDTO: UsuarioCreateDTO): UsuarioResponseDTO {
         val usuario = usuarioMapper.toEntity(usuarioCreateDTO)
         //TODO Define password criptography
-        usuario.password = passwordEncoder.encode(usuario.password);
+        //usuario.password = passwordEncoder.encode(usuario.password);
         return usuarioMapper.toResponseDTO(
             usuarioRepository.save(usuario)
         )
@@ -49,13 +49,14 @@ class UsuarioService(
             .orElseThrow { UsuarioNotFoundException() }
         usuarioMapper.updateEntityFromDTO(usuarioUpdateDTO, usuario)
 
-        if (!usuarioUpdateDTO.password.isNullOrEmpty())
-        //TODO Define password criptography
-            usuario.password = passwordEncoder.encode(usuarioUpdateDTO.password)
-
+        if (!usuarioUpdateDTO.password.isNullOrEmpty()) {
+            //TODO Define password criptography
+            // usuario.password = passwordEncoder.encode(usuarioUpdateDTO.password)
+        }
         return usuarioMapper.toResponseDTO(
             usuarioRepository.save(usuario)
         )
+        return TODO("Provide the return value")
     }
 
     @Transactional
