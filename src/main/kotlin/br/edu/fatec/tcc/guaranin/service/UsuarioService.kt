@@ -10,8 +10,11 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.beans.Encoder
+import java.util.*
 
+/**
+ * Serviço de regras de negócio para [Usuario] (CRUD).
+ */
 @Service
 class UsuarioService(
     private val usuarioRepository: UsuarioRepository,
@@ -22,7 +25,7 @@ class UsuarioService(
     @Transactional(readOnly = true)
     fun findByEmail(email: String): UsuarioResponseDTO {
         return usuarioMapper.toResponseDTO(
-            usuarioRepository.findByLogin(email)
+            usuarioRepository.findByEmail(email)
                 .orElseThrow { UsuarioNotFoundException() }
         )
     }
@@ -56,11 +59,10 @@ class UsuarioService(
         return usuarioMapper.toResponseDTO(
             usuarioRepository.save(usuario)
         )
-        return TODO("Provide the return value")
     }
 
     @Transactional
-    fun delete(id: Long): UsuarioResponseDTO {
+    fun delete(id: UUID): UsuarioResponseDTO {
         val usuario = usuarioRepository.findById(id)
             .orElseThrow { UsuarioNotFoundException() }
         usuarioRepository.delete(usuario)

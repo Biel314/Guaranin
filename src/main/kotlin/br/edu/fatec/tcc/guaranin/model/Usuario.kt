@@ -9,6 +9,17 @@ import jakarta.validation.constraints.Pattern
 import jakarta.validation.constraints.Size
 import java.util.*
 
+/**
+ * Entidade JPA que representa um usuário no sistema Guaranin.
+ *
+ * @property id UUID gerado automaticamente.
+ * @property apelido Apelido do usuário (máx 26 chars).
+ * @property email E-mail único (utilizado como login).
+ * @property password Senha (write-only).
+ * @property mascote Mascote vinculado.
+ * @property metas Metas do usuário.
+ * @property historicoSesses Histórico de sessões de uso.
+ */
 @Entity
 class Usuario(
     @Id
@@ -50,5 +61,15 @@ class Usuario(
     @JsonIgnore
     public fun getLogin(): String {
         return this.email
+    }
+
+    @JsonIgnore
+    public fun setLogin(
+        @NotBlank(message = "O e-mail é obrigatório")
+        @Email(regexp = "\\w+@\\w+\\.\\w+", message = "Formato de e-mail inválido")
+        @Size(max = 254, message = "O login deve ter no máximo 254 caracteres")
+        login: String
+    ) {
+        this.email = login
     }
 }

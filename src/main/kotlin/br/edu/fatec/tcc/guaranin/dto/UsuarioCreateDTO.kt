@@ -5,11 +5,18 @@ import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Pattern
 import jakarta.validation.constraints.Size
 
+/**
+ * DTO de entrada para criação de [Usuario].
+ */
 data class UsuarioCreateDTO(
+    @NotBlank(message = "O Nome de Usuário é obrigatório")
+    @Size(max = 26, message = "O apelido deve ter no máximo 26 caracteres")
+    var apelido: String,
+
     @NotBlank(message = "O e-mail é obrigatório")
     @Email(regexp = "\\w+@\\w+\\.\\w+", message = "Formato de e-mail inválido")
-    @Size(max = 255, message = "O login deve ter no máximo 255 caracteres")
-    val login: String,
+    @Size(max = 254, message = "O e-mail deve ter no máximo 254 caracteres")
+    val email: String,
 
     @Size(min = 8, max = 72, message = "A senha deve ter entre 8 e 72 caracteres")
     @Pattern(

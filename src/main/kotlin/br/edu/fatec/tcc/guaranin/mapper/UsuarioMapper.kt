@@ -17,6 +17,9 @@ import org.mapstruct.*
  * silenciosamente ignorados ([ReportingPolicy.IGNORE]), evitando warnings
  * de compilação para mapeamentos parciais intencionais (ex.: `id`, `password`).
  */
+/**
+ * Mapper MapStruct para conversão entre entidade [Usuario] e DTOs.
+ */
 @Mapper(
     componentModel = "spring",
     unmappedTargetPolicy = ReportingPolicy.IGNORE,
