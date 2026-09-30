@@ -21,11 +21,12 @@ import java.util.*
  * @property historicoSesses Histórico de sessões de uso.
  */
 @Entity
+@Table(name = "tb_usuario")
 class Usuario(
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id_usuario", nullable = false)
-    var id: UUID,
+    var id: UUID? = null,
 
     @Column(length = 26)
     @NotBlank(message = "O Nome de Usuário é obrigatório")
@@ -34,7 +35,7 @@ class Usuario(
 
     @Column(nullable = false, unique = true, length = 254)
     @NotBlank(message = "O e-mail é obrigatório")
-    @Email(regexp = "\\w+@\\w+\\.\\w+", message = "Formato de e-mail inválido")
+    @Email(message = "Formato de e-mail inválido")
     @Size(max = 254, message = "O login deve ter no máximo 254 caracteres")
     var email: String,
 
@@ -66,7 +67,7 @@ class Usuario(
     @JsonIgnore
     public fun setLogin(
         @NotBlank(message = "O e-mail é obrigatório")
-        @Email(regexp = "\\w+@\\w+\\.\\w+", message = "Formato de e-mail inválido")
+        @Email(message = "Formato de e-mail inválido")
         @Size(max = 254, message = "O login deve ter no máximo 254 caracteres")
         login: String
     ) {
