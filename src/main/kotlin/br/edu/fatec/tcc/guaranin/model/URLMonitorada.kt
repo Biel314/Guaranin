@@ -35,8 +35,8 @@ class URLMonitorada(
 
     @Column(name = "ip", length = 50)
     @Size(max = 50)
-    var ip: String?,
+    var ip: String? = null,
 
-    @Column(name = "padrao")
-    var padrao: Boolean?
+    @Column(name = "padrao", nullable = false)
+    var padrao: Boolean = false
 ) {}
