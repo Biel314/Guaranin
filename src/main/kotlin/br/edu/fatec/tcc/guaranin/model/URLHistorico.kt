@@ -14,7 +14,7 @@ import java.util.*
  */
 @Entity
 @Table(name = "tb_url_historico")
-class UrlHistorico(
+class URLHistorico(
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id_url_historico", nullable = false)
