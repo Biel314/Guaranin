@@ -13,7 +13,7 @@ class UrlHistorico(
     var id: UUID? = null,
 
     @Column(nullable = false)
-    var id_usuario_url: UUID? = null,
+    var UsuarioUrl: UsuarioURL? = null,
 
     @Column(nullable = false)
     @FutureOrPresent
