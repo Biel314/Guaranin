@@ -35,8 +35,8 @@ class Usuario(
 
     @Column(nullable = false, unique = true, length = 254)
     @NotBlank(message = "O e-mail é obrigatório")
-    @Email(message = "Formato de e-mail inválido")
-    @Size(max = 254, message = "O login deve ter no máximo 254 caracteres")
+    @Email(regexp = "\\w+@\\w+\\.\\w+", message = "Formato de e-mail inválido")
+    @Size(max = 254, message = "O e-mail deve ter no máximo 254 caracteres")
     var email: String,
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
@@ -50,27 +50,22 @@ class Usuario(
     var password: String,
 
     // TODO External Connections
-    @OneToOne(cascade = [(CascadeType.ALL)])
+    @OneToOne(cascade = [(CascadeType.ALL)], fetch = FetchType.EAGER)
     var mascote: Mascote?,
 
-    @OneToMany(mappedBy = "usuario", cascade = [(CascadeType.ALL)])
+    @OneToMany(mappedBy = "usuario", cascade = [(CascadeType.ALL)], fetch = FetchType.LAZY)
     val metas: MutableList<Metas> = mutableListOf(),
 
-    @OneToMany(mappedBy = "usuario", cascade = [(CascadeType.ALL)])
-    val historicoSesses: MutableList<HistoricoSessoesUso> = mutableListOf()
-) {
-    @JsonIgnore
-    public fun getLogin(): String {
-        return this.email
-    }
+    @OneToMany(mappedBy = "usuario", cascade = [(CascadeType.ALL)], fetch = FetchType.LAZY)
+    val historicoSessoes: MutableList<HistoricoSessoesUso> = mutableListOf(),
 
-    @JsonIgnore
-    public fun setLogin(
-        @NotBlank(message = "O e-mail é obrigatório")
-        @Email(message = "Formato de e-mail inválido")
-        @Size(max = 254, message = "O login deve ter no máximo 254 caracteres")
-        login: String
-    ) {
-        this.email = login
-    }
+    @OneToMany(mappedBy = "usuario", cascade = [(CascadeType.ALL)], fetch = FetchType.LAZY)
+    val usuarioURLs: MutableList<UsuarioURL> = mutableListOf()
+) {
+    @get:JsonIgnore
+    var login: String
+        get() = this.email
+        set(value) {
+            this.email = value
+        }
 }
