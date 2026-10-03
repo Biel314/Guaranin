@@ -19,7 +19,7 @@ import java.util.*
  * @property id identificador da URL monitorada, gerado automaticamente.
  * @property link endereço sendo monitorado, obrigatório e único na base (máximo 4050 caracteres).
  * @property ip endereço IP associado ao campo [link] (máximo 50 caracteres).
- * @property padrao ?
+ * @property padrao indentificador se o link é monitorado por decisão do usuário ou padrão da aplicação.
  */
 @Entity
 @Table(name = "tb_url_monitorado")
