@@ -50,14 +50,14 @@ class Usuario(
     var password: String,
 
     // TODO External Connections
-    @OneToOne(cascade = [(CascadeType.ALL)], fetch = FetchType.EAGER)
-    var mascote: Mascote?,
+    //OneToOne(cascade = [(CascadeType.ALL)], fetch = FetchType.EAGER)
+    //var mascote: Mascote?,
 
-    @OneToMany(mappedBy = "usuario", cascade = [(CascadeType.ALL)], fetch = FetchType.LAZY)
-    val metas: MutableList<Metas> = mutableListOf(),
+    //@OneToMany(mappedBy = "usuario", cascade = [(CascadeType.ALL)], fetch = FetchType.LAZY)
+    //val metas: MutableList<Metas> = mutableListOf(),
 
-    @OneToMany(mappedBy = "usuario", cascade = [(CascadeType.ALL)], fetch = FetchType.LAZY)
-    val historicoSessoes: MutableList<HistoricoSessoesUso> = mutableListOf(),
+    //@OneToMany(mappedBy = "usuario", cascade = [(CascadeType.ALL)], fetch = FetchType.LAZY)
+    //val historicoSessoes: MutableList<HistoricoSessoesUso> = mutableListOf(),
 
     @OneToMany(mappedBy = "usuario", cascade = [(CascadeType.ALL)], fetch = FetchType.LAZY)
     val usuarioURLs: MutableList<UsuarioURL> = mutableListOf()
