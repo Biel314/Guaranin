@@ -31,13 +31,13 @@ class Usuario(
     @Column(length = 26)
     @NotBlank(message = "O Nome de Usuário é obrigatório")
     @Size(max = 26, message = "O login deve ter no máximo 26 caracteres")
-    var apelido: String,
+    var apelido: String = "",
 
     @Column(nullable = false, unique = true, length = 254)
     @NotBlank(message = "O e-mail é obrigatório")
     @Email(regexp = "\\w+@\\w+\\.\\w+", message = "Formato de e-mail inválido")
     @Size(max = 254, message = "O e-mail deve ter no máximo 254 caracteres")
-    var email: String,
+    var email: String = "",
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(nullable = false, length = 255)
@@ -47,7 +47,7 @@ class Usuario(
         regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,72}$",
         message = "A senha deve ter entre 8 e 72 caracteres e conter ao menos uma letra maiúscula, uma minúscula, um número e um caractere especial"
     )
-    var password: String,
+    var password: String = "",
 
     // TODO External Connections
     //OneToOne(cascade = [(CascadeType.ALL)], fetch = FetchType.EAGER)

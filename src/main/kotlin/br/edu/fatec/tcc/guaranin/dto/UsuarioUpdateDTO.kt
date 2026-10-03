@@ -1,9 +1,6 @@
 package br.edu.fatec.tcc.guaranin.dto
 
-import jakarta.validation.constraints.Email
-import jakarta.validation.constraints.NotBlank
-import jakarta.validation.constraints.Pattern
-import jakarta.validation.constraints.Size
+import jakarta.validation.constraints.*
 import java.util.*
 
 /**
@@ -11,7 +8,8 @@ import java.util.*
  */
 data class UsuarioUpdateDTO(
 
-    var id: UUID,
+    @field:NotNull
+    var id: UUID? = null,
 
     @field:NotBlank(message = "O Nome de Usuário é obrigatório")
     @field:Size(max = 26, message = "O apelido deve ter no máximo 26 caracteres")

@@ -24,7 +24,7 @@ interface URLHistoricoRepository : JpaRepository<URLHistorico, UUID> {
      * @param usuarioURL relação [UsuarioURL] critério de busca.
      * @return [Optional] contendo a entidade encontrada ou vazio.
      */
-    fun findByIdUsuarioUrl(usuarioURL: UsuarioURL): Optional<URLHistorico>
+    fun findByUsuarioUrl(usuarioURL: UsuarioURL): Optional<URLHistorico>
 
     /**
      * Busca histórico de URL pela data e hora do acesso com paginação.

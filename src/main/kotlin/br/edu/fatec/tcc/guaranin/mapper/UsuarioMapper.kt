@@ -62,6 +62,14 @@ interface UsuarioMapper {
     fun toEntity(usuarioCreateDTO: UsuarioCreateDTO): Usuario
 
     /**
+     * Converte um [UsuarioUpdateDTO] em uma entidade [Usuario].
+     *
+     * @param usuarioUpdateDTO dados de atualização de usuário.
+     * @return nova instância de [Usuario].
+     */
+    fun toEntity(usuarioUpdateDTO: UsuarioUpdateDTO): Usuario
+
+    /**
      * Atualiza os campos de uma entidade [Usuario] existente com os valores
      * fornecidos em um [UsuarioUpdateDTO].
      *
