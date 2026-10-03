@@ -8,13 +8,23 @@ services:
     ports:
       - "3306:3306"
     environment:
-      MYSQL_ALLOW_EMPTY_PASSWORD: "true"
       MYSQL_ROOT_PASSWORD: ""
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
       MYSQL_DATABASE: "guaranin"
-      MYSQL_USER: "teste"
-      MYSQL_PASSWORD: "123456789"
     volumes:
-      - "locodora_mysql_data:/var/lib/mysql"
+      - "guaranin_mysql_data:/var/lib/mysql"
+
+  phpmyadmin:
+    image: "phpmyadmin:latest"
+    container_name: "guaranin-phpmyadmin"
+    restart: "no"
+    depends_on:
+      - mysql
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: "mysql"
+      PMA_PORT: "3306"
 
 volumes:
-  locodora_mysql_data:
+  guaranin_mysql_data:
