@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="~{fragmentos/head :: head('Manter Usuário')}"></head>
+<head>
+    <meta charset="UTF-8">
+    <title>Manter Usuário</title>
+</head>
 
 <body>
-
-<header th:replace="~{fragmentos/header :: header(activePage='usuario')}"></header>
 
 <div class="box">
 
@@ -24,16 +25,27 @@
                th:value="${usuario?.id}">
 
         <div class="form-group">
+            <label for="apelido">Apelido:</label>
+            <input type="text"
+                   id="apelido"
+                   name="apelido"
+                   th:value="${usuario?.apelido}"
+                   maxlength="26"
+                   placeholder="Digite o apelido"
+                   required>
+        </div>
 
-            <label for="login">
+        <div class="form-group">
+
+            <label for="email">
                 E-mail:
             </label>
 
             <input type="email"
-                   id="login"
-                   name="login"
-                   th:value="${usuario?.login}"
-                   maxlength="255"
+                   id="email"
+                   name="email"
+                   th:value="${usuario?.email}"
+                   maxlength="254"
                    placeholder="Digite o e-mail"
                    required>
 

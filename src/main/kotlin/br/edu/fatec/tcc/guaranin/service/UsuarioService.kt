@@ -68,4 +68,18 @@ class UsuarioService(
         usuarioRepository.delete(usuario)
         return usuarioMapper.toResponseDTO(usuario)
     }
+
+    /**
+     * Busca um usuário pelo ID e o converte para [UsuarioUpdateDTO] para fins de edição no formulário.
+     *
+     * @param id identificador único do usuário ([UUID]).
+     * @return DTO contendo os dados atuais do usuário.
+     * @throws UsuarioNotFoundException se o usuário não for encontrado.
+     */
+    @Transactional(readOnly = true)
+    fun findByIdForUpdate(id: UUID): UsuarioUpdateDTO {
+        val usuario = usuarioRepository.findById(id)
+            .orElseThrow { UsuarioNotFoundException() }
+        return usuarioMapper.toUpdateDTO(usuario)
+    }
 }

@@ -38,6 +38,15 @@ interface UsuarioMapper {
     fun toResponseDTO(usuario: Usuario): UsuarioResponseDTO
 
     /**
+     * Converte uma entidade [Usuario] persistida em um [UsuarioUpdateDTO],
+     * utilizado para preencher o formulário de edição.
+     *
+     * @param usuario entidade de origem.
+     * @return DTO de atualização correspondente.
+     */
+    fun toUpdateDTO(usuario: Usuario): UsuarioUpdateDTO
+
+    /**
      * Converte um [UsuarioCreateDTO], recebido na requisição de cadastro,
      * em uma nova entidade [Usuario].
      *
@@ -66,5 +75,6 @@ interface UsuarioMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "password", ignore = true)
     fun updateEntityFromDTO(dto: UsuarioUpdateDTO, @MappingTarget usuario: Usuario)
+
 
 }
