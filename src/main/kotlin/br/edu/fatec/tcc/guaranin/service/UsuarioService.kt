@@ -3,8 +3,10 @@ package br.edu.fatec.tcc.guaranin.service
 import br.edu.fatec.tcc.guaranin.dto.UsuarioCreateDTO
 import br.edu.fatec.tcc.guaranin.dto.UsuarioResponseDTO
 import br.edu.fatec.tcc.guaranin.dto.UsuarioUpdateDTO
+import br.edu.fatec.tcc.guaranin.exception.InvalidDTOException
 import br.edu.fatec.tcc.guaranin.exception.UsuarioNotFoundException
 import br.edu.fatec.tcc.guaranin.mapper.UsuarioMapper
+import br.edu.fatec.tcc.guaranin.model.Usuario
 import br.edu.fatec.tcc.guaranin.repository.UsuarioRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -48,7 +50,9 @@ class UsuarioService(
 
     @Transactional
     fun update(usuarioUpdateDTO: UsuarioUpdateDTO): UsuarioResponseDTO {
-        val usuario = usuarioRepository.findById(usuarioUpdateDTO.id)
+        val uuid = usuarioUpdateDTO.id
+            ?: throw InvalidDTOException()
+        val usuario = usuarioRepository.findById(uuid)
             .orElseThrow { UsuarioNotFoundException() }
         usuarioMapper.updateEntityFromDTO(usuarioUpdateDTO, usuario)
 
@@ -82,4 +86,13 @@ class UsuarioService(
             .orElseThrow { UsuarioNotFoundException() }
         return usuarioMapper.toUpdateDTO(usuario)
     }
+
+    fun toUsuario(usuarioUpdateDTO: UsuarioUpdateDTO): Usuario {
+        return usuarioMapper.toEntity(usuarioUpdateDTO)
+    }
+
+    fun toUsuario(usuarioCreateDTO: UsuarioCreateDTO): Usuario {
+        return usuarioMapper.toEntity(usuarioCreateDTO)
+    }
+
 }
