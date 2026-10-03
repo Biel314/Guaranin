@@ -10,19 +10,22 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.beans.Encoder
+import java.util.*
 
+/**
+ * Serviço de regras de negócio para [Usuario] (CRUD).
+ */
 @Service
 class UsuarioService(
     private val usuarioRepository: UsuarioRepository,
     private val usuarioMapper: UsuarioMapper,
-    private val passwordEncoder: Encoder
+    //private val passwordEncoder: Encoder
 ) {
 
     @Transactional(readOnly = true)
     fun findByEmail(email: String): UsuarioResponseDTO {
         return usuarioMapper.toResponseDTO(
-            usuarioRepository.findByLogin(email)
+            usuarioRepository.findByEmail(email)
                 .orElseThrow { UsuarioNotFoundException() }
         )
     }
@@ -37,7 +40,7 @@ class UsuarioService(
     fun create(usuarioCreateDTO: UsuarioCreateDTO): UsuarioResponseDTO {
         val usuario = usuarioMapper.toEntity(usuarioCreateDTO)
         //TODO Define password criptography
-        usuario.password = passwordEncoder.encode(usuario.password);
+        //usuario.password = passwordEncoder.encode(usuario.password);
         return usuarioMapper.toResponseDTO(
             usuarioRepository.save(usuario)
         )
@@ -49,17 +52,17 @@ class UsuarioService(
             .orElseThrow { UsuarioNotFoundException() }
         usuarioMapper.updateEntityFromDTO(usuarioUpdateDTO, usuario)
 
-        if (!usuarioUpdateDTO.password.isNullOrEmpty())
-        //TODO Define password criptography
-            usuario.password = passwordEncoder.encode(usuarioUpdateDTO.password)
-
+        if (!usuarioUpdateDTO.password.isNullOrEmpty()) {
+            //TODO Define password criptography
+            // usuario.password = passwordEncoder.encode(usuarioUpdateDTO.password)
+        }
         return usuarioMapper.toResponseDTO(
             usuarioRepository.save(usuario)
         )
     }
 
     @Transactional
-    fun delete(id: Long): UsuarioResponseDTO {
+    fun delete(id: UUID): UsuarioResponseDTO {
         val usuario = usuarioRepository.findById(id)
             .orElseThrow { UsuarioNotFoundException() }
         usuarioRepository.delete(usuario)

@@ -12,19 +12,19 @@ import java.util.*
  * paginação, ordenação e consulta por identificador.
  *
  * As consultas personalizadas permitem localizar uma URL monitorada
- * pelo endereço da URL ou pelo endereço IP associado.
+ * pelo endereço do link ou pelo endereço IP associado.
  */
 @Repository
-interface URLMonitoradaRepository : JpaRepository<URLMonitorada, Long> {
+interface URLMonitoradaRepository : JpaRepository<URLMonitorada, UUID> {
 
     /**
-     * Busca uma URL monitorada pelo endereço da URL.
+     * Busca uma URL monitorada pelo endereço do link.
      *
-     * @param url endereço da URL que será utilizado como critério de busca.
+     * @param link endereço do link que será utilizado como critério de busca.
      * @return [Optional] contendo a entidade encontrada ou vazio caso
      * nenhuma URL monitorada corresponda ao endereço informado.
      */
-    fun findByUrl(url: String): Optional<URLMonitorada>
+    fun findByLink(link: String): Optional<URLMonitorada>
 
     /**
      * Busca uma URL monitorada pelo endereço IP.
@@ -33,5 +33,5 @@ interface URLMonitoradaRepository : JpaRepository<URLMonitorada, Long> {
      * @return [Optional] contendo a entidade encontrada ou vazio caso
      * nenhum registro corresponda ao endereço IP informado.
      */
-    fun findByIpAddress(ip: String): Optional<URLMonitorada>
+    fun findByIp(ip: String): Optional<URLMonitorada>
 }

@@ -7,19 +7,37 @@ import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Pattern
 import jakarta.validation.constraints.Size
+import java.util.*
 
+/**
+ * Entidade JPA que representa um usuário no sistema Guaranin.
+ *
+ * @property id UUID gerado automaticamente.
+ * @property apelido Apelido do usuário (máx 26 chars).
+ * @property email E-mail único (utilizado como login).
+ * @property password Senha (write-only).
+ * @property mascote Mascote vinculado.
+ * @property metas Metas do usuário.
+ * @property historicoSesses Histórico de sessões de uso.
+ */
 @Entity
+@Table(name = "tb_usuario")
 class Usuario(
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id", nullable = false)
-    var id: Long? = null,
+    @Column(name = "id_usuario", nullable = false)
+    var id: UUID? = null,
 
-    @Column(nullable = false, unique = true, length = 255)
+    @Column(length = 26)
+    @NotBlank(message = "O Nome de Usuário é obrigatório")
+    @Size(max = 26, message = "O login deve ter no máximo 26 caracteres")
+    var apelido: String,
+
+    @Column(nullable = false, unique = true, length = 254)
     @NotBlank(message = "O e-mail é obrigatório")
     @Email(regexp = "\\w+@\\w+\\.\\w+", message = "Formato de e-mail inválido")
-    @Size(max = 255, message = "O login deve ter no máximo 255 caracteres")
-    var login: String? = null,
+    @Size(max = 254, message = "O e-mail deve ter no máximo 254 caracteres")
+    var email: String,
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(nullable = false, length = 255)
@@ -29,21 +47,25 @@ class Usuario(
         regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,72}$",
         message = "A senha deve ter entre 8 e 72 caracteres e conter ao menos uma letra maiúscula, uma minúscula, um número e um caractere especial"
     )
-    var password: String? = null,
+    var password: String,
 
-    @OneToOne(cascade = [(CascadeType.ALL)])
-    var mascote: Mascote? = null,
+    // TODO External Connections
+    @OneToOne(cascade = [(CascadeType.ALL)], fetch = FetchType.EAGER)
+    var mascote: Mascote?,
 
-    @OneToMany(mappedBy = "usuario", cascade = [(CascadeType.ALL)])
+    @OneToMany(mappedBy = "usuario", cascade = [(CascadeType.ALL)], fetch = FetchType.LAZY)
     val metas: MutableList<Metas> = mutableListOf(),
 
-    @OneToMany(mappedBy = "usuario", cascade = [(CascadeType.ALL)])
-    val historicoSesses: MutableList<HistoricoSessoesUso> = mutableListOf()
-) {
-    constructor() : this(null, "", "")
+    @OneToMany(mappedBy = "usuario", cascade = [(CascadeType.ALL)], fetch = FetchType.LAZY)
+    val historicoSessoes: MutableList<HistoricoSessoesUso> = mutableListOf(),
 
-    @JsonIgnore
-    public fun getEmail(): String? {
-        return this.login
-    }
+    @OneToMany(mappedBy = "usuario", cascade = [(CascadeType.ALL)], fetch = FetchType.LAZY)
+    val usuarioURLs: MutableList<UsuarioURL> = mutableListOf()
+) {
+    @get:JsonIgnore
+    var login: String
+        get() = this.email
+        set(value) {
+            this.email = value
+        }
 }

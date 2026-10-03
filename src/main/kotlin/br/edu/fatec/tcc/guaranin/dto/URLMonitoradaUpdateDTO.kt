@@ -2,21 +2,27 @@ package br.edu.fatec.tcc.guaranin.dto
 
 import br.edu.fatec.tcc.guaranin.validation.ValidIp
 import br.edu.fatec.tcc.guaranin.validation.ValidUrl
-import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
+import java.util.*
 
+/**
+ * DTO de entrada para atualização de [br.edu.fatec.tcc.guaranin.model.URLMonitorada].
+ *
+ * Campos opcionais: valores `null` são ignorados pelo mapeamento, preservando
+ * o estado atual da entidade.
+ */
 data class URLMonitoradaUpdateDTO(
-    @NotNull
-    var id: Long,
 
-    @NotBlank
-    @ValidUrl
-    @Size(max = 255)
-    var url: String,
+    @field:NotNull
+    val id: UUID,
 
-    @NotBlank
-    @ValidIp
-    @Size(max = 50)
-    var ipAddress: String,
-)
+    @field:ValidUrl
+    val link: String?,
+
+    @field:Size(max = 50, message = "O IP deve ter no máximo 50 caracteres")
+    @field:ValidIp
+    val ip: String?,
+
+    val padrao: Boolean?
+) {}
