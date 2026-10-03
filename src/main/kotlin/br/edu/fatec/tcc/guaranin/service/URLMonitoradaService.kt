@@ -7,17 +7,21 @@ import br.edu.fatec.tcc.guaranin.exception.URLMonitoradaNotFoundException
 import br.edu.fatec.tcc.guaranin.mapper.URLMonitoradaMapper
 import br.edu.fatec.tcc.guaranin.model.URLMonitorada
 import br.edu.fatec.tcc.guaranin.repository.URLMonitoradaRepository
-import br.edu.fatec.tcc.guaranin.validation.ValidUrl
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.util.*
 
+/**
+ * Serviço de regras de negócio para [URLMonitorada] (CRUD).
+ */
 @Service
 class URLMonitoradaService(
     private val urlMonitoradaRepository: URLMonitoradaRepository,
     private val urlMonitoradaMapper: URLMonitoradaMapper
 ) {
+
     @Transactional(readOnly = true)
     fun findAll(pageable: Pageable): Page<URLMonitoradaResponseDTO> {
         return urlMonitoradaRepository.findAll(pageable)
@@ -25,16 +29,16 @@ class URLMonitoradaService(
     }
 
     @Transactional(readOnly = true)
-    fun findById(id: Long): URLMonitoradaResponseDTO {
+    fun findById(id: UUID): URLMonitoradaResponseDTO {
         return urlMonitoradaMapper.toResponseDTO(
             urlMonitoradaRepository.findById(id)
                 .orElseThrow { URLMonitoradaNotFoundException() })
     }
 
     @Transactional(readOnly = true)
-    fun findByURL(@ValidUrl url: String): URLMonitoradaResponseDTO {
+    fun findByLink(link: String): URLMonitoradaResponseDTO {
         return urlMonitoradaMapper.toResponseDTO(
-            urlMonitoradaRepository.findByUrl(url).orElseThrow {
+            urlMonitoradaRepository.findByLink(link).orElseThrow {
                 URLMonitoradaNotFoundException()
             }
         )
@@ -51,14 +55,14 @@ class URLMonitoradaService(
 
     @Transactional
     fun update(urlMonitoradaUpdateDTO: URLMonitoradaUpdateDTO): URLMonitoradaResponseDTO {
-        val urlMonitorada = urlMonitoradaRepository.findByUrl(urlMonitoradaUpdateDTO.url)
+        val urlMonitorada = urlMonitoradaRepository.findById(urlMonitoradaUpdateDTO.id)
             .orElseThrow { URLMonitoradaNotFoundException() }
         urlMonitoradaMapper.updateEntityFromDTO(urlMonitoradaUpdateDTO, urlMonitorada)
         return urlMonitoradaMapper.toResponseDTO(urlMonitoradaRepository.save(urlMonitorada))
     }
 
     @Transactional
-    fun delete(id: Long): URLMonitoradaResponseDTO {
+    fun delete(id: UUID): URLMonitoradaResponseDTO {
         val urlMonitorada: URLMonitorada = urlMonitoradaRepository.findById(id)
             .orElseThrow { URLMonitoradaNotFoundException() }
         urlMonitoradaRepository.delete(urlMonitorada)

@@ -17,6 +17,9 @@ import org.mapstruct.*
  * silenciosamente ignorados ([ReportingPolicy.IGNORE]), evitando warnings
  * de compilação para mapeamentos parciais intencionais (ex.: `id`, `password`).
  */
+/**
+ * Mapper MapStruct para conversão entre entidade [Usuario] e DTOs.
+ */
 @Mapper(
     componentModel = "spring",
     unmappedTargetPolicy = ReportingPolicy.IGNORE,
@@ -35,6 +38,15 @@ interface UsuarioMapper {
     fun toResponseDTO(usuario: Usuario): UsuarioResponseDTO
 
     /**
+     * Converte uma entidade [Usuario] persistida em um [UsuarioUpdateDTO],
+     * utilizado para preencher o formulário de edição.
+     *
+     * @param usuario entidade de origem.
+     * @return DTO de atualização correspondente.
+     */
+    fun toUpdateDTO(usuario: Usuario): UsuarioUpdateDTO
+
+    /**
      * Converte um [UsuarioCreateDTO], recebido na requisição de cadastro,
      * em uma nova entidade [Usuario].
      *
@@ -50,6 +62,14 @@ interface UsuarioMapper {
     fun toEntity(usuarioCreateDTO: UsuarioCreateDTO): Usuario
 
     /**
+     * Converte um [UsuarioUpdateDTO] em uma entidade [Usuario].
+     *
+     * @param usuarioUpdateDTO dados de atualização de usuário.
+     * @return nova instância de [Usuario].
+     */
+    fun toEntity(usuarioUpdateDTO: UsuarioUpdateDTO): Usuario
+
+    /**
      * Atualiza os campos de uma entidade [Usuario] existente com os valores
      * fornecidos em um [UsuarioUpdateDTO].
      *
@@ -63,5 +83,6 @@ interface UsuarioMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "password", ignore = true)
     fun updateEntityFromDTO(dto: UsuarioUpdateDTO, @MappingTarget usuario: Usuario)
+
 
 }
