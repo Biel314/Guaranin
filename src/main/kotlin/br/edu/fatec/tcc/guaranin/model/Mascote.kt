@@ -2,20 +2,27 @@ package br.edu.fatec.tcc.guaranin.model
 
 import jakarta.persistence.*
 import jakarta.validation.constraints.Size
+import java.util.UUID
 
 @Entity
 class Mascote(
     @Id
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.AUTO)
-    var id: Long? = null,
+    var id: UUID? = null,
 
     @Column(nullable = false)
     @Size(
         min = 3, max = 255,
         message = "O nome do mascote deve ter entre 3 e 255 caracteres"
     )
-    var nome: String? = null
+    var nome: String? = null,
+
+    @Column(nullable = false)
+    var estado: Estado ?= null,
+
+    @Column(nullable = false)
+    var pontosVida: UByte = 7u
 ) {
     constructor() : this(null, "")
 }
