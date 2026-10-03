@@ -13,11 +13,11 @@ import java.util.*
 
 @Controller
 @RequestMapping("/usuario")
-class UsuarioController(
+class UsuarioWebController(
     private val usuarioService: UsuarioService,
 ) {
 
-    @GetMapping("", "/", "/listar")
+    @GetMapping("", "/")
     fun listarTodos(model: Model, pageable: Pageable): String {
         val usuariosPage = usuarioService.findAll(pageable)
         model.addAttribute("usuarios", usuariosPage.content)
@@ -38,8 +38,13 @@ class UsuarioController(
     }
 
     @PostMapping("")
-    fun salvar(@Valid @ModelAttribute dto: UsuarioCreateDTO, result: BindingResult, model: Model): String {
+    fun salvar(
+        @Valid @ModelAttribute dto: UsuarioCreateDTO,
+        result: BindingResult,
+        model: Model
+    ): String {
         if (result.hasErrors()) {
+            model.addAttribute("usuario", usuarioService.toUsuario(dto))
             return "usuario/formulario"
         }
         usuarioService.create(dto)
@@ -47,8 +52,13 @@ class UsuarioController(
     }
 
     @PutMapping("")
-    fun atualizar(@Valid @ModelAttribute dto: UsuarioUpdateDTO, result: BindingResult): String {
+    fun atualizar(
+        @Valid @ModelAttribute dto: UsuarioUpdateDTO,
+        result: BindingResult,
+        model: Model
+    ): String {
         if (result.hasErrors()) {
+            model.addAttribute("usuario", usuarioService.toUsuario(dto))
             return "usuario/formulario"
         }
         usuarioService.update(dto)
