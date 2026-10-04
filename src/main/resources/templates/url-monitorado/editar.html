@@ -3,14 +3,14 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Cadastro URL Monitorada</title>
+    <title>Editar URL Monitorada</title>
 </head>
 
 <body>
 
 <div class="box">
 
-    <h1>Cadastro URL Monitorada</h1>
+    <h1>Editar URL Monitorada</h1>
 
     <div th:if="${errors != null}" style="background-color: #f8d7da; color: #721c24; padding: 10px; margin-bottom: 15px; border: 1px solid #f5c6cb; border-radius: 4px;">
         <ul>
@@ -18,7 +18,9 @@
         </ul>
     </div>
 
-    <form th:action="@{/url-monitorada}" method="post" th:object="${urlMonitorada}">
+    <form th:action="@{/url-monitorado}" method="post" th:object="${urlMonitoradaUpdateDTO}">
+        <input type="hidden" name="_method" value="put">
+        <input type="hidden" name="id" th:value="*{id}">
 
         <div class="form-group">
             <label for="link">Link:</label>
@@ -47,8 +49,8 @@
         </div>
 
         <div style="margin-top: 20px;">
-            <input type="submit" value="Cadastrar">
-            <a th:href="@{/url-monitorada}">Voltar</a>
+            <input type="submit" value="Atualizar">
+            <a th:href="@{/url-monitorado}">Voltar</a>
         </div>
 
     </form>

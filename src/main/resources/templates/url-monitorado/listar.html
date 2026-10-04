@@ -12,7 +12,7 @@
     <h1>URLs Monitoradas</h1>
 
     <button type="submit">
-        <a th:href="@{/url-monitorada/novo}">Nova URL</a>
+        <a th:href="@{/url-monitorado/novo}">Nova URL</a>
     </button>
 
     <table>
@@ -31,9 +31,9 @@
             <td th:text="${url.padrao ? 'Sim' : 'Não'}">Não</td>
             <td>
                 <button type="submit">
-                    <a th:href="@{/url-monitorada/{id}(id=${url.id})}">Editar</a>
+                    <a th:href="@{/url-monitorado/{id}(id=${url.id})}">Editar</a>
                 </button>
-                <form method="post" style="display:inline;" th:action="@{/url-monitorada/{id}(id=${url.id})}">
+                <form method="post" style="display:inline;" th:action="@{/url-monitorado/{id}(id=${url.id})}">
                     <input name="_method" type="hidden" value="delete">
                     <button type="submit">Excluir</button>
                 </form>
