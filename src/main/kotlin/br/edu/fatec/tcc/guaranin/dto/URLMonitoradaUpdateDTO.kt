@@ -11,11 +11,16 @@ import java.util.*
  *
  * Campos opcionais: valores `null` são ignorados pelo mapeamento, preservando
  * o estado atual da entidade.
+ *
+ * @property id identificador único obrigatório da URL a ser atualizada.
+ * @property link novo endereço web opcional.
+ * @property ip novo endereço IP opcional.
+ * @property padrao novo status de marcação padrão opcional.
  */
 data class URLMonitoradaUpdateDTO(
 
     @field:NotNull
-    val id: UUID,
+    val id: UUID?,
 
     @field:ValidUrl
     val link: String?,
