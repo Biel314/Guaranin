@@ -3,6 +3,7 @@ package br.edu.fatec.tcc.guaranin.service
 import br.edu.fatec.tcc.guaranin.dto.URLMonitoradaCreateDTO
 import br.edu.fatec.tcc.guaranin.dto.URLMonitoradaResponseDTO
 import br.edu.fatec.tcc.guaranin.dto.URLMonitoradaUpdateDTO
+import br.edu.fatec.tcc.guaranin.exception.InvalidDTOException
 import br.edu.fatec.tcc.guaranin.exception.URLMonitoradaNotFoundException
 import br.edu.fatec.tcc.guaranin.mapper.URLMonitoradaMapper
 import br.edu.fatec.tcc.guaranin.model.URLMonitorada
@@ -55,7 +56,9 @@ class URLMonitoradaService(
 
     @Transactional
     fun update(urlMonitoradaUpdateDTO: URLMonitoradaUpdateDTO): URLMonitoradaResponseDTO {
-        val urlMonitorada = urlMonitoradaRepository.findById(urlMonitoradaUpdateDTO.id)
+        val uuid = urlMonitoradaUpdateDTO.id
+            ?: throw InvalidDTOException()
+        val urlMonitorada = urlMonitoradaRepository.findById(uuid)
             .orElseThrow { URLMonitoradaNotFoundException() }
         urlMonitoradaMapper.updateEntityFromDTO(urlMonitoradaUpdateDTO, urlMonitorada)
         return urlMonitoradaMapper.toResponseDTO(urlMonitoradaRepository.save(urlMonitorada))
