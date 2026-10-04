@@ -27,25 +27,28 @@ class UsuarioWebController(
 
     @GetMapping("/novo")
     fun novoForm(model: Model): String {
-        return "usuario/formulario"
+        if (!model.containsAttribute("usuario")) {
+            model.addAttribute("usuario", UsuarioCreateDTO("", "", ""))
+        }
+        return "usuario/novo"
     }
 
     @GetMapping("/{id}")
     fun editar(@PathVariable id: UUID, model: Model): String {
         val usuario = usuarioService.findByIdForUpdate(id)
-        model.addAttribute("usuario", usuario)
-        return "usuario/formulario"
+        model.addAttribute("usuarioUpdateDTO", usuario)
+        return "usuario/editar"
     }
 
     @PostMapping("")
     fun salvar(
-        @Valid @ModelAttribute dto: UsuarioCreateDTO,
+        @Valid @ModelAttribute("usuario") dto: UsuarioCreateDTO,
         result: BindingResult,
         model: Model
     ): String {
         if (result.hasErrors()) {
-            model.addAttribute("usuario", usuarioService.toUsuario(dto))
-            return "usuario/formulario"
+            model.addAttribute("errors", result.allErrors)
+            return "usuario/novo"
         }
         usuarioService.create(dto)
         return "redirect:/usuario"
@@ -53,13 +56,13 @@ class UsuarioWebController(
 
     @PutMapping("")
     fun atualizar(
-        @Valid @ModelAttribute dto: UsuarioUpdateDTO,
+        @Valid @ModelAttribute("usuarioUpdateDTO") dto: UsuarioUpdateDTO,
         result: BindingResult,
         model: Model
     ): String {
         if (result.hasErrors()) {
-            model.addAttribute("usuario", usuarioService.toUsuario(dto))
-            return "usuario/formulario"
+            model.addAttribute("errors", result.allErrors)
+            return "usuario/editar"
         }
         usuarioService.update(dto)
         return "redirect:/usuario"
