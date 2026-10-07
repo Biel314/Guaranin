@@ -4,6 +4,7 @@ import jakarta.persistence.*
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.Size
+import java.time.LocalDate
 import java.util.UUID
 
 @Entity
@@ -13,15 +14,26 @@ class Mascote(
     @GeneratedValue(strategy = GenerationType.AUTO)
     var id: UUID? = null,
 
-    @Column(nullable = false)
+    @Column(name = "nome", nullable = false)
     @Size(
         min = 3, max = 255,
         message = "O nome do mascote deve ter entre 3 e 255 caracteres"
     )
     var nome: String? = null,
 
-    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "estado", nullable = false)
     var estado: Estado,
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "humor", nullable = false)
+    var humor: Humor,
+
+    @Column(name = "progresso", nullable = false)
+    var nivel: Int,
+
+    @Column(name = "experiencia", nullable = false)
+    var experiencia: Int,
 
     @Column(nullable = false)
     @Min (
@@ -32,7 +44,10 @@ class Mascote(
         value = 7,
         message = "pontos de vida não podem passar de 7"
     )
-    var pontosVida: Int
+    var pontosVida: Int,
+
+    @Column(name = "data_morte", nullable = true)
+    var dataMorte: LocalDate? = null
 ) {
-    constructor() : this(null, "",Estado.VIVO, 7)
+
 }
