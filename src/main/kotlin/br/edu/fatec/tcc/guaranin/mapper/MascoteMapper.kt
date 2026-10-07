@@ -3,7 +3,6 @@ package br.edu.fatec.tcc.guaranin.mapper
 import br.edu.fatec.tcc.guaranin.dto.MascoteCreateDTO
 import br.edu.fatec.tcc.guaranin.dto.MascoteResponseDTO
 import br.edu.fatec.tcc.guaranin.dto.MascoteUpdateDTO
-import br.edu.fatec.tcc.guaranin.dto.UsuarioUpdateDTO
 import br.edu.fatec.tcc.guaranin.model.Mascote
 import org.mapstruct.*
 
@@ -62,8 +61,12 @@ interface MascoteMapper {
      * @param usuario entidade existente a ser atualizada.
      */
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "nome", ignore = true)
     @Mapping(target = "estado", ignore = true)
+    @Mapping(target = "humor", ignore = true)
+    @Mapping(target = "experiencia", ignore = true)
+    @Mapping(target = "nivel", ignore = true)
+    @Mapping(target = "pontosVida", ignore = true)
+    @Mapping(target = "dataMorte", ignore = true)
     fun updateEntityFromDTO(dto: MascoteUpdateDTO, @MappingTarget mascote: Mascote)
 
 }
