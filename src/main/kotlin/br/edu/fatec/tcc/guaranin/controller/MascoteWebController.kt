@@ -21,7 +21,7 @@ import java.util.*
  * Fornece operações CRUD integradas com Thymeleaf e documentação OpenAPI/Swagger.
  */
 @Controller
-@RequestMapping("/usuario")
+@RequestMapping("/mascote")
 @Tag(name = "Mascote", description = "Endpoints web para gerenciamento de mascotes do sistema")
 class MascoteWebController (
     private val mascoteService: MascoteService

@@ -7,11 +7,12 @@ import java.util.UUID
 
 data class MascoteResponseDTO(
     val id: UUID,
+    val usuarioId: UUID,
     val nome: String,
     val estado: Estado,
     val humor: Humor,
     val nivel: Int,
     val experiencia: Int,
     val pontosVida: Int,
-    val dataMorte: LocalDate
+    val dataMorte: LocalDate?
 ) {}
