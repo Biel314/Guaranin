@@ -12,11 +12,8 @@ data class MascoteUpdateDTO (
     @NotNull
     var id: UUID?,
 
-    @NotBlank(message = "O e-nome é obrigatório")
-    @Size(max = 255, message = "O nome deve ter no máximo 255 caracteres")
+    @NotBlank(message = "O nome é obrigatório")
+    @Size(min= 3, max = 255, message = "O nome deve possuir entre 3 e 255 caracteres")
     var nome: String?,
 
-    var estado: Estado,
-
-    var pontosVida: Int
 ) {}
