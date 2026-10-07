@@ -9,6 +9,7 @@ import br.edu.fatec.tcc.guaranin.dto.UsuarioUpdateDTO
 import br.edu.fatec.tcc.guaranin.exception.InvalidDTOException
 import br.edu.fatec.tcc.guaranin.exception.MascoteNotFoundException
 import br.edu.fatec.tcc.guaranin.mapper.MascoteMapper
+import br.edu.fatec.tcc.guaranin.model.Mascote
 import br.edu.fatec.tcc.guaranin.model.Usuario
 import br.edu.fatec.tcc.guaranin.repository.MascoteRepository
 import org.springframework.data.domain.Page
@@ -84,12 +85,12 @@ class MascoteService (
         return mascoteMapper.toUpdateDTO(mascote)
     }
 
-    fun toUsuario(usuarioUpdateDTO: UsuarioUpdateDTO): Usuario {
-        return usuarioMapper.toEntity(usuarioUpdateDTO)
+    fun toEntity(mascoteUpdateDTO: MascoteUpdateDTO): Mascote {
+        return mascoteMapper.toEntity(mascoteUpdateDTO)
     }
 
-    fun toUsuario(usuarioCreateDTO: UsuarioCreateDTO): Usuario {
-        return usuarioMapper.toEntity(usuarioCreateDTO)
+    fun toEntity(mascoteCreateDTO: MascoteCreateDTO): Mascote {
+        return mascoteMapper.toEntity(mascoteCreateDTO)
     }
 
 }
