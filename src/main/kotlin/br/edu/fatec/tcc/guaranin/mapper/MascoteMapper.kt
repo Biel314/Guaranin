@@ -3,7 +3,10 @@ package br.edu.fatec.tcc.guaranin.mapper
 import br.edu.fatec.tcc.guaranin.dto.MascoteCreateDTO
 import br.edu.fatec.tcc.guaranin.dto.MascoteResponseDTO
 import br.edu.fatec.tcc.guaranin.dto.MascoteUpdateDTO
+import br.edu.fatec.tcc.guaranin.dto.UsuarioCreateDTO
+import br.edu.fatec.tcc.guaranin.dto.UsuarioUpdateDTO
 import br.edu.fatec.tcc.guaranin.model.Mascote
+import br.edu.fatec.tcc.guaranin.model.Usuario
 import org.mapstruct.*
 
 /**
@@ -35,27 +38,44 @@ interface MascoteMapper {
     fun toResponseDTO(mascote: Mascote): MascoteResponseDTO
 
     /**
+     * Converte uma entidade [Mascote] persistida em um [MascoteUpdateDTO],
+     * utilizado para preencher o formulário de edição.
+     *
+     * @param mascote entidade de origem.
+     * @return DTO de atualização correspondente.
+     */
+    fun toUpdateDTO(mascote: Mascote): MascoteUpdateDTO
+
+    /**
      * Converte um [MascoteCreateDTO], recebido na requisição de cadastro,
      * em uma nova entidade [Mascote].
      *
      * O campo `id` é ignorado no mapeamento, pois é gerado pelo banco de
-     * dados na persistência. A senha mapeada aqui está em texto plano —
-     * cabe à camada de serviço aplicar o hash (`PasswordEncoder`) antes
-     * de salvar a entidade.
+     * dados na persistência.
      *
-     * @param mascoteCreateDto dados de entrada para criação do usuário.
+     * @param mascoteCreateDTO dados de entrada para criação do mascote.
      * @return nova instância de [Mascote], ainda não persistida.
      */
     @Mapping(target = "id", ignore = true)
-    fun toEntity(mascoteCreateDto: MascoteCreateDTO): Mascote
+    fun toEntity(mascoteCreateDTO: MascoteCreateDTO): Mascote
+
+    /**
+     * Converte um [MascoteUpdateDTO] em uma entidade [Mascote].
+     *
+     * @param mascoteUpdateDTO dados de atualização de usuário.
+     * @return nova instância de [Mascote].
+     */
+    fun toEntity(mascoteUpdateDTO: MascoteUpdateDTO): Mascote
 
     /**
      * Atualiza os campos de uma entidade [Mascote] existente com os valores
      * fornecidos em um [MascoteUpdateDTO].
      *
-     * O parâmetro `usuario` é modificado in-place (anotado com
+     * O parâmetro `mascote` é modificado in-place (anotado com
      * [MappingTarget]), e o `id` original é preservado, já que é ignorado
-     * no mapeamento.
+     * no mapeamento. Além disso, o `estado`, `humor`, `experiencia`, `nivel`,
+     * `pontosVida` e `dataMorte` são administrados pelo sistema, não possuindo
+     * interação com o usuário
      *
      * @param dto dados de atualização fornecidos pelo cliente.
      * @param usuario entidade existente a ser atualizada.
