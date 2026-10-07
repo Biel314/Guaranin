@@ -27,17 +27,17 @@ class Mascote(
 
     @Enumerated(EnumType.STRING)
     @Column(name = "estado", nullable = false)
-    var estado: Estado,
+    var estado: Estado = Estado.SAUDAVEL,
 
     @Enumerated(EnumType.STRING)
     @Column(name = "humor", nullable = false)
-    var humor: Humor,
+    var humor: Humor = Humor.FELIZ,
 
-    @Column(name = "progresso", nullable = false)
-    var nivel: Int,
+    @Column(name = "nivel", nullable = false)
+    var nivel: Int = 1,
 
     @Column(name = "experiencia", nullable = false)
-    var experiencia: Int,
+    var experiencia: Int = 0,
 
     @Column(nullable = false)
     @Min (
@@ -48,7 +48,7 @@ class Mascote(
         value = 7,
         message = "pontos de vida não podem passar de 7"
     )
-    var pontosVida: Int,
+    var pontosVida: Int = 7,
 
     @Column(name = "data_morte", nullable = true)
     var dataMorte: LocalDate? = null
