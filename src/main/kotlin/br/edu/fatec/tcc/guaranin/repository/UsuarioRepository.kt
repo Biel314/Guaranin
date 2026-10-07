@@ -19,8 +19,11 @@ import java.util.*
  * gerenciado pelo Spring, permitindo sua injeção via construtor em
  * services e outros componentes.
  */
+/**
+ * Repositório JPA para entidade [Usuario] com chave primária UUID.
+ */
 @Repository
-interface UsuarioRepository : JpaRepository<Usuario, Long> {
+interface UsuarioRepository : JpaRepository<Usuario, UUID> {
     /**
      * Busca um usuário pelo seu login (e-mail).
      *
@@ -32,5 +35,7 @@ interface UsuarioRepository : JpaRepository<Usuario, Long> {
      * @return um [Optional] contendo o usuário encontrado, ou vazio
      * caso nenhum usuário possua o login informado.
      */
-    fun findByLogin(login: String?): Optional<Usuario>
+    fun findByEmail(login: String): Optional<Usuario>
+    
+    fun findByApelido(apelido: String): Optional<Usuario>
 }

@@ -10,7 +10,7 @@ import kotlin.reflect.KClass
     AnnotationTarget.VALUE_PARAMETER
 )
 @Retention(AnnotationRetention.RUNTIME)
-@Constraint(validatedBy = [UrlValidator::class])
+@Constraint(validatedBy = [URLValidator::class])
 annotation class ValidUrl(
     val message: String = "URL inválida",
     val groups: Array<KClass<*>> = [],

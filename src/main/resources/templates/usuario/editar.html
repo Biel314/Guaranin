@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Usuário</title>
+</head>
+
+<body>
+
+<div class="box">
+
+    <h1>Editar Usuário</h1>
+
+    <div th:if="${errors != null}" style="background-color: #f8d7da; color: #721c24; padding: 10px; margin-bottom: 15px; border: 1px solid #f5c6cb; border-radius: 4px;">
+        <ul>
+            <li th:each="err : ${errors}" th:text="${err.defaultMessage}">Erro</li>
+        </ul>
+    </div>
+
+    <form th:action="@{/usuario}" method="post" th:object="${usuarioUpdateDTO}">
+        <input type="hidden" name="_method" value="put">
+
+        <input type="hidden"
+               name="id"
+               th:value="*{id}">
+
+        <div class="form-group">
+            <label for="apelido">Apelido:</label>
+            <input type="text"
+                   id="apelido"
+                   th:field="*{apelido}"
+                   maxlength="26"
+                   placeholder="Digite o apelido"
+                   required>
+            <p th:if="${#fields.hasErrors('apelido')}" th:errors="*{apelido}" style="color: red; font-size: 0.85em; margin-top: 4px;"></p>
+        </div>
+
+        <div class="form-group">
+
+            <label for="email">
+                E-mail:
+            </label>
+
+            <input type="email"
+                   id="email"
+                   th:field="*{email}"
+                   maxlength="254"
+                   placeholder="Digite o e-mail"
+                   required>
+            <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}" style="color: red; font-size: 0.85em; margin-top: 4px;"></p>
+
+        </div>
+
+        <div class="form-group">
+
+            <label for="password">
+                Senha (deixe em branco para manter):
+            </label>
+
+            <input type="password"
+                   id="password"
+                   th:field="*{password}"
+                   minlength="8"
+                   maxlength="72"
+                   placeholder="Digite a nova senha">
+            <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}" style="color: red; font-size: 0.85em; margin-top: 4px;"></p>
+
+        </div>
+
+        <div style="margin-top: 20px;">
+
+            <input type="submit" value="Atualizar">
+
+            <a href="/usuario">
+                Voltar
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+</body>
+</html>

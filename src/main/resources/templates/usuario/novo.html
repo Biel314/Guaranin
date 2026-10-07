@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro Usuário</title>
+</head>
+
+<body>
+
+<div class="box">
+
+    <h1>Cadastro Usuário</h1>
+
+    <div style="background-color: #f8d7da; color: #721c24; padding: 10px; margin-bottom: 15px; border: 1px solid #f5c6cb; border-radius: 4px;"
+         th:if="${errors != null}">
+        <ul>
+            <li th:each="err : ${errors}" th:text="${err.defaultMessage}">Erro</li>
+        </ul>
+    </div>
+
+    <form th:action="@{/usuario}" method="post" th:object="${usuario}">
+
+        <div class="form-group">
+            <label for="apelido">Apelido:</label>
+            <input id="apelido"
+                   maxlength="26"
+                   placeholder="Digite o apelido"
+                   required
+                   th:field="*{apelido}"
+                   type="text">
+            <p style="color: red; font-size: 0.85em; margin-top: 4px;" th:errors="*{apelido}"
+               th:if="${#fields.hasErrors('apelido')}"></p>
+        </div>
+
+        <div class="form-group">
+
+            <label for="email">
+                E-mail:
+            </label>
+
+            <input id="email"
+                   maxlength="254"
+                   placeholder="Digite o e-mail"
+                   required
+                   th:field="*{email}"
+                   type="email">
+            <p style="color: red; font-size: 0.85em; margin-top: 4px;" th:errors="*{email}"
+               th:if="${#fields.hasErrors('email')}"></p>
+
+        </div>
+
+        <div class="form-group">
+
+            <label for="password">
+                Senha:
+            </label>
+
+            <div style="max-width: 50%">
+
+                <input id="password"
+                       maxlength="72"
+                       minlength="8"
+                       placeholder="Digite a senha"
+                       required
+                       th:field="*{password}"
+                       type="password">
+
+                <p style="color: red; font-size: 0.85em; margin-top: 4px;" th:errors="*{password}"
+                   th:if="${#fields.hasErrors('password')}"></p>
+
+                <br>
+                <small>
+                    A senha deve possuir entre 8 e 72 caracteres,
+                    contendo pelo menos uma letra maiúscula,
+                    uma letra minúscula, um número e um caractere especial.
+                </small>
+            </div>
+
+        </div>
+
+        <div style="margin-top: 20px;">
+
+            <input type="submit" value="Cadastrar">
+
+            <a href="/usuario">
+                Voltar
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+</body>
+</html>

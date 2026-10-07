@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de URLs Monitoradas</title>
+</head>
+
+<body>
+
+<div class="box">
+    <h1>URLs Monitoradas</h1>
+
+    <button type="submit">
+        <a th:href="@{/url-monitorado/novo}">Nova URL</a>
+    </button>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Link</th>
+            <th>IP</th>
+            <th>Padrão</th>
+            <th>Ações</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="url : ${urls}">
+            <td th:text="${url.link}">https://example.com</td>
+            <td th:text="${url.ip}">127.0.0.1</td>
+            <td th:text="${url.padrao ? 'Sim' : 'Não'}">Não</td>
+            <td>
+                <button type="submit">
+                    <a th:href="@{/url-monitorado/{id}(id=${url.id})}">Editar</a>
+                </button>
+                <form method="post" style="display:inline;" th:action="@{/url-monitorado/{id}(id=${url.id})}">
+                    <input name="_method" type="hidden" value="delete">
+                    <button type="submit">Excluir</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>

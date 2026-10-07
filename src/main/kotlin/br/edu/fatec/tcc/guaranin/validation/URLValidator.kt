@@ -4,7 +4,7 @@ import jakarta.validation.ConstraintValidator
 import jakarta.validation.ConstraintValidatorContext
 import org.apache.commons.validator.routines.UrlValidator
 
-class UrlValidator : ConstraintValidator<ValidUrl, String> {
+class URLValidator : ConstraintValidator<ValidUrl, String> {
 
     private val validator = UrlValidator.getInstance()
 
