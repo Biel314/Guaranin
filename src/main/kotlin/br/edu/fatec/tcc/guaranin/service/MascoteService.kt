@@ -3,9 +3,6 @@ package br.edu.fatec.tcc.guaranin.service
 import br.edu.fatec.tcc.guaranin.dto.MascoteCreateDTO
 import br.edu.fatec.tcc.guaranin.dto.MascoteResponseDTO
 import br.edu.fatec.tcc.guaranin.dto.MascoteUpdateDTO
-import br.edu.fatec.tcc.guaranin.dto.UsuarioCreateDTO
-import br.edu.fatec.tcc.guaranin.dto.UsuarioResponseDTO
-import br.edu.fatec.tcc.guaranin.dto.UsuarioUpdateDTO
 import br.edu.fatec.tcc.guaranin.exception.InvalidDTOException
 import br.edu.fatec.tcc.guaranin.exception.MascoteNotFoundException
 import br.edu.fatec.tcc.guaranin.mapper.MascoteMapper
@@ -25,7 +22,6 @@ import java.util.*
 class MascoteService (
     private val mascoteRepository: MascoteRepository,
     private val mascoteMapper: MascoteMapper,
-    //private val passwordEncoder: Encoder
 ) {
 
     @Transactional(readOnly = true)
