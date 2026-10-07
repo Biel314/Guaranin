@@ -10,11 +10,15 @@ import java.util.UUID
 @Entity
 class Mascote(
     @Id
-    @Column(name = "id", nullable = false)
+    @Column(name = "id_mascote", nullable = false)
     @GeneratedValue(strategy = GenerationType.AUTO)
     var id: UUID? = null,
 
-    @Column(name = "nome", nullable = false)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_usuario", nullable = false)
+    var usuario: Usuario,
+
+
     @Size(
         min = 3, max = 255,
         message = "O nome do mascote deve ter entre 3 e 255 caracteres"

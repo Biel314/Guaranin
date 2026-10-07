@@ -3,10 +3,7 @@ package br.edu.fatec.tcc.guaranin.mapper
 import br.edu.fatec.tcc.guaranin.dto.MascoteCreateDTO
 import br.edu.fatec.tcc.guaranin.dto.MascoteResponseDTO
 import br.edu.fatec.tcc.guaranin.dto.MascoteUpdateDTO
-import br.edu.fatec.tcc.guaranin.dto.UsuarioCreateDTO
-import br.edu.fatec.tcc.guaranin.dto.UsuarioUpdateDTO
 import br.edu.fatec.tcc.guaranin.model.Mascote
-import br.edu.fatec.tcc.guaranin.model.Usuario
 import org.mapstruct.*
 
 /**
@@ -35,6 +32,7 @@ interface MascoteMapper {
      * @param mascote entidade de origem, já persistida no banco de dados.
      * @return DTO de saída pronto para serialização.
      */
+    @Mapping(source = "usuario.id", target = "usuarioId")
     fun toResponseDTO(mascote: Mascote): MascoteResponseDTO
 
     /**
@@ -57,6 +55,13 @@ interface MascoteMapper {
      * @return nova instância de [Mascote], ainda não persistida.
      */
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "usuario", ignore = true)
+    @Mapping(target = "estado", ignore = true)
+    @Mapping(target = "humor", ignore = true)
+    @Mapping(target = "experiencia", ignore = true)
+    @Mapping(target = "nivel", ignore = true)
+    @Mapping(target = "pontosVida", ignore = true)
+    @Mapping(target = "dataMorte", ignore = true)
     fun toEntity(mascoteCreateDTO: MascoteCreateDTO): Mascote
 
     /**
@@ -73,14 +78,15 @@ interface MascoteMapper {
      *
      * O parâmetro `mascote` é modificado in-place (anotado com
      * [MappingTarget]), e o `id` original é preservado, já que é ignorado
-     * no mapeamento. Além disso, o `estado`, `humor`, `experiencia`, `nivel`,
+     * no mapeamento. Além disso, o `usuario`, `estado`, `humor`, `experiencia`, `nivel`,
      * `pontosVida` e `dataMorte` são administrados pelo sistema, não possuindo
-     * interação com o usuário
+     * interação direta com o usuário
      *
      * @param dto dados de atualização fornecidos pelo cliente.
-     * @param usuario entidade existente a ser atualizada.
+     * @param mascote entidade existente a ser atualizada.
      */
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "usuario", ignore = true)
     @Mapping(target = "estado", ignore = true)
     @Mapping(target = "humor", ignore = true)
     @Mapping(target = "experiencia", ignore = true)
