@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro de Mascote</title>
+</head>
+
+<body>
+
+<div class="box">
+
+    <h1>Cadastro de Mascote</h1>
+
+    <div th:if="${errors != null}" style="background-color: #f8d7da; color: #721c24; padding: 10px; margin-bottom: 15px; border: 1px solid #f5c6cb; border-radius: 4px;">
+        <ul>
+            <li th:each="err : ${errors}" th:text="${err.defaultMessage}">Erro</li>
+        </ul>
+    </div>
+
+    <form th:action="@{/mascote}" method="post" th:object="${mascote}">
+
+        <div class="form-group">
+            <label for="nome">Nome:</label>
+            <input type="text"
+                   id="nome"
+                   th:field="*{nome}"
+                   placeholder="Guaranin"
+                   required>
+            <p th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}" style="color: red; font-size: 0.85em; margin-top: 4px;"></p>
+        </div>
+
+        <div style="margin-top: 20px;">
+            <input type="submit" value="Cadastrar">
+            <a th:href="@{/mascote}">Voltar</a>
+        </div>
+
+    </form>
+
+</div>
+
+</body>
+</html>

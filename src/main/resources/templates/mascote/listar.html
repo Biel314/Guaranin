@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Mascotes</title>
+</head>
+
+<body>
+
+<div class="box">
+    <h1>Mascotes</h1>
+
+    <button type="submit">
+        <a th:href="@{/mascote/novo}">Novo Mascote</a>
+    </button>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Nome</th>
+            <th>Nivel</th>
+            <th>Estado</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="mascote : ${mascotes}">
+            <td th:text="${mascote.nome}">https://example.com</td>
+            <td th:text="${mascote.nivel}">127.0.0.1</td>
+            <td th:text="${mascote.estado}">estado</td>
+            <td>
+                <button type="submit">
+                    <a th:href="@{/mascote/{id}(id=${mascote.id})}">Editar</a>
+                </button>
+                <form method="post" style="display:inline;" th:action="@{/mascote/{id}(id=${mascote.id})}">
+                    <input name="_method" type="hidden" value="delete">
+                    <button type="submit">Excluir</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>
