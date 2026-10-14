@@ -45,11 +45,11 @@ class MascoteService (
     }
 
     @Transactional
-    fun findByIdAndEstado(usuarioId: UUID, estado: Estado): Optional<MascoteResponseDTO> {
+    fun findByIdAndEstado(usuarioId: UUID): MascoteResponseDTO {
         return mascoteMapper.toResponseDTO(
             mascoteRepository.findByUsuarioIdAndEstado(
                 usuarioId,
-                estado
+                Estado.SAUDAVEL
             ).orElseThrow { MascoteNotFoundException() }
         )
     }
