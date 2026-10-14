@@ -18,7 +18,7 @@
         </ul>
     </div>
 
-    <form th:action="@{/mascote}" method="post" th:object="${mascote}">
+    <form th:action="@{/mascote/usuario/{id}/salvar(id=${usuarioId})}" method="post" th:object="${mascote}">
 
         <div class="form-group">
             <label for="nome">Nome:</label>

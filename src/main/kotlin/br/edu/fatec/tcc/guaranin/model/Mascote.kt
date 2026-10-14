@@ -8,15 +8,16 @@ import java.time.LocalDate
 import java.util.UUID
 
 @Entity
+@Table(name = "tb_mascote")
 class Mascote(
     @Id
     @Column(name = "id_mascote", nullable = false)
     @GeneratedValue(strategy = GenerationType.AUTO)
     var id: UUID? = null,
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_usuario", nullable = false)
-    var usuario: Usuario,
+    var usuario: Usuario? = null,
 
 
     @Size(
@@ -27,17 +28,17 @@ class Mascote(
 
     @Enumerated(EnumType.STRING)
     @Column(name = "estado", nullable = false)
-    var estado: Estado = Estado.SAUDAVEL,
+    var estado: Estado? = Estado.SAUDAVEL,
 
     @Enumerated(EnumType.STRING)
     @Column(name = "humor", nullable = false)
-    var humor: Humor = Humor.FELIZ,
+    var humor: Humor? = Humor.FELIZ,
 
     @Column(name = "nivel", nullable = false)
-    var nivel: Int = 1,
+    var nivel: Int? = 1,
 
     @Column(name = "experiencia", nullable = false)
-    var experiencia: Int = 0,
+    var experiencia: Int? = 0,
 
     @Column(nullable = false)
     @Min (
@@ -48,7 +49,7 @@ class Mascote(
         value = 7,
         message = "pontos de vida não podem passar de 7"
     )
-    var pontosVida: Int = 7,
+    var pontosVida: Int? = 7,
 
     @Column(name = "data_morte", nullable = true)
     var dataMorte: LocalDate? = null

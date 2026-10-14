@@ -24,4 +24,6 @@ interface MascoteRepository : JpaRepository<Mascote, UUID> {
 
 
     fun findByNome(nome: String?): Optional<Mascote>
+
+    fun findByUsuarioId(usuarioId: UUID): Optional<Mascote>
 }

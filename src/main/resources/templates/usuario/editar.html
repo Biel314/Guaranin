@@ -80,6 +80,28 @@
 
     </form>
 
+    <div style="margin-top: 20px;">
+
+        <form th:action="@{/mascote/usuario/{id}/editar(id=${usuarioUpdateDTO.id})}"
+              method="get">
+            <button type="submit">
+                Modificar Mascotes
+            </button>
+
+        </form>
+    </div>
+
+    <div style="margin-top: 20px;">
+
+        <form th:action="@{/mascote/usuario/{id}/novo(id=${usuarioUpdateDTO.id})}"
+              method="get">
+            <button type="submit">
+                Novo Mascote
+            </button>
+
+        </form>
+    </div>
+
 </div>
 
 </body>

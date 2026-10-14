@@ -7,6 +7,8 @@ import br.edu.fatec.tcc.guaranin.exception.InvalidDTOException
 import br.edu.fatec.tcc.guaranin.exception.MascoteNotFoundException
 import br.edu.fatec.tcc.guaranin.exception.UsuarioNotFoundException
 import br.edu.fatec.tcc.guaranin.mapper.MascoteMapper
+import br.edu.fatec.tcc.guaranin.model.Estado
+import br.edu.fatec.tcc.guaranin.model.Humor
 import br.edu.fatec.tcc.guaranin.model.Mascote
 import br.edu.fatec.tcc.guaranin.model.Usuario
 import br.edu.fatec.tcc.guaranin.repository.MascoteRepository
@@ -49,8 +51,13 @@ class MascoteService (
         val usuario = usuarioRepository.findById(usuarioId)
             .orElseThrow { UsuarioNotFoundException() }
         val mascote = mascoteMapper.toEntity(mascoteCreateDTO)
-
         mascote.usuario = usuario
+
+        mascote.estado = Estado.SAUDAVEL
+        mascote.humor = Humor.FELIZ
+        mascote.nivel = 1
+        mascote.pontosVida = 7
+        mascote.experiencia = 0
 
         return mascoteMapper.toResponseDTO(
             mascoteRepository.save(mascote)
@@ -68,6 +75,16 @@ class MascoteService (
        return mascoteMapper.toResponseDTO(
             mascoteRepository.save(mascote)
         )
+    }
+
+    @Transactional
+    fun findByUsuarioIdForUpdate(
+        usuarioId: UUID
+    ): MascoteUpdateDTO {
+        val mascote = mascoteRepository.findByUsuarioId(usuarioId)
+            .orElseThrow { MascoteNotFoundException() }
+
+        return mascoteMapper.toUpdateDTO(mascote)
     }
 
     @Transactional
