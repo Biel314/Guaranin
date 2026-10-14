@@ -68,7 +68,7 @@ open class Usuario(
     @OneToMany(mappedBy = "usuario", cascade = [(CascadeType.ALL)], fetch = FetchType.LAZY)
     val usuarioURLs: MutableList<UsuarioURL> = mutableListOf()
 ) {
-    constructor() : this(null, "", "", "", mutableListOf())
+    constructor() : this(null, mutableListOf(), "", "", "", mutableListOf())
 
     @get:JsonIgnore
     var login: String

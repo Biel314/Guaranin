@@ -30,6 +30,11 @@ interface MascoteRepository : JpaRepository<Mascote, UUID> {
 
     fun findAllByUsuarioId(usuarioId: UUID): List<Mascote>
 
+    fun findAllByUsuarioIdAndEstado(usuarioId: UUID, estado: Estado): List<Mascote>
+
     fun findByUsuarioIdAndEstado(usuarioId: UUID, estado: Estado): Optional<Mascote>
+
+    fun findByUsuarioIdAndEstadoNot(usuarioId: UUID, estado: Estado): Optional<Mascote>
+
     fun existsByUsuarioIdAndEstadoNot(usuarioId: UUID, morto: Estado): Boolean
 }

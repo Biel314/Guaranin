@@ -56,7 +56,7 @@ class MascoteWebController(
             usuarioId
         )
 
-        println("CHEGOU NO POST DE CRIACAO")
+        println("CHEGOU NO GET DE CRIACAO")
         println("USUARIO = $usuarioId")
 
         return "mascote/novo"

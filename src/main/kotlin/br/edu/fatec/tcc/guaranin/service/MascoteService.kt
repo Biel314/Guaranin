@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDate
 import java.util.*
 
 /**
@@ -44,12 +45,23 @@ class MascoteService (
             .map { mascoteMapper.toResponseDTO(it) }
     }
 
-    @Transactional
-    fun findByIdAndEstado(usuarioId: UUID): MascoteResponseDTO {
+    @Transactional(readOnly = true)
+    fun findAllMascotesMortos(usuarioId: UUID): List<MascoteResponseDTO> {
         return mascoteMapper.toResponseDTO(
-            mascoteRepository.findByUsuarioIdAndEstado(
+            mascoteRepository.findAllByUsuarioIdAndEstado(
                 usuarioId,
-                Estado.SAUDAVEL
+                Estado.MORTO
+            )
+        )
+
+    }
+
+    @Transactional
+    fun findMascotesVivos(usuarioId: UUID): MascoteResponseDTO {
+        return mascoteMapper.toResponseDTO(
+            mascoteRepository.findByUsuarioIdAndEstadoNot(
+                usuarioId,
+                Estado.MORTO
             ).orElseThrow { MascoteNotFoundException() }
         )
     }
@@ -73,16 +85,17 @@ class MascoteService (
            throw MascoteVivoException()
        } else {
 
-        mascote.estado = Estado.SAUDAVEL
-        mascote.humor = Humor.FELIZ
-        mascote.nivel = 1
-        mascote.pontosVida = 7
-        mascote.experiencia = 0
+           mascote.estado = Estado.SAUDAVEL
+           mascote.humor = Humor.FELIZ
+           mascote.nivel = 1
+           mascote.pontosVida = 7
+           mascote.experiencia = 0
 
 
-        return mascoteMapper.toResponseDTO(
-            mascoteRepository.save(mascote)
-        )
+           return mascoteMapper.toResponseDTO(
+               mascoteRepository.save(mascote)
+           )
+       }
     }
 
     @Transactional
@@ -114,6 +127,18 @@ class MascoteService (
             .orElseThrow { MascoteNotFoundException() }
         mascoteRepository.delete(mascote)
         return mascoteMapper.toResponseDTO(mascote)
+    }
+
+    @Transactional
+    fun registrarMorte(id: UUID): MascoteResponseDTO {
+        val mascote = mascoteRepository.findById(id)
+            .orElseThrow { MascoteNotFoundException() }
+
+        mascote.estado = Estado.MORTO
+        mascote.pontosVida = 0
+        mascote.dataMorte = LocalDate.now()
+
+        return mascoteMapper.toResponseDTO(mascoteRepository.save(mascote))
     }
 
     /**
