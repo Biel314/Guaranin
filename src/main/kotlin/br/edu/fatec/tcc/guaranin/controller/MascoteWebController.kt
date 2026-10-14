@@ -88,18 +88,20 @@ class MascoteWebController (
     /**
      * Processa a criação de um novo mascote.
      *
+     * @param usuarioId id do usuario que criará o mascote
      * @param dto DTO contendo os dados de criação ([MascoteCreateDTO]).
      * @param result Resultado da validação bean validation.
      * @param model Modelo Thymeleaf.
      * @return Redirecionamento para listagem ou retorno ao formulário em caso de erro.
      */
-    @PostMapping("")
+    @PostMapping("/usuario/{usuarioId}")
     @Operation(summary = "Salvar novo mascote", description = "Valida e persiste novo mascote.")
     @ApiResponses(value = [
         ApiResponse(responseCode = "302", description = "Mascote criado com sucesso, redireciona para listagem"),
         ApiResponse(responseCode = "200", description = "Erro de validação, retorna ao formulário")
     ])
     fun salvar(
+        @PathVariable usuarioId: UUID,
         @Valid @ModelAttribute("mascote") dto: MascoteCreateDTO,
         result: BindingResult,
         model: Model
@@ -108,7 +110,7 @@ class MascoteWebController (
             model.addAttribute("errors", result.allErrors)
             return "mascote/novo"
         }
-        mascoteService.create(dto)
+        mascoteService.create(dto, usuarioId)
         return "redirect:/mascote"
     }
 

@@ -5,10 +5,12 @@ import br.edu.fatec.tcc.guaranin.dto.MascoteResponseDTO
 import br.edu.fatec.tcc.guaranin.dto.MascoteUpdateDTO
 import br.edu.fatec.tcc.guaranin.exception.InvalidDTOException
 import br.edu.fatec.tcc.guaranin.exception.MascoteNotFoundException
+import br.edu.fatec.tcc.guaranin.exception.UsuarioNotFoundException
 import br.edu.fatec.tcc.guaranin.mapper.MascoteMapper
 import br.edu.fatec.tcc.guaranin.model.Mascote
 import br.edu.fatec.tcc.guaranin.model.Usuario
 import br.edu.fatec.tcc.guaranin.repository.MascoteRepository
+import br.edu.fatec.tcc.guaranin.repository.UsuarioRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -21,6 +23,7 @@ import java.util.*
 @Service
 class MascoteService (
     private val mascoteRepository: MascoteRepository,
+    private val usuarioRepository: UsuarioRepository,
     private val mascoteMapper: MascoteMapper,
 ) {
 
@@ -39,8 +42,16 @@ class MascoteService (
     }
 
     @Transactional
-    fun create(mascoteCreateDTO: MascoteCreateDTO): MascoteResponseDTO {
+    fun create(
+        mascoteCreateDTO: MascoteCreateDTO,
+        usuarioId: UUID
+    ): MascoteResponseDTO {
+        val usuario = usuarioRepository.findById(usuarioId)
+            .orElseThrow { UsuarioNotFoundException() }
         val mascote = mascoteMapper.toEntity(mascoteCreateDTO)
+
+        mascote.usuario = usuario
+
         return mascoteMapper.toResponseDTO(
             mascoteRepository.save(mascote)
         )
