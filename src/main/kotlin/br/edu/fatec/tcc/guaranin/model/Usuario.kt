@@ -28,6 +28,12 @@ open class Usuario(
     @Column(name = "id_usuario", nullable = false)
     var id: UUID? = null,
 
+    @OneToMany(
+        mappedBy = "usuario",
+        fetch = FetchType.LAZY
+    )
+    var mascotes: MutableList<Mascote> = mutableListOf(),
+
     @Column(length = 26)
     @field:NotBlank(message = "O Nome de Usuário é obrigatório")
     @field:Size(max = 26, message = "O login deve ter no máximo 26 caracteres")

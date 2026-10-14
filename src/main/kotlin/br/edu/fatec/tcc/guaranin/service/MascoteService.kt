@@ -5,6 +5,7 @@ import br.edu.fatec.tcc.guaranin.dto.MascoteResponseDTO
 import br.edu.fatec.tcc.guaranin.dto.MascoteUpdateDTO
 import br.edu.fatec.tcc.guaranin.exception.InvalidDTOException
 import br.edu.fatec.tcc.guaranin.exception.MascoteNotFoundException
+import br.edu.fatec.tcc.guaranin.exception.MascoteVivoException
 import br.edu.fatec.tcc.guaranin.exception.UsuarioNotFoundException
 import br.edu.fatec.tcc.guaranin.mapper.MascoteMapper
 import br.edu.fatec.tcc.guaranin.model.Estado
@@ -44,6 +45,16 @@ class MascoteService (
     }
 
     @Transactional
+    fun findByIdAndEstado(usuarioId: UUID, estado: Estado): Optional<MascoteResponseDTO> {
+        return mascoteMapper.toResponseDTO(
+            mascoteRepository.findByUsuarioIdAndEstado(
+                usuarioId,
+                estado
+            ).orElseThrow { MascoteNotFoundException() }
+        )
+    }
+
+    @Transactional
     fun create(
         mascoteCreateDTO: MascoteCreateDTO,
         usuarioId: UUID
@@ -53,11 +64,21 @@ class MascoteService (
         val mascote = mascoteMapper.toEntity(mascoteCreateDTO)
         mascote.usuario = usuario
 
+        val possuiMascoteVivo =
+            mascoteRepository.existsByUsuarioIdAndEstadoNot(
+                usuarioId,
+                Estado.MORTO
+            )
+       if (possuiMascoteVivo) {
+           throw MascoteVivoException()
+       } else {
+
         mascote.estado = Estado.SAUDAVEL
         mascote.humor = Humor.FELIZ
         mascote.nivel = 1
         mascote.pontosVida = 7
         mascote.experiencia = 0
+
 
         return mascoteMapper.toResponseDTO(
             mascoteRepository.save(mascote)
