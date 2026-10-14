@@ -18,7 +18,7 @@
         </ul>
     </div>
 
-    <form th:action="@{/mascote/usuario/{id}/salvar(id=${usuarioId})}" method="post" th:object="${mascote}">
+    <form th:action="@{/mascote}" method="post" th:object="${mascote}">
 
         <div class="form-group">
             <label for="nome">Nome:</label>
@@ -29,6 +29,12 @@
                    required>
             <p th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}" style="color: red; font-size: 0.85em; margin-top: 4px;"></p>
         </div>
+
+        <input
+            type="hidden"
+            name="usuarioId"
+            th:value="${usuarioId}"
+        >
 
         <div style="margin-top: 20px;">
             <input type="submit" value="Cadastrar">

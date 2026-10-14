@@ -6,11 +6,7 @@ import br.edu.fatec.tcc.guaranin.dto.UsuarioUpdateDTO
 import br.edu.fatec.tcc.guaranin.exception.InvalidDTOException
 import br.edu.fatec.tcc.guaranin.exception.UsuarioNotFoundException
 import br.edu.fatec.tcc.guaranin.mapper.UsuarioMapper
-import br.edu.fatec.tcc.guaranin.model.Estado
-import br.edu.fatec.tcc.guaranin.model.Humor
-import br.edu.fatec.tcc.guaranin.model.Mascote
 import br.edu.fatec.tcc.guaranin.model.Usuario
-import br.edu.fatec.tcc.guaranin.repository.MascoteRepository
 import br.edu.fatec.tcc.guaranin.repository.UsuarioRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -25,7 +21,6 @@ import java.util.*
 class UsuarioService(
     private val usuarioRepository: UsuarioRepository,
     private val usuarioMapper: UsuarioMapper,
-    private val mascoteRepository: MascoteRepository
     //private val passwordEncoder: Encoder
 ) {
 
@@ -49,18 +44,7 @@ class UsuarioService(
 
         val usuarioSalvo = usuarioRepository.save(usuario)
 
-        val mascote = Mascote(
-            usuario = usuarioSalvo,
-            nome = "Guaranin",
-            estado = Estado.SAUDAVEL,
-            humor = Humor.FELIZ,
-            nivel = 1,
-            experiencia = 0,
-            pontosVida = 7
-        )
-
-        mascoteRepository.save(mascote)
-        //TODO Define password criptography
+       //TODO Define password criptography
         //usuario.password = passwordEncoder.encode(usuario.password);
         return usuarioMapper.toResponseDTO(
             usuarioRepository.save(usuarioSalvo)

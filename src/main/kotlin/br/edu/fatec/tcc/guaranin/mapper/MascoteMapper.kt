@@ -33,6 +33,7 @@ interface MascoteMapper {
      * @return DTO de saída pronto para serialização.
      */
     @Mapping(source = "usuario.id", target = "usuarioId")
+    @Mapping(source = "usuario.apelido", target = "usuarioApelido")
     fun toResponseDTO(mascote: Mascote): MascoteResponseDTO
 
     /**

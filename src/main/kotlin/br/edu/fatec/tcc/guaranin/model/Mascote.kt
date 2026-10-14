@@ -54,5 +54,5 @@ class Mascote(
     @Column(name = "data_morte", nullable = true)
     var dataMorte: LocalDate? = null
 ) {
-
+    constructor() : this(null, null, "Guaranin", Estado.SAUDAVEL, Humor.FELIZ, 1, 0, 7, null)
 }

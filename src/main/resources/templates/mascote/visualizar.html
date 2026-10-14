@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Visualizar Mascote</title>
+</head>
+<body>
+   <div class="box">
+       <h1 th:text="${mascote.nome}"></h1>
+       <p>
+           <strong>Dono:</strong>
+           <span th:text="${mascote.usuarioApelido}"></span>
+       </p>
+
+       <p>
+           <strong>Nome:</strong>
+           <span th:text="${mascote.nome}"></span>
+       </p>
+       <p>
+           <strong>Estado:</strong>
+           <span th:text="${mascote.estado}"></span>
+       </p>
+       <p>
+           <strong>Humor:</strong>
+           <span th:text="${mascote.humor}"></span>
+       </p>
+       <p>
+           <strong>Nivel:</strong>
+           <span th:text="${mascote.nivel}"></span>
+       </p>
+       <p>
+           <strong>Experiência:</strong>
+           <span th:text="${mascote.experiencia}"></span>
+       </p>
+
+       <div th:if="${mascote.dataMorte != null}">
+            <strong>Data da Morte:</strong>
+            <span th:text="${mascote.dataMorte}"></span>
+       </div>
+       <form th:action="@{/mascote}" method="get">
+           <button type="submit">
+               Voltar
+           </button>
+       </form>
+ </div>
+
+</body>
+</html>

@@ -8,6 +8,7 @@ import java.util.UUID
 data class MascoteResponseDTO(
     val id: UUID,
     val usuarioId: UUID,
+    val usuarioApelido: String,
     val nome: String,
     val estado: Estado,
     val humor: Humor,

@@ -31,6 +31,17 @@ class MascoteService (
 ) {
 
     @Transactional(readOnly = true)
+    fun findById(id: UUID): MascoteResponseDTO {
+        val mascote = mascoteRepository.findById(id)
+            .orElseThrow { MascoteNotFoundException() }
+
+        println("id usuario: ${mascote.usuario}")
+        println("apelido usuario: ${mascote.usuario?.apelido}")
+
+        return mascoteMapper.toResponseDTO(mascote)
+    }
+
+    @Transactional(readOnly = true)
     fun findByNome(nome: String): MascoteResponseDTO {
         return mascoteMapper.toResponseDTO(
             mascoteRepository.findByNome(nome)
@@ -45,11 +56,11 @@ class MascoteService (
     }
 
     @Transactional
-    fun findByIdAndEstado(usuarioId: UUID, estado: Estado): Optional<MascoteResponseDTO> {
+    fun findByIdAndEstado(usuarioId: UUID): MascoteResponseDTO {
         return mascoteMapper.toResponseDTO(
             mascoteRepository.findByUsuarioIdAndEstado(
                 usuarioId,
-                estado
+                Estado.SAUDAVEL
             ).orElseThrow { MascoteNotFoundException() }
         )
     }
@@ -61,28 +72,31 @@ class MascoteService (
     ): MascoteResponseDTO {
         val usuario = usuarioRepository.findById(usuarioId)
             .orElseThrow { UsuarioNotFoundException() }
-        val mascote = mascoteMapper.toEntity(mascoteCreateDTO)
-        mascote.usuario = usuario
 
-        val possuiMascoteVivo =
+        if (
             mascoteRepository.existsByUsuarioIdAndEstadoNot(
                 usuarioId,
                 Estado.MORTO
             )
-       if (possuiMascoteVivo) {
-           throw MascoteVivoException()
-       } else {
+        ) {
+            throw MascoteVivoException()
+        }
 
+        val mascote = mascoteMapper.toEntity(mascoteCreateDTO)
+
+        mascote.usuario = usuario
         mascote.estado = Estado.SAUDAVEL
         mascote.humor = Humor.FELIZ
         mascote.nivel = 1
-        mascote.pontosVida = 7
         mascote.experiencia = 0
+        mascote.dataMorte = null
 
+        val mascoteSalvo = mascoteRepository.save(mascote)
 
-        return mascoteMapper.toResponseDTO(
-            mascoteRepository.save(mascote)
-        )
+        println("USUARIO ID: ${mascoteSalvo.usuario?.id}")
+        println("USUARIO APELIDO: ${mascoteSalvo.usuario?.apelido}")
+
+        return mascoteMapper.toResponseDTO(mascoteSalvo)
     }
 
     @Transactional

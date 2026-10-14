@@ -28,14 +28,18 @@
                 <button type="submit">
                     <a th:href="@{/mascote/editar/{id}(id=${mascote.id})}">Editar</a>
                 </button>
-                <form method="post" style="display:inline;" th:action="@{/mascote/deletar/{id}(id=${mascote.id})}">
-                    <input name="_method" type="hidden" value="delete">
-                    <button type="submit">Excluir</button>
-                </form>
-            </td>
+                <button type="submit">
+                    <a th:href="@{/mascote/visualizar/{id}(id=${mascote.id})}">Visualizar Informações</a>
+                </button>
+           </td>
         </tr>
         </tbody>
     </table>
+</div>
+<div class="bottom">
+   <button type="submit">
+       <a href="/usuario">Voltar para o Usuario</a>
+   </button>
 </div>
 
 </body>

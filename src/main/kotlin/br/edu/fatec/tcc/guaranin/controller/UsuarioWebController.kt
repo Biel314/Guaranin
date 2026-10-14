@@ -1,5 +1,6 @@
 package br.edu.fatec.tcc.guaranin.controller
 
+import br.edu.fatec.tcc.guaranin.dto.MascoteCreateDTO
 import br.edu.fatec.tcc.guaranin.dto.UsuarioCreateDTO
 import br.edu.fatec.tcc.guaranin.dto.UsuarioUpdateDTO
 import br.edu.fatec.tcc.guaranin.service.UsuarioService
@@ -96,7 +97,7 @@ class UsuarioWebController(
     @PostMapping("")
     @Operation(summary = "Salvar novo usuário", description = "Valida e persiste novo usuário.")
     @ApiResponses(value = [
-        ApiResponse(responseCode = "302", description = "Usuário criado com sucesso, redireciona para listagem"),
+        ApiResponse(responseCode = "302", description = "Usuário criado com sucesso, redireciona para a criação de mascote"),
         ApiResponse(responseCode = "200", description = "Erro de validação, retorna ao formulário")
     ])
     fun salvar(
@@ -108,8 +109,22 @@ class UsuarioWebController(
             model.addAttribute("errors", result.allErrors)
             return "usuario/novo"
         }
-        usuarioService.create(dto)
-        return "redirect:/usuario"
+
+        val usuario = usuarioService.create(dto)
+
+        model.addAttribute(
+            "usuarioId",
+            usuario.id
+        )
+
+        model.addAttribute(
+            "mascote",
+            MascoteCreateDTO("")
+        )
+
+        // redireciona para a tela de criacao de mascote
+        // @GabrielGit10110
+        return "mascote/novo"
     }
 
     /**
