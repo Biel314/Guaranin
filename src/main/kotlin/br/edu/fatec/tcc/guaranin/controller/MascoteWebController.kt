@@ -71,7 +71,7 @@ class MascoteWebController (
      * @return Nome da view Thymeleaf `usuario/editar`.
      */
     @GetMapping("/{id}")
-    @Operation(summary = "Formulário de edição de usuário", description = "Busca mascote por ID e exibe formulário de edição.")
+    @Operation(summary = "Formulário de edição de mascote", description = "Busca mascote por ID e exibe formulário de edição.")
     @ApiResponses(value = [
         ApiResponse(responseCode = "200", description = "Formulário carregado com sucesso"),
         ApiResponse(responseCode = "404", description = "Mascote não encontrado")
