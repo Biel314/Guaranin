@@ -15,7 +15,8 @@ import org.springframework.transaction.annotation.Transactional
 import java.util.*
 
 /**
- * Serviço de regras de negócio para [Usuario] (CRUD).
+ * Serviço de regras de negócio para gerenciamento de [Usuario] (CRUD).
+ * Orquestra as operações de persistência, mapeamento de DTOs e validações de domínio.
  */
 @Service
 class UsuarioService(
@@ -24,6 +25,13 @@ class UsuarioService(
     //private val passwordEncoder: Encoder
 ) {
 
+    /**
+     * Busca um usuário pelo endereço de e-mail.
+     *
+     * @param email E-mail cadastrado do usuário.
+     * @return [UsuarioResponseDTO] correspondente.
+     * @throws UsuarioNotFoundException se nenhum usuário for encontrado com o e-mail informado.
+     */
     @Transactional(readOnly = true)
     fun findByEmail(email: String): UsuarioResponseDTO {
         return usuarioMapper.toResponseDTO(
@@ -32,12 +40,24 @@ class UsuarioService(
         )
     }
 
+    /**
+     * Lista todos os usuários cadastrados de forma paginada.
+     *
+     * @param pageable Parâmetros de paginação e ordenação.
+     * @return Página contendo [UsuarioResponseDTO].
+     */
     @Transactional(readOnly = true)
     fun findAll(pageable: Pageable): Page<UsuarioResponseDTO> {
         return usuarioRepository.findAll(pageable)
             .map { usuarioMapper.toResponseDTO(it) }
-    }
+        }
 
+    /**
+     * Cadastra um novo usuário no sistema.
+     *
+     * @param usuarioCreateDTO DTO com os dados de criação ([UsuarioCreateDTO]).
+     * @return [UsuarioResponseDTO] do usuário recém-criado.
+     */
     @Transactional
     fun create(usuarioCreateDTO: UsuarioCreateDTO): UsuarioResponseDTO {
         val usuario = usuarioMapper.toEntity(usuarioCreateDTO)
@@ -48,6 +68,14 @@ class UsuarioService(
         )
     }
 
+    /**
+     * Atualiza os dados de um usuário existente.
+     *
+     * @param usuarioUpdateDTO DTO com os dados de atualização ([UsuarioUpdateDTO]).
+     * @return [UsuarioResponseDTO] do usuário atualizado.
+     * @throws InvalidDTOException se o ID do usuário não for fornecido no DTO.
+     * @throws UsuarioNotFoundException se o usuário não for encontrado no banco de dados.
+     */
     @Transactional
     fun update(usuarioUpdateDTO: UsuarioUpdateDTO): UsuarioResponseDTO {
         val uuid = usuarioUpdateDTO.id
@@ -65,6 +93,13 @@ class UsuarioService(
         )
     }
 
+    /**
+     * Remove um usuário do sistema pelo seu identificador único.
+     *
+     * @param id Identificador único ([UUID]) do usuário.
+     * @return [UsuarioResponseDTO] do usuário removido.
+     * @throws UsuarioNotFoundException se o usuário não for encontrado.
+     */
     @Transactional
     fun delete(id: UUID): UsuarioResponseDTO {
         val usuario = usuarioRepository.findById(id)
@@ -74,10 +109,24 @@ class UsuarioService(
     }
 
     /**
+     * Busca um usuário pelo seu identificador único.
+     *
+     * @param id Identificador único ([UUID]) do usuário.
+     * @return [UsuarioResponseDTO] correspondente.
+     * @throws UsuarioNotFoundException se o usuário não for encontrado.
+     */
+    @Transactional(readOnly = true)
+    fun findById(id: UUID): UsuarioResponseDTO {
+        val usuario = usuarioRepository.findById(id)
+            .orElseThrow { UsuarioNotFoundException() }
+        return usuarioMapper.toResponseDTO(usuario)
+    }
+
+    /**
      * Busca um usuário pelo ID e o converte para [UsuarioUpdateDTO] para fins de edição no formulário.
      *
-     * @param id identificador único do usuário ([UUID]).
-     * @return DTO contendo os dados atuais do usuário.
+     * @param id Identificador único do usuário ([UUID]).
+     * @return DTO contendo os dados atuais do usuário para atualização.
      * @throws UsuarioNotFoundException se o usuário não for encontrado.
      */
     @Transactional(readOnly = true)
@@ -87,10 +136,22 @@ class UsuarioService(
         return usuarioMapper.toUpdateDTO(usuario)
     }
 
+    /**
+     * Converte um [UsuarioUpdateDTO] em uma entidade [Usuario].
+     *
+     * @param usuarioUpdateDTO DTO de atualização.
+     * @return Entidade [Usuario] mapeada.
+     */
     fun toUsuario(usuarioUpdateDTO: UsuarioUpdateDTO): Usuario {
         return usuarioMapper.toEntity(usuarioUpdateDTO)
     }
 
+    /**
+     * Converte um [UsuarioCreateDTO] em uma entidade [Usuario].
+     *
+     * @param usuarioCreateDTO DTO de criação.
+     * @return Entidade [Usuario] mapeada.
+     */
     fun toUsuario(usuarioCreateDTO: UsuarioCreateDTO): Usuario {
         return usuarioMapper.toEntity(usuarioCreateDTO)
     }
