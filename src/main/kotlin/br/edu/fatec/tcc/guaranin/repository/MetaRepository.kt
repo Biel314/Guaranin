@@ -3,6 +3,7 @@ package br.edu.fatec.tcc.guaranin.repository
 import br.edu.fatec.tcc.guaranin.model.Meta
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
+import java.util.Optional
 import java.util.UUID
 
 /**
@@ -22,5 +23,5 @@ import java.util.UUID
 @Repository
 interface MetaRepository : JpaRepository<Meta, UUID> {
 
-    fun findByTitulo(titulo: String): List<Meta>
+    fun findByTitulo(titulo: String): Optional<Meta>
 }

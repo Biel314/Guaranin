@@ -6,11 +6,11 @@ import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
 
 data class MetaCreateDTO (
-    @NotBlank(message = "O Titulo é obrigatório")
-    @Size(min = 3, max = 50, message = "O nome da meta deve ter entre 3 e 50 caracteres")
+    @field:NotBlank(message = "O Titulo é obrigatório")
+    @field:Size(min = 3, max = 50, message = "O nome da meta deve ter entre 3 e 50 caracteres")
     val titulo: String,
 
-    @Size(min = 0, max = 200, message = "A descricao da meta deve ter entre 3 e 200 caracteres")
+    @field:Size(min = 0, max = 200, message = "A descricao da meta deve ter entre 3 e 200 caracteres")
     var descricao: String,
 
     @field:Min(value = 1, message = "O vencimento deve ser de no mínimo 1 dia")
