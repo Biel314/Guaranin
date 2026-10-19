@@ -82,7 +82,7 @@
 
     <div style="margin-top: 20px;">
 
-        <form th:action="@{/mascote}"
+        <form th:action="@{/mascote/usuario/{id}(id=${id})}"
               method="get">
             <button type="submit">
                 Administrar Mascotes

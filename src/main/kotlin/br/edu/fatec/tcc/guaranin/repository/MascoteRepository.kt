@@ -2,6 +2,8 @@ package br.edu.fatec.tcc.guaranin.repository
 
 import br.edu.fatec.tcc.guaranin.model.Estado
 import br.edu.fatec.tcc.guaranin.model.Mascote
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 import java.util.*
@@ -28,7 +30,7 @@ interface MascoteRepository : JpaRepository<Mascote, UUID> {
 
     fun findByUsuarioId(usuarioId: UUID): Optional<Mascote>
 
-    fun findAllByUsuarioId(usuarioId: UUID): List<Mascote>
+    fun findByUsuarioId(usuarioId: UUID, pageable: Pageable): Page<Mascote>
 
     fun findByUsuarioIdAndEstado(usuarioId: UUID, estado: Estado): Optional<Mascote>
     fun existsByUsuarioIdAndEstadoNot(usuarioId: UUID, morto: Estado): Boolean

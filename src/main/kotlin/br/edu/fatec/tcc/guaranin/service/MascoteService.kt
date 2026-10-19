@@ -50,6 +50,21 @@ class MascoteService (
     }
 
     @Transactional(readOnly = true)
+    fun findAllByUsuarioId(
+        usuarioId: UUID,
+        pageable: Pageable
+    ): Page<MascoteResponseDTO> {
+        val mascotes = mascoteRepository
+            .findByUsuarioId(usuarioId, pageable)
+
+        println("TOTAL = ${mascotes.totalElements}")
+
+        return mascotes.map {
+            mascoteMapper.toResponseDTO(it)
+        }
+    }
+
+    @Transactional(readOnly = true)
     fun findAll(pageable: Pageable): Page<MascoteResponseDTO> {
         return mascoteRepository.findAll(pageable)
             .map { mascoteMapper.toResponseDTO(it) }

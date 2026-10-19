@@ -28,7 +28,7 @@ class MascoteWebController(
     private val mascoteService: MascoteService,
 ) {
 
-    @GetMapping("", "/")
+    @GetMapping("", "/debug-todos-mascotes")
     fun listarTodos(
         model: Model,
         pageable: Pageable
@@ -37,6 +37,21 @@ class MascoteWebController(
 
         model.addAttribute("mascotes", mascotesPage.content)
         model.addAttribute("page", mascotesPage)
+
+        return "mascote/listar"
+    }
+
+    @GetMapping("/usuario/{usuarioId}")
+    fun listarPorUsuario(
+        @PathVariable("usuarioId") usuarioId: UUID,
+        model: Model,
+        pageable: Pageable
+    ): String {
+       val mascotePage = mascoteService.findAllByUsuarioId(usuarioId, pageable)
+
+        model.addAttribute("mascotes", mascotePage.content)
+
+        model.addAttribute("page", mascotePage)
 
         return "mascote/listar"
     }
