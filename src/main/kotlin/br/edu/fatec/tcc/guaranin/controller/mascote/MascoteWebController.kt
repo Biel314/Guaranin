@@ -55,17 +55,16 @@ class MascoteWebController(
         return "mascote/listar"
     }
 
-    @GetMapping("visualizar/{id}")
+    @GetMapping("/usuario/{usuarioId}/visualizar/{mascoteId}")
     fun visualizar(
-        @PathVariable id: UUID,
+        @PathVariable usuarioId: UUID,
+        @PathVariable mascoteId: UUID,
         model: Model
     ): String {
-        val mascote = mascoteService.findById(id)
+        val mascote = mascoteService.findById(mascoteId)
 
-        model.addAttribute(
-            "mascote",
-            mascote
-        )
+        model.addAttribute("usuarioId", usuarioId)
+        model.addAttribute("mascote", mascote)
 
         return "mascote/visualizar"
     }
@@ -149,19 +148,18 @@ class MascoteWebController(
         return "redirect:/usuario/$usuarioId"
     }
 
-    @GetMapping("/editar/{id}")
+    @GetMapping("/usuario/{usuarioId}/editar/{mascoteId}")
     fun editar(
-        @PathVariable id: UUID,
+        @PathVariable usuarioId: UUID,
+        @PathVariable mascoteId: UUID,
         model: Model
     ): String {
 
         val mascote =
-            mascoteService.findByIdForUpdate(id)
+            mascoteService.findByIdForUpdate(mascoteId)
 
-        model.addAttribute(
-            "mascoteUpdateDTO",
-            mascote
-        )
+        model.addAttribute("usuarioId", usuarioId)
+        model.addAttribute("mascoteUpdateDTO", mascote)
 
         return "mascote/editar"
     }

@@ -26,10 +26,16 @@
             <td th:text="${mascote.estado}">estado</td>
             <td>
                 <button type="submit">
-                    <a th:href="@{/mascote/editar/{id}(id=${mascote.id})}">Editar</a>
+                    <a th:href="@{/mascote/usuario/{usuarioId}/editar/{mascoteId}
+                    (usuarioId=${mascote.usuarioId},
+                    mascoteId=${mascote.id})}">Editar</a>
                 </button>
                 <button type="submit">
-                    <a th:href="@{/mascote/visualizar/{id}(id=${mascote.id})}">Visualizar Informações</a>
+                    <a th:href="@{/mascote/usuario/{usuarioId}/visualizar/{mascoteId}
+                    (usuarioId=${mascote.usuarioId},
+                    mascoteId=${mascote.id})}">
+                        Visualizar Informações
+                    </a>
                 </button>
            </td>
         </tr>

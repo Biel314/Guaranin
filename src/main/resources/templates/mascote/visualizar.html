@@ -37,7 +37,7 @@
             <strong>Data da Morte:</strong>
             <span th:text="${mascote.dataMorte}"></span>
        </div>
-       <form th:action="@{/mascote}" method="get">
+       <form th:action="@{/mascote/usuario/{id}(id=${usuarioId})}" method="get">
            <button type="submit">
                Voltar
            </button>
