@@ -37,6 +37,8 @@
                         Visualizar Informações
                     </a>
                 </button>
+                <button type="submit">
+                </button>
            </td>
         </tr>
         </tbody>
@@ -46,6 +48,14 @@
    <button type="submit">
        <a href="/usuario">Voltar para o Usuario</a>
    </button>
+</div>
+<div th:if="${!possuiMascoteVivo}">
+    <form th:action="@{mascote/novo/{usuarioId}(usuarioId=${usuarioId})}"
+          method="GET">
+        <button type="submit">
+            Novo Mascote
+        </button>
+    </form>
 </div>
 
 </body>

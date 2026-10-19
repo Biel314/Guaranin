@@ -46,11 +46,19 @@ class MascoteWebController(
         model: Model,
         pageable: Pageable
     ): String {
-       val mascotePage = mascoteService.findAllByUsuarioId(usuarioId, pageable)
+        val mascotePage = mascoteService.findAllByUsuarioId(usuarioId, pageable)
+
+        val possuiMascoteVivo = mascoteService.possuiMascoteVivo(
+            usuarioId,
+        )
 
         model.addAttribute("mascotes", mascotePage.content)
 
         model.addAttribute("page", mascotePage)
+
+        model.addAttribute("usuarioId", usuarioId)
+
+        model.addAttribute("possuiMascoteVivo", possuiMascoteVivo)
 
         return "mascote/listar"
     }
@@ -72,9 +80,9 @@ class MascoteWebController(
     /**
      * Salva um novo mascote.
      */
-    @PostMapping("/novo")
+    @PostMapping("/usuario/{usuarioId}/novo")
     fun novoForm(
-        @RequestParam usuarioId: UUID,
+        @PathVariable usuarioId: UUID,
         @Valid @ModelAttribute("mascote") dto: MascoteCreateDTO,
         result: BindingResult,
         model: Model
