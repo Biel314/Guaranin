@@ -36,6 +36,8 @@ interface MascoteMapper {
     @Mapping(source = "usuario.apelido", target = "usuarioApelido")
     fun toResponseDTO(mascote: Mascote): MascoteResponseDTO
 
+    fun toResponseDTO(mascotes: List<Mascote>): List<MascoteResponseDTO>
+
     /**
      * Converte uma entidade [Mascote] persistida em um [MascoteUpdateDTO],
      * utilizado para preencher o formulário de edição.
