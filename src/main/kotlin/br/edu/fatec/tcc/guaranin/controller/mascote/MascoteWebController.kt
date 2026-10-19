@@ -81,7 +81,7 @@ class MascoteWebController(
      * Salva um novo mascote.
      */
     @PostMapping("/usuario/{usuarioId}/novo")
-    fun novoForm(
+    fun novoMascote(
         @PathVariable usuarioId: UUID,
         @Valid @ModelAttribute("mascote") dto: MascoteCreateDTO,
         result: BindingResult,
@@ -114,46 +114,19 @@ class MascoteWebController(
         return "redirect:/usuario/$usuarioId"
     }
 
-    /**
-     * Processa a criação de um novo mascote.
-     *
-     * @param dto DTO contendo os dados de criação ([MascoteCreateDTO]).
-     * @param result Resultado da validação bean validation.
-     * @param model Modelo Thymeleaf.
-     * @return Redirecionamento para listagem ou retorno ao formulário em caso de erro.
-     */
-    @PostMapping("")
-    @Operation(summary = "Salvar novo mascote", description = "Valida e persiste novo mascote.")
-    @ApiResponses(value = [
-        ApiResponse(responseCode = "302", description = "Mascote criado com sucesso, redireciona para listagem"),
-        ApiResponse(responseCode = "200", description = "Erro de validação, retorna ao formulário")
-    ])
-    fun salvar(
-        @RequestParam usuarioId: UUID,
-        @Valid @ModelAttribute("mascote") dto: MascoteCreateDTO,
-        result: BindingResult,
+    @GetMapping("/usuario/{usuarioId}/novo")
+    fun novoFormulario(
+        @PathVariable usuarioId: UUID,
         model: Model
     ): String {
-        println("CHEGOU NO POST DE CRIACAO CONFIRMACAO")
-        println("USUARIO = $usuarioId")
-
-        if (result.hasErrors()) {
-            model.addAttribute("errors", result.allErrors)
-            return "mascote/novo"
+        if (mascoteService.possuiMascoteVivo(usuarioId)) {
+            return "redirect:/mascote/usuario/$usuarioId"
         }
-        val mascote = mascoteService.create(dto, usuarioId)
 
-        model.addAttribute(
-            "usuarioId",
-            usuarioId
-        )
+        model.addAttribute("mascote", MascoteCreateDTO(""))
+        model.addAttribute("usuarioId", usuarioId)
 
-        model.addAttribute(
-            "mascote",
-            mascote.id
-        )
-
-        return "redirect:/usuario/$usuarioId"
+        return "mascote/novo"
     }
 
     @GetMapping("/usuario/{usuarioId}/editar/{mascoteId}")
@@ -192,6 +165,12 @@ class MascoteWebController(
         mascoteService.update(dto)
 
         return "redirect:/mascote"
+    }
+
+    @PostMapping("/usuario/{usuarioId}/matar/{mascoteId}")
+    fun matar(@PathVariable usuarioId: UUID, @PathVariable mascoteId: UUID): String {
+        mascoteService.matarMascote(mascoteId)
+        return "redirect:/mascote/usuario/$usuarioId"
     }
 
     @DeleteMapping("deletar/{id}")

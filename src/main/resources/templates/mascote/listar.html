@@ -37,9 +37,13 @@
                         Visualizar Informações
                     </a>
                 </button>
-                <button type="submit">
-                </button>
-           </td>
+                <form th:if="${mascote.estado.name() != 'MORTO'}"
+                      th:action="@{/mascote/usuario/{usuarioId}/matar/{mascoteId}(usuarioId=${mascote.usuarioId},
+                       mascoteId=${mascote.id})}"
+                      method="post" style="display:inline">
+                    <button type="submit">Matar</button>
+                </form>
+            </td>
         </tr>
         </tbody>
     </table>
@@ -50,7 +54,7 @@
    </button>
 </div>
 <div th:if="${!possuiMascoteVivo}">
-    <form th:action="@{mascote/novo/{usuarioId}(usuarioId=${usuarioId})}"
+    <form th:action="@{/mascote/usuario/{usuarioId}/novo(usuarioId=${usuarioId})}"
           method="GET">
         <button type="submit">
             Novo Mascote

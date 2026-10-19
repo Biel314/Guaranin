@@ -167,6 +167,7 @@ class MascoteService (
 
         if (mascote.pontosVida == 0) {
             mascote.estado = Estado.MORTO
+            mascote.humor = Humor.TRISTE
         }
 
         mascote.dataMorte = LocalDate.now()
