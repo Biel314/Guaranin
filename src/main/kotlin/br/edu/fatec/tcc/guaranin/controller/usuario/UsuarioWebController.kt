@@ -1,8 +1,9 @@
 package br.edu.fatec.tcc.guaranin.controller
 
-import br.edu.fatec.tcc.guaranin.dto.UsuarioCreateDTO
-import br.edu.fatec.tcc.guaranin.dto.UsuarioUpdateDTO
-import br.edu.fatec.tcc.guaranin.service.UsuarioService
+import br.edu.fatec.tcc.guaranin.dto.mascote.MascoteCreateDTO
+import br.edu.fatec.tcc.guaranin.dto.usuario.UsuarioCreateDTO
+import br.edu.fatec.tcc.guaranin.dto.usuario.UsuarioUpdateDTO
+import br.edu.fatec.tcc.guaranin.service.usuario.UsuarioService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
