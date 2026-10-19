@@ -9,6 +9,7 @@ import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Pattern
 import jakarta.validation.constraints.Size
 import java.util.*
+import kotlin.collections.mutableListOf
 
 /**
  * Entidade JPA que representa um usuário no sistema Guaranin.
@@ -30,6 +31,14 @@ open class Usuario(
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id_usuario", nullable = false)
     var id: UUID? = null,
+
+    @OneToMany(
+        mappedBy = "usuario",
+        fetch = FetchType.LAZY,
+        cascade = [CascadeType.REMOVE],
+        orphanRemoval = true
+    )
+    var mascotes: MutableList<Mascote> = mutableListOf(),
 
     @Column(length = 26)
     @field:NotBlank(message = "O Nome de Usuário é obrigatório")
@@ -69,7 +78,8 @@ open class Usuario(
     @OneToMany(mappedBy = "usuario", cascade = [(CascadeType.ALL)], fetch = FetchType.LAZY)
     val usuarioURLs: MutableList<UsuarioURL> = mutableListOf()
 ) {
-    constructor() : this(null, "", "", "", mutableListOf())
+    // Adicionei mutableListOf() dos mascotes ao construtor
+    constructor() : this(null, mutableListOf(), "", "", "", mutableListOf())
 
     /**
      * Alias de conveniência para [email], usado como login.
