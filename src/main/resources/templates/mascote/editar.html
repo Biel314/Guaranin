@@ -34,7 +34,9 @@
 
         <div style="margin-top: 20px;">
             <input type="submit" value="Atualizar">
-            <a th:href="@{/mascote}">Voltar</a>
+            <a th:href="@{/mascote/usuario/{id}(id=${usuarioId})}">
+                Voltar
+            </a>
         </div>
 
     </form>

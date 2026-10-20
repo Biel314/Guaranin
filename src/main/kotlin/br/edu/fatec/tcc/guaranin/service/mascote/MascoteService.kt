@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDate
 import java.util.*
 
 /**
@@ -80,6 +81,16 @@ class MascoteService (
         )
     }
 
+    @Transactional(readOnly = true)
+    fun possuiMascoteVivo(
+        usuarioId: UUID,
+    ): Boolean {
+        return mascoteRepository
+            .existsByUsuarioIdAndEstadoNot(
+                usuarioId,
+                Estado.MORTO
+            )
+    }
     @Transactional
     fun create(
         mascoteCreateDTO: MascoteCreateDTO,
@@ -143,6 +154,27 @@ class MascoteService (
             .orElseThrow { MascoteNotFoundException() }
         mascoteRepository.delete(mascote)
         return mascoteMapper.toResponseDTO(mascote)
+    }
+
+    //teste
+    fun matarMascote(
+        id: UUID,
+    ): MascoteResponseDTO {
+        val mascote = mascoteRepository.findById(id)
+            .orElseThrow { MascoteNotFoundException() }
+
+        mascote.pontosVida = 0 // para teste
+
+        if (mascote.pontosVida == 0) {
+            mascote.estado = Estado.MORTO
+            mascote.humor = Humor.TRISTE
+        }
+
+        mascote.dataMorte = LocalDate.now()
+
+        val mascoteSalvo = mascoteRepository.save(mascote)
+
+        return mascoteMapper.toResponseDTO(mascoteSalvo)
     }
 
     /**
