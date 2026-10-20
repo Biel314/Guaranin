@@ -22,12 +22,25 @@ class URLMonitoradaService(
     private val urlMonitoradaMapper: URLMonitoradaMapper
 ) {
 
+    /**
+     * Lista URLs monitoradas de forma paginada.
+     *
+     * @param pageable parâmetros de paginação e ordenação.
+     * @return página de DTOs de resposta.
+     */
     @Transactional(readOnly = true)
     fun findAll(pageable: Pageable): Page<URLMonitoradaResponseDTO> {
         return urlMonitoradaRepository.findAll(pageable)
             .map { urlMonitoradaMapper.toResponseDTO(it) }
     }
 
+    /**
+     * Busca uma URL monitorada pelo identificador.
+     *
+     * @param id identificador único da URL monitorada.
+     * @return DTO da URL encontrada.
+     * @throws URLMonitoradaNotFoundException quando a URL não existe.
+     */
     @Transactional(readOnly = true)
     fun findById(id: UUID): URLMonitoradaResponseDTO {
         return urlMonitoradaMapper.toResponseDTO(
@@ -35,6 +48,16 @@ class URLMonitoradaService(
                 .orElseThrow { URLMonitoradaNotFoundException() })
     }
 
+    /**
+     * Busca uma URL monitorada pelo link.
+     *
+     * O link é normalizado antes da consulta para tratar variações
+     * equivalentes de esquema, host, porta padrão e barra final.
+     *
+     * @param link endereço informado pelo cliente.
+     * @return DTO da URL encontrada.
+     * @throws URLMonitoradaNotFoundException quando a URL não existe.
+     */
     @Transactional(readOnly = true)
     fun findByLink(link: String): URLMonitoradaResponseDTO {
         val normalizedLink = URLMonitoradaLinkNormalizer.normalize(link)
@@ -45,6 +68,14 @@ class URLMonitoradaService(
         )
     }
 
+    /**
+     * Cria uma URL monitorada.
+     *
+     * O link é normalizado antes de ser convertido em entidade e persistido.
+     *
+     * @param urlMonitoradaCreateDTO dados da URL a ser criada.
+     * @return DTO da URL persistida.
+     */
     @Transactional
     fun create(urlMonitoradaCreateDTO: URLMonitoradaCreateDTO): URLMonitoradaResponseDTO {
         val normalizedDTO = urlMonitoradaCreateDTO.copy(
@@ -57,6 +88,17 @@ class URLMonitoradaService(
         )
     }
 
+    /**
+     * Atualiza parcialmente uma URL monitorada.
+     *
+     * Campos nulos no DTO preservam os valores atuais. Quando o link é
+     * informado, ele é normalizado antes do mapeamento.
+     *
+     * @param id identificador único da URL monitorada.
+     * @param urlMonitoradaUpdateDTO dados a serem atualizados.
+     * @return DTO da URL após a atualização.
+     * @throws URLMonitoradaNotFoundException quando a URL não existe.
+     */
     @Transactional
     fun update(id: UUID, urlMonitoradaUpdateDTO: URLMonitoradaUpdateDTO): URLMonitoradaResponseDTO {
         val urlMonitorada = urlMonitoradaRepository.findById(id)
@@ -68,6 +110,13 @@ class URLMonitoradaService(
         return urlMonitoradaMapper.toResponseDTO(urlMonitoradaRepository.save(urlMonitorada))
     }
 
+    /**
+     * Remove uma URL monitorada.
+     *
+     * @param id identificador único da URL monitorada.
+     * @return DTO da URL removida.
+     * @throws URLMonitoradaNotFoundException quando a URL não existe.
+     */
     @Transactional
     fun delete(id: UUID): URLMonitoradaResponseDTO {
         val urlMonitorada: URLMonitorada = urlMonitoradaRepository.findById(id)

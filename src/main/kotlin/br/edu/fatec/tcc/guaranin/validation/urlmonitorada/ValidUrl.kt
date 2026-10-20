@@ -4,6 +4,16 @@ import jakarta.validation.Constraint
 import jakarta.validation.Payload
 import kotlin.reflect.KClass
 
+/**
+ * Anotação de validação para URLs.
+ *
+ * Aceita `null` para campos opcionais, mas rejeita valores em branco ou com
+ * formato inválido conforme [URLValidator].
+ *
+ * @property message mensagem exibida quando o valor é inválido.
+ * @property groups grupos de validação aos quais a restrição pertence.
+ * @property payload metadados adicionais da restrição.
+ */
 @Target(
     AnnotationTarget.FIELD,
     AnnotationTarget.PROPERTY_GETTER,
