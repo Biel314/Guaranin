@@ -2,7 +2,6 @@ package br.edu.fatec.tcc.guaranin.controller.urlmonitorada
 
 import br.edu.fatec.tcc.guaranin.dto.urlmonitorada.URLMonitoradaCreateDTO
 import br.edu.fatec.tcc.guaranin.dto.urlmonitorada.URLMonitoradaUpdateDTO
-import br.edu.fatec.tcc.guaranin.mapper.urlmonitorada.URLMonitoradaMapper
 import br.edu.fatec.tcc.guaranin.service.urlmonitorada.URLMonitoradaService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -25,8 +24,7 @@ import java.util.*
 @RequestMapping("/url-monitorado")
 @Tag(name = "URL Monitorado", description = "Endpoints web para gerenciamento e cadastro de URLs monitoradas")
 class URLMonitoradaWebController(
-    private val urlMonitoradaService: URLMonitoradaService,
-    private val urlMonitoradaMapper: URLMonitoradaMapper
+    private val urlMonitoradaService: URLMonitoradaService
 ) {
 
     /**

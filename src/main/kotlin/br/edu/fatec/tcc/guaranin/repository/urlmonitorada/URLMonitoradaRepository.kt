@@ -1,6 +1,8 @@
 package br.edu.fatec.tcc.guaranin.repository.urlmonitorada
 
 import br.edu.fatec.tcc.guaranin.model.URLMonitorada
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 import java.util.*
@@ -27,11 +29,11 @@ interface URLMonitoradaRepository : JpaRepository<URLMonitorada, UUID> {
     fun findByLink(link: String): Optional<URLMonitorada>
 
     /**
-     * Busca uma URL monitorada pelo endereço IP.
+     * Busca URLs monitoradas pelo endereço IP.
      *
      * @param ip endereço IP que será utilizado como critério de busca.
-     * @return [Optional] contendo a entidade encontrada ou vazio caso
-     * nenhum registro corresponda ao endereço IP informado.
+     * @param pageable parâmetros de paginação e ordenação.
+     * @return página de entidades associadas ao endereço IP informado.
      */
-    fun findByIp(ip: String): Optional<URLMonitorada>
+    fun findByIp(ip: String, pageable: Pageable): Page<URLMonitorada>
 }
