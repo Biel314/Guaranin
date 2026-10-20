@@ -160,17 +160,17 @@ class UsuarioAPIController(
     /**
      * Atualiza os dados de um usuário existente.
      *
-     * O `id` deve ser informado no corpo. A senha é opcional e só é considerada
-     * quando preenchida. Retorna `200 OK` com [UsuarioResponseDTO].
+     * O `id` deve ser informado no caminho da requisição. A senha é opcional
+     * e só é considerada quando preenchida. Retorna `200 OK` com
+     * [UsuarioResponseDTO].
      *
+     * @param id identificador único ([UUID]) do usuário.
      * @param dto dados de atualização do usuário.
      * @return dados públicos do usuário atualizado.
-     * @throws br.edu.fatec.tcc.guaranin.exception.InvalidDTOException se o `id`
-     *   não for informado; convertida em `400` pelo [UsuarioAPIExceptionHandler].
      * @throws br.edu.fatec.tcc.guaranin.exception.usuario.UsuarioNotFoundException se o
      *   usuário não existir; convertida em `404` pelo [UsuarioAPIExceptionHandler].
      */
-    @PutMapping("")
+    @PutMapping("/{id}")
     @Operation(
         summary = "Atualizar usuário",
         description = "Atualiza os dados do usuário. A senha é opcional."
@@ -184,7 +184,7 @@ class UsuarioAPIController(
             ),
             ApiResponse(
                 responseCode = "400",
-                description = "Dados inválidos ou ID ausente",
+                description = "Dados inválidos",
                 content = [Content(schema = Schema(implementation = ApiErrorDTO::class))]
             ),
             ApiResponse(
@@ -200,9 +200,14 @@ class UsuarioAPIController(
         ]
     )
     fun atualizar(
+        @Parameter(
+            description = "ID do usuário",
+            example = "550e8400-e29b-41d4-a716-446655440000"
+        )
+        @PathVariable id: UUID,
         @Valid @RequestBody dto: UsuarioUpdateDTO
     ): UsuarioResponseDTO {
-        return usuarioService.update(dto)
+        return usuarioService.update(id, dto)
     }
 
     /**

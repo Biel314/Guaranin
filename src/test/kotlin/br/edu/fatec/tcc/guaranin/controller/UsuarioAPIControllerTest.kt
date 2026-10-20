@@ -223,7 +223,6 @@ class UsuarioAPIControllerTest {
     fun `deve atualizar usuario com sucesso`() {
         val id = UUID.randomUUID()
         val updateDTO = UsuarioUpdateDTO(
-            id = id,
             apelido = "updateduser",
             email = "updated@fatec.br",
             password = "NewPassword@123"
@@ -234,10 +233,10 @@ class UsuarioAPIControllerTest {
             email = "updated@fatec.br"
         )
 
-        `when`(usuarioService.update(any())).thenReturn(responseDTO)
+        `when`(usuarioService.update(any(), any())).thenReturn(responseDTO)
 
         mockMvc.perform(
-            put("/api/usuarios")
+            put("/api/usuarios/$id")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updateDTO))
         )
@@ -246,7 +245,7 @@ class UsuarioAPIControllerTest {
             .andExpect(jsonPath("$.apelido").value("updateduser"))
             .andExpect(jsonPath("$.email").value("updated@fatec.br"))
 
-        verify(usuarioService).update(updateDTO)
+        verify(usuarioService).update(id, updateDTO)
     }
 
     /**

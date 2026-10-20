@@ -15,7 +15,7 @@ import org.mapstruct.*
  *
  * Campos do DTO de destino que não possuem correspondência na origem são
  * silenciosamente ignorados ([ReportingPolicy.IGNORE]), evitando warnings
- * de compilação para mapeamentos parciais intencionais (ex.: `id`, `password`).
+ * de compilação para mapeamentos parciais intencionais (ex.: `password`).
  */
 /**
  * Mapper MapStruct para conversão entre entidade [Usuario] e DTOs.

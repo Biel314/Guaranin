@@ -3,7 +3,6 @@ package br.edu.fatec.tcc.guaranin.service.usuario
 import br.edu.fatec.tcc.guaranin.dto.usuario.UsuarioCreateDTO
 import br.edu.fatec.tcc.guaranin.dto.usuario.UsuarioResponseDTO
 import br.edu.fatec.tcc.guaranin.dto.usuario.UsuarioUpdateDTO
-import br.edu.fatec.tcc.guaranin.exception.InvalidDTOException
 import br.edu.fatec.tcc.guaranin.exception.usuario.UsuarioNotFoundException
 import br.edu.fatec.tcc.guaranin.mapper.usuario.UsuarioMapper
 import br.edu.fatec.tcc.guaranin.model.Usuario
@@ -50,7 +49,7 @@ class UsuarioService(
     fun findAll(pageable: Pageable): Page<UsuarioResponseDTO> {
         return usuarioRepository.findAll(pageable)
             .map { usuarioMapper.toResponseDTO(it) }
-        }
+    }
 
     /**
      * Cadastra um novo usuário no sistema.
@@ -64,7 +63,7 @@ class UsuarioService(
 
         val usuarioSalvo = usuarioRepository.save(usuario)
 
-       //TODO Define password criptography
+        //TODO Define password criptography
         //usuario.password = passwordEncoder.encode(usuario.password);
         return usuarioMapper.toResponseDTO(
             usuarioRepository.save(usuarioSalvo)
@@ -74,16 +73,14 @@ class UsuarioService(
     /**
      * Atualiza os dados de um usuário existente.
      *
+     * @param id Identificador único ([UUID]) do usuário a ser atualizado.
      * @param usuarioUpdateDTO DTO com os dados de atualização ([UsuarioUpdateDTO]).
      * @return [UsuarioResponseDTO] do usuário atualizado.
-     * @throws InvalidDTOException se o ID do usuário não for fornecido no DTO.
      * @throws UsuarioNotFoundException se o usuário não for encontrado no banco de dados.
      */
     @Transactional
-    fun update(usuarioUpdateDTO: UsuarioUpdateDTO): UsuarioResponseDTO {
-        val uuid = usuarioUpdateDTO.id
-            ?: throw InvalidDTOException()
-        val usuario = usuarioRepository.findById(uuid)
+    fun update(id: UUID, usuarioUpdateDTO: UsuarioUpdateDTO): UsuarioResponseDTO {
+        val usuario = usuarioRepository.findById(id)
             .orElseThrow { UsuarioNotFoundException() }
         usuarioMapper.updateEntityFromDTO(usuarioUpdateDTO, usuario)
 
