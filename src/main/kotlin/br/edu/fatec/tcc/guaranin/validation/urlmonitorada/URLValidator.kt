@@ -12,6 +12,6 @@ class URLValidator : ConstraintValidator<ValidUrl, String> {
         value: String?,
         context: ConstraintValidatorContext
     ): Boolean {
-        return value.isNullOrBlank() || validator.isValid(value)
+        return value == null || validator.isValid(value)
     }
 }

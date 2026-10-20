@@ -37,8 +37,9 @@ class URLMonitoradaService(
 
     @Transactional(readOnly = true)
     fun findByLink(link: String): URLMonitoradaResponseDTO {
+        val normalizedLink = URLMonitoradaLinkNormalizer.normalize(link)
         return urlMonitoradaMapper.toResponseDTO(
-            urlMonitoradaRepository.findByLink(link).orElseThrow {
+            urlMonitoradaRepository.findByLink(normalizedLink).orElseThrow {
                 URLMonitoradaNotFoundException()
             }
         )
@@ -46,9 +47,12 @@ class URLMonitoradaService(
 
     @Transactional
     fun create(urlMonitoradaCreateDTO: URLMonitoradaCreateDTO): URLMonitoradaResponseDTO {
+        val normalizedDTO = urlMonitoradaCreateDTO.copy(
+            link = URLMonitoradaLinkNormalizer.normalize(urlMonitoradaCreateDTO.link)
+        )
         return urlMonitoradaMapper.toResponseDTO(
             urlMonitoradaRepository.save(
-                urlMonitoradaMapper.toEntity(urlMonitoradaCreateDTO)
+                urlMonitoradaMapper.toEntity(normalizedDTO)
             )
         )
     }
@@ -57,7 +61,10 @@ class URLMonitoradaService(
     fun update(id: UUID, urlMonitoradaUpdateDTO: URLMonitoradaUpdateDTO): URLMonitoradaResponseDTO {
         val urlMonitorada = urlMonitoradaRepository.findById(id)
             .orElseThrow { URLMonitoradaNotFoundException() }
-        urlMonitoradaMapper.updateEntityFromDTO(urlMonitoradaUpdateDTO, urlMonitorada)
+        val normalizedDTO = urlMonitoradaUpdateDTO.copy(
+            link = urlMonitoradaUpdateDTO.link?.let(URLMonitoradaLinkNormalizer::normalize)
+        )
+        urlMonitoradaMapper.updateEntityFromDTO(normalizedDTO, urlMonitorada)
         return urlMonitoradaMapper.toResponseDTO(urlMonitoradaRepository.save(urlMonitorada))
     }
 
