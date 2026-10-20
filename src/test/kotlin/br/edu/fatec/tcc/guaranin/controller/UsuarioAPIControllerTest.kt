@@ -1,5 +1,6 @@
 package br.edu.fatec.tcc.guaranin.controller
 
+import br.edu.fatec.tcc.guaranin.controller.GlobalAPIExceptionHandler
 import br.edu.fatec.tcc.guaranin.controller.usuario.UsuarioAPIController
 import br.edu.fatec.tcc.guaranin.controller.usuario.UsuarioAPIExceptionHandler
 import br.edu.fatec.tcc.guaranin.dto.usuario.UsuarioCreateDTO
@@ -28,7 +29,8 @@ import java.util.*
  *
  * Utiliza [MockMvc] em modo standalone, com [UsuarioService] mockado,
  * [JacksonJsonHttpMessageConverter] para serialização compatível com Jackson 3
- * e [br.edu.fatec.tcc.guaranin.controller.usuario.UsuarioAPIExceptionHandler] para o contrato de erros.
+ * e os handlers [br.edu.fatec.tcc.guaranin.controller.usuario.UsuarioAPIExceptionHandler]
+ * e [br.edu.fatec.tcc.guaranin.controller.GlobalAPIExceptionHandler] para o contrato de erros.
  * Cobre criação, consulta, listagem paginada, atualização e remoção de usuários.
  */
 class UsuarioAPIControllerTest {
@@ -56,7 +58,8 @@ class UsuarioAPIControllerTest {
      *
      * Cria o mock de [UsuarioService], instancia o [br.edu.fatec.tcc.guaranin.controller.usuario.UsuarioAPIController] e configura
      * o [MockMvc] com o resolver de `Pageable`, o conversor JSON do Jackson 3 e
-     * o [br.edu.fatec.tcc.guaranin.controller.usuario.UsuarioAPIExceptionHandler].
+     * os handlers [br.edu.fatec.tcc.guaranin.controller.usuario.UsuarioAPIExceptionHandler]
+     * e [br.edu.fatec.tcc.guaranin.controller.GlobalAPIExceptionHandler].
      */
     @BeforeEach
     fun setup() {
@@ -65,7 +68,7 @@ class UsuarioAPIControllerTest {
         mockMvc = MockMvcBuilders.standaloneSetup(controller)
             .setCustomArgumentResolvers(PageableHandlerMethodArgumentResolver())
             .setMessageConverters(JacksonJsonHttpMessageConverter(objectMapper))
-            .setControllerAdvice(UsuarioAPIExceptionHandler())
+            .setControllerAdvice(UsuarioAPIExceptionHandler(), GlobalAPIExceptionHandler())
             .build()
     }
 
