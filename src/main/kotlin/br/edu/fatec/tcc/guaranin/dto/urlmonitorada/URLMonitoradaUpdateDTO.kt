@@ -2,9 +2,7 @@ package br.edu.fatec.tcc.guaranin.dto.urlmonitorada
 
 import br.edu.fatec.tcc.guaranin.validation.urlmonitorada.ValidIp
 import br.edu.fatec.tcc.guaranin.validation.urlmonitorada.ValidUrl
-import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
-import java.util.*
 
 /**
  * DTO de entrada para atualização de [br.edu.fatec.tcc.guaranin.model.URLMonitorada].
@@ -12,16 +10,13 @@ import java.util.*
  * Campos opcionais: valores `null` são ignorados pelo mapeamento, preservando
  * o estado atual da entidade.
  *
- * @property id identificador único obrigatório da URL a ser atualizada.
+ * O identificador é recebido pelo path da requisição, não pelo DTO.
+ *
  * @property link novo endereço web opcional.
  * @property ip novo endereço IP opcional.
  * @property padrao novo status de marcação padrão opcional.
  */
 data class URLMonitoradaUpdateDTO(
-
-    @field:NotNull
-    val id: UUID?,
-
     @field:ValidUrl
     val link: String?,
 
