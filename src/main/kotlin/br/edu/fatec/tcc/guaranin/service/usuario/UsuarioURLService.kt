@@ -136,8 +136,8 @@ class UsuarioURLService(
      * @throws URLMonitoradaNotFoundException quando a nova URL monitorada não existe.
      */
     @Transactional
-    fun update(updateDTO: UsuarioURLUpdateDTO): UsuarioURLResponseDTO {
-        val usuarioURL = usuarioURLRepository.findById(updateDTO.id)
+    fun update(id: UUID, updateDTO: UsuarioURLUpdateDTO): UsuarioURLResponseDTO {
+        val usuarioURL = usuarioURLRepository.findById(id)
             .orElseThrow { UsuarioURLNotFoundException() }
 
         usuarioURLMapper.updateEntityFromDTO(updateDTO, usuarioURL)
