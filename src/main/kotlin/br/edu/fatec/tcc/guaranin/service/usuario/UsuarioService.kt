@@ -7,10 +7,12 @@ import br.edu.fatec.tcc.guaranin.exception.usuario.UsuarioNotFoundException
 import br.edu.fatec.tcc.guaranin.mapper.usuario.UsuarioMapper
 import br.edu.fatec.tcc.guaranin.model.Usuario
 import br.edu.fatec.tcc.guaranin.repository.usuario.UsuarioRepository
+import br.edu.fatec.tcc.guaranin.validation.usuario.ValidApelido
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.validation.annotation.Validated
 import java.util.*
 
 /**
@@ -26,6 +28,7 @@ import java.util.*
  * @see UsuarioRepository
  * @see UsuarioMapper
  */
+@Validated
 @Service
 class UsuarioService(
     private val usuarioRepository: UsuarioRepository,
