@@ -74,9 +74,7 @@ class UsuarioService(
 
         //TODO Define password criptography
         //usuario.password = passwordEncoder.encode(usuario.password);
-        return usuarioMapper.toResponseDTO(
-            usuarioRepository.save(usuarioSalvo)
-        )
+        return usuarioMapper.toResponseDTO(usuarioSalvo)
     }
 
     /**
