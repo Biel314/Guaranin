@@ -250,6 +250,88 @@ class UsuarioAPIControllerTest {
     }
 
     /**
+     * Verifica se a atualização de apelido com valor válido retorna `200 OK`
+     * e repassa os parâmetros ao serviço.
+     */
+    @Test
+    fun `deve atualizar apelido com sucesso`() {
+        val id = UUID.randomUUID()
+        val apelido = "novoapelido"
+        val responseDTO = UsuarioResponseDTO(
+            id = id,
+            apelido = apelido,
+            email = "test@fatec.br"
+        )
+
+        `when`(usuarioService.updateApelido(any(), any())).thenReturn(responseDTO)
+
+        mockMvc.perform(
+            patch("/api/usuarios/{id}/apelido/{apelido}", id, apelido)
+                .accept(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.id").value(id.toString()))
+            .andExpect(jsonPath("$.apelido").value(apelido))
+
+        verify(usuarioService).updateApelido(id, apelido)
+    }
+
+    /**
+     * Verifica se a atualização de apelido de um usuário inexistente retorna
+     * `404 Not Found`.
+     */
+    @Test
+    fun `deve retornar not found ao atualizar apelido de usuario inexistente`() {
+        val id = UUID.randomUUID()
+
+        `when`(usuarioService.updateApelido(any(), any()))
+            .thenThrow(UsuarioNotFoundException())
+
+        mockMvc.perform(
+            patch("/api/usuarios/{id}/apelido/{apelido}", id, "novoapelido")
+                .accept(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isNotFound)
+            .andExpect(jsonPath("$.error").value("Usuário não encontrado"))
+
+        verify(usuarioService).updateApelido(id, "novoapelido")
+    }
+
+    /**
+     * Verifica se um ID de usuário inválido na atualização de apelido retorna
+     * `400 Bad Request` sem acionar o serviço.
+     */
+    @Test
+    fun `deve retornar bad request ao atualizar apelido com ID invalido`() {
+        mockMvc.perform(
+            patch("/api/usuarios/{id}/apelido/{apelido}", "id-invalido", "novoapelido")
+                .accept(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.error").value("Parâmetro inválido"))
+
+        verify(usuarioService, never()).updateApelido(any(), any())
+    }
+
+    /**
+     * Verifica se um apelido fora do padrão retorna `400 Bad Request` sem
+     * acionar o serviço.
+     */
+    @Test
+    fun `deve retornar bad request ao atualizar apelido invalido`() {
+        val id = UUID.randomUUID()
+
+        mockMvc.perform(
+            patch("/api/usuarios/{id}/apelido/{apelido}", id, "ab")
+                .accept(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.error").value("Apelido de Usuário inválido."))
+
+        verify(usuarioService, never()).updateApelido(any(), any())
+    }
+
+    /**
      * Verifica se a remoção de um usuário existente retorna `204 No Content`,
      * sem corpo, e se o ID é repassado ao serviço.
      */

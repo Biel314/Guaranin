@@ -104,6 +104,34 @@ class UsuarioService(
     }
 
     /**
+     * Atualiza apenas o apelido de um usuário existente.
+     *
+     * O apelido é validado por [ValidApelido], que aplica o padrão
+     * [br.edu.fatec.tcc.guaranin.validation.RegexPatterns.USUARIO] e rejeita
+     * valores nulos, em branco ou fora do formato permitido.
+     *
+     * @param id identificador único do usuário.
+     * @param apelido novo apelido, com 3 a 26 caracteres.
+     * @return DTO do usuário após a atualização.
+     * @throws jakarta.validation.ConstraintViolationException quando o apelido
+     * não atende às regras de validação.
+     * @throws UsuarioNotFoundException quando o usuário não existe.
+     */
+    @Transactional
+    fun updateApelido(
+        id: UUID,
+        @ValidApelido
+        apelido: String
+    ): UsuarioResponseDTO {
+        val usuario = usuarioRepository.findById(id)
+            .orElseThrow { UsuarioNotFoundException() }
+        usuario.apelido = apelido
+        return usuarioMapper.toResponseDTO(
+            usuarioRepository.save(usuario)
+        )
+    }
+
+    /**
      * Remove um usuário do sistema pelo seu identificador único.
      *
      * @param id Identificador único ([UUID]) do usuário.
@@ -165,5 +193,4 @@ class UsuarioService(
     fun toUsuario(usuarioCreateDTO: UsuarioCreateDTO): Usuario {
         return usuarioMapper.toEntity(usuarioCreateDTO)
     }
-
 }
