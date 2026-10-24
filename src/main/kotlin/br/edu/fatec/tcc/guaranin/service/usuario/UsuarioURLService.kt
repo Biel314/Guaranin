@@ -51,6 +51,39 @@ class UsuarioURLService(
     }
 
     /**
+     * Lista associações de um usuário com tempo ativo mínimo, de forma
+     * paginada.
+     *
+     * Consulta diretamente pelo identificador do usuário, sem carregar a
+     * entidade [Usuario]. A existência do usuário só é verificada quando a
+     * página está vazia.
+     *
+     * @param usuarioId identificador único do usuário.
+     * @param tempoAtivo tempo ativo mínimo em segundos.
+     * @param pageable parâmetros de paginação e ordenação.
+     * @return página de DTOs das associações encontradas.
+     * @throws UsuarioNotFoundException quando o usuário não existe.
+     */
+    @Transactional(readOnly = true)
+    fun findByUsuarioIdAndTempoAtivoGreaterThanEqual(
+        usuarioId: UUID,
+        tempoAtivo: Int,
+        pageable: Pageable
+    ): Page<UsuarioURLResponseDTO> {
+        val page = usuarioURLRepository.findByUsuarioIdAndTempoAtivoGreaterThanEqual(
+            usuarioId,
+            tempoAtivo,
+            pageable
+        )
+
+        if (page.totalElements == 0L && !usuarioRepository.existsById(usuarioId)) {
+            throw UsuarioNotFoundException()
+        }
+
+        return page.map { usuarioURLMapper.toResponseDTO(it) }
+    }
+
+    /**
      * Busca uma associação pelo identificador.
      *
      * @param id identificador único da associação.
