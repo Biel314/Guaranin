@@ -7,6 +7,7 @@ import br.edu.fatec.tcc.guaranin.exception.urlmonitorada.URLMonitoradaNotFoundEx
 import br.edu.fatec.tcc.guaranin.exception.usuario.UsuarioNotFoundException
 import br.edu.fatec.tcc.guaranin.exception.usuario.UsuarioURLNotFoundException
 import br.edu.fatec.tcc.guaranin.mapper.usuario.UsuarioURLMapper
+import br.edu.fatec.tcc.guaranin.model.Usuario
 import br.edu.fatec.tcc.guaranin.model.UsuarioURL
 import br.edu.fatec.tcc.guaranin.repository.urlmonitorada.URLMonitoradaRepository
 import br.edu.fatec.tcc.guaranin.repository.usuario.UsuarioRepository
@@ -67,6 +68,10 @@ class UsuarioURLService(
     /**
      * Lista associações de um usuário de forma paginada.
      *
+     * Consulta diretamente pelo identificador do usuário, sem carregar a
+     * entidade [Usuario]. A existência do usuário só é verificada quando a
+     * página está vazia.
+     *
      * @param usuarioId identificador único do usuário.
      * @param pageable parâmetros de paginação e ordenação.
      * @return página de DTOs das associações encontradas.
@@ -74,10 +79,13 @@ class UsuarioURLService(
      */
     @Transactional(readOnly = true)
     fun findByUsuarioId(usuarioId: UUID, pageable: Pageable): Page<UsuarioURLResponseDTO> {
-        val usuario = usuarioRepository.findById(usuarioId)
-            .orElseThrow { UsuarioNotFoundException() }
-        return usuarioURLRepository.findByUsuario(usuario, pageable)
-            .map { usuarioURLMapper.toResponseDTO(it) }
+        val page = usuarioURLRepository.findByUsuarioId(usuarioId, pageable)
+
+        if (page.totalElements == 0L && !usuarioRepository.existsById(usuarioId)) {
+            throw UsuarioNotFoundException()
+        }
+
+        return page.map { usuarioURLMapper.toResponseDTO(it) }
     }
 
     /**
