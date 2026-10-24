@@ -33,9 +33,10 @@ import java.util.*
 @Service
 class UsuarioURLService(
     private val usuarioURLRepository: UsuarioURLRepository,
+    private val usuarioURLMapper: UsuarioURLMapper,
+
     private val usuarioRepository: UsuarioRepository,
-    private val urlMonitoradaRepository: URLMonitoradaRepository,
-    private val usuarioURLMapper: UsuarioURLMapper
+    private val urlMonitoradaRepository: URLMonitoradaRepository
 ) {
 
     /**
