@@ -127,15 +127,17 @@ class MascoteService (
 
     @Transactional
     fun update(mascoteUpdateDTO: MascoteUpdateDTO): MascoteResponseDTO {
-        val uuid = mascoteUpdateDTO.id
-            ?: throw InvalidDTOException()
-        val mascote = mascoteRepository.findById(uuid)
+        val uuid = mascoteUpdateDTO.id ?: throw InvalidDTOException()
+       	return update(uuid, mascoteUpdateDTO)
+    }
+
+    @Transactional
+    fun update(id: UUID, mascoteUpdateDTO: MascoteUpdateDTO): MascoteResponseDTO {
+        val mascote = mascoteRepository.findById(id)
             .orElseThrow { MascoteNotFoundException() }
         mascoteMapper.updateEntityFromDTO(mascoteUpdateDTO, mascote)
 
-       return mascoteMapper.toResponseDTO(
-            mascoteRepository.save(mascote)
-        )
+       return mascoteMapper.toResponseDTO(mascoteRepository.save(mascote))
     }
 
     @Transactional

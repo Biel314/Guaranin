@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Size
 import java.util.UUID
 
 data class MascoteUpdateDTO (
-    @NotNull
+    @field:Schema(accessMode = Schema.AccessMode.READ_ONLY)
     var id: UUID?,
 
     @NotBlank(message = "O nome é obrigatório")
