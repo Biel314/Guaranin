@@ -17,12 +17,13 @@ import jakarta.validation.constraints.Size
 data class URLMonitoradaCreateDTO(
 
     @field:NotBlank(message = "O link é obrigatório")
+    @field:Size(max = 4050, message = "O link deve ter no máximo 4050 caracteres")
     @field:ValidUrl
     val link: String,
 
     @field:Size(max = 50, message = "O IP deve ter no máximo 50 caracteres")
     @field:ValidIp
-    val ip: String?,
+    val ip: String? = null,
 
     val padrao: Boolean = false
 ) {}

@@ -18,12 +18,8 @@
         </ul>
     </div>
 
-    <form th:action="@{/usuario}" method="post" th:object="${usuarioUpdateDTO}">
+    <form th:action="@{/usuario/{id}(id=${id})}" method="post" th:object="${usuarioUpdateDTO}">
         <input type="hidden" name="_method" value="put">
-
-        <input type="hidden"
-               name="id"
-               th:value="*{id}">
 
         <div class="form-group">
             <label for="apelido">Apelido:</label>
