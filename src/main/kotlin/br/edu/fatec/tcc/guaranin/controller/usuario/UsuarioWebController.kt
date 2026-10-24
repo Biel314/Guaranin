@@ -16,8 +16,14 @@ import org.springframework.web.bind.annotation.*
 import java.util.*
 
 /**
- * Controller web para gerenciamento de Usuários ([br.edu.fatec.tcc.guaranin.model.Usuario]).
- * Fornece operações CRUD integradas com Thymeleaf e documentação OpenAPI/Swagger.
+ * Controller web para gerenciamento de usuários
+ * ([br.edu.fatec.tcc.guaranin.model.Usuario]).
+ *
+ * Fornece operações CRUD integradas com Thymeleaf e documentação
+ * OpenAPI/Swagger, delegando as regras de negócio ao [UsuarioService].
+ *
+ * @property usuarioService service de regras de negócio de usuários.
+ * @see UsuarioService
  */
 @Controller
 @RequestMapping("/usuario")

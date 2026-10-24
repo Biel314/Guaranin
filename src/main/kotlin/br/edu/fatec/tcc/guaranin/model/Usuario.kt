@@ -1,6 +1,8 @@
 package br.edu.fatec.tcc.guaranin.model
 
 import br.edu.fatec.tcc.guaranin.validation.RegexPatterns
+import br.edu.fatec.tcc.guaranin.validation.usuario.ValidEmail
+import br.edu.fatec.tcc.guaranin.validation.usuario.ValidSenha
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import jakarta.persistence.*
@@ -9,24 +11,26 @@ import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Pattern
 import jakarta.validation.constraints.Size
 import java.util.*
-import kotlin.collections.mutableListOf
 
 /**
  * Entidade JPA que representa um usuário no sistema Guaranin.
  *
  * O e-mail é único e usado como credencial de login. A senha é write-only
  * e não é serializada nas respostas JSON. As validações de apelido, e-mail
- * e senha reutilizam os padrões definidos em [RegexPatterns].
+ * e senha reutilizam os padrões definidos em [RegexPatterns] e as restrições
+ * [ValidEmail] e [ValidSenha].
  *
  * @property id identificador único do usuário, gerado automaticamente.
+ * @property mascotes mascotes associados ao usuário.
  * @property apelido apelido do usuário, com 3 a 26 caracteres.
  * @property email e-mail único do usuário, usado como login.
  * @property password senha de acesso, write-only, com 8 a 72 caracteres.
  * @property usuarioURLs URLs monitoradas associadas ao usuário.
+ * @property login alias de conveniência para [email], ignorado no JSON.
  */
 @Entity
 @Table(name = "tb_usuario")
-open class Usuario(
+class Usuario(
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id_usuario", nullable = false)
@@ -51,7 +55,8 @@ open class Usuario(
 
     @Column(nullable = false, unique = true, length = 254)
     @field:NotBlank(message = "O e-mail é obrigatório")
-    @field:Email(regexp = RegexPatterns.EMAIL, message = "Formato de e-mail inválido")
+    @field:ValidEmail
+    @field:Email
     @field:Size(max = 254, message = "O e-mail deve ter no máximo 254 caracteres")
     var email: String = "",
 
@@ -59,10 +64,7 @@ open class Usuario(
     @Column(nullable = false, length = 255)
     @field:NotBlank(message = "A senha é obrigatória")
     @field:Size(min = 8, max = 72, message = "A senha deve ter entre 8 e 72 caracteres")
-    @field:Pattern(
-        regexp = RegexPatterns.SENHA,
-        message = "A senha deve ter entre 8 e 72 caracteres e conter ao menos uma letra maiúscula, uma minúscula, um número e um caractere especial"
-    )
+    @field:ValidSenha
     var password: String = "",
 
     // TODO External Connections

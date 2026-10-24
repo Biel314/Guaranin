@@ -7,35 +7,39 @@ import java.util.*
 
 
 /**
- * Repositório de persistência para a entidade [Usuario].
+ * Repositório JPA para a entidade [Usuario], com chave primária [UUID].
  *
+ * Estende [JpaRepository], herdando as operações CRUD padrão, e declara
+ * consultas derivadas por e-mail e apelido. A anotação [Repository] marca a
+ * interface como bean gerenciado pelo Spring.
  *
- * Estende [JpaRepository], herdando automaticamente as operações
- * de CRUD padrão (salvar, buscar por id, listar, deletar, etc.), sem
- * necessidade de implementação manual.
- *
- *
- * A anotação [Repository] marca esta interface como um bean
- * gerenciado pelo Spring, permitindo sua injeção via construtor em
- * services e outros componentes.
- */
-/**
- * Repositório JPA para entidade [Usuario] com chave primária UUID.
+ * @see Usuario
  */
 @Repository
 interface UsuarioRepository : JpaRepository<Usuario, UUID> {
+
     /**
-     * Busca um usuário pelo seu login (e-mail).
+     * Busca um usuário pelo e-mail, que também é usado como login.
      *
+     * O e-mail é único na entidade [Usuario], portanto no máximo um registro
+     * pode corresponder à busca.
      *
-     * Como o campo `login` é definido como único na entidade
-     * [Usuario], no máximo um registro pode corresponder à busca.
-     *
-     * @param login e-mail/login do usuário a ser localizado.
-     * @return um [Optional] contendo o usuário encontrado, ou vazio
-     * caso nenhum usuário possua o login informado.
+     * @param email e-mail/login do usuário a ser localizado.
+     * @return [Optional] com o usuário encontrado ou vazio quando não existe
+     * usuário com o e-mail informado.
      */
-    fun findByEmail(login: String): Optional<Usuario>
-    
+    fun findByEmail(email: String): Optional<Usuario>
+
+    /**
+     * Busca um usuário pelo apelido.
+     *
+     * O apelido não possui restrição de unicidade no modelo atual. Caso
+     * existam registros duplicados, a consulta pode falhar por resultado não
+     * único.
+     *
+     * @param apelido apelido do usuário a ser localizado.
+     * @return [Optional] com o usuário encontrado ou vazio quando nenhum
+     * usuário possui o apelido informado.
+     */
     fun findByApelido(apelido: String): Optional<Usuario>
 }

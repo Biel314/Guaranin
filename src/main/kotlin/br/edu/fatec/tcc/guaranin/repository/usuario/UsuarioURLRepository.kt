@@ -11,18 +11,25 @@ import java.util.*
 
 /**
  * Repositório responsável pelo acesso e persistência das entidades [UsuarioURL].
+ *
+ * Estende [JpaRepository] e declara consultas derivadas por usuário, URL
+ * monitorada e tempo ativo mínimo.
+ *
+ * @see UsuarioURL
+ * @see Usuario
+ * @see URLMonitorada
  */
 @Repository
 interface UsuarioURLRepository : JpaRepository<UsuarioURL, UUID> {
 
     /**
-     * Busca associações de URL por usuário com paginação.
+     * Busca associações de URL por ID do usuário com paginação.
      *
-     * @param usuario usuário critério de busca.
+     * @param usuarioId identificador único do usuário.
      * @param pageable parâmetros de paginação.
      * @return [Page] contendo as associações encontradas.
      */
-    fun findByUsuario(usuario: Usuario, pageable: Pageable): Page<UsuarioURL>
+    fun findByUsuarioId(usuarioId: UUID, pageable: Pageable): Page<UsuarioURL>
 
     /**
      * Busca associações de URL por URL monitorada com paginação.
@@ -34,12 +41,17 @@ interface UsuarioURLRepository : JpaRepository<UsuarioURL, UUID> {
     fun findByUrlMonitorada(urlMonitorada: URLMonitorada, pageable: Pageable): Page<UsuarioURL>
 
     /**
-     * Busca associações de URL por usuário e tempo ativo mínimo com paginação.
+     * Busca associações de URL por ID do usuário e tempo ativo mínimo com
+     * paginação.
      *
-     * @param usuario usuário critério de busca.
+     * @param usuarioId identificador único do usuário.
      * @param tempoAtivo tempo ativo mínimo.
      * @param pageable parâmetros de paginação.
      * @return [Page] contendo as associações encontradas.
      */
-    fun findByUsuarioAndTempoAtivoGreaterThanEqual(usuario: Usuario, tempoAtivo: Int, pageable: Pageable): Page<UsuarioURL>
+    fun findByUsuarioIdAndTempoAtivoGreaterThanEqual(
+        usuarioId: UUID,
+        tempoAtivo: Int,
+        pageable: Pageable
+    ): Page<UsuarioURL>
 }
