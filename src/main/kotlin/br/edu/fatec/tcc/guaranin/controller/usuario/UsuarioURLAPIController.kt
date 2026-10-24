@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*
 import java.util.*
 
 /**
- * Controller REST responsável pelo gerenciamento de associações entre usuários e URLs ([UsuarioURL]).
+ * Controller REST responsável pelo gerenciamento de associações entre usuários e URLs ([br.edu.fatec.tcc.guaranin.model.UsuarioURL]).
  *
  * Expõe os endpoints sob `/api/usuarios_url`, recebe e retorna JSON e delega as
  * regras de negócio ao [UsuarioURLService]. Respostas de erro usam [ApiErrorDTO]
