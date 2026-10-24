@@ -1,6 +1,8 @@
 package br.edu.fatec.tcc.guaranin.dto.usuario
 
 import br.edu.fatec.tcc.guaranin.validation.RegexPatterns
+import br.edu.fatec.tcc.guaranin.validation.usuario.ValidEmail
+import br.edu.fatec.tcc.guaranin.validation.usuario.ValidSenha
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
@@ -13,8 +15,8 @@ import jakarta.validation.constraints.Size
  *
  * O identificador do registro a ser atualizado é informado no caminho da
  * requisição, não neste DTO. Apelido, e-mail e senha reutilizam os padrões de
- * [RegexPatterns]. A senha é opcional e deve ser informada apenas quando
- * houver troca.
+ * [RegexPatterns] e são validados também por [ValidEmail] e [ValidSenha]. A
+ * senha é opcional e deve ser informada apenas quando houver troca.
  *
  * @property apelido novo apelido, com 3 a 26 caracteres.
  * @property email novo e-mail único, com até 254 caracteres.
@@ -44,12 +46,13 @@ data class UsuarioUpdateDTO(
     )
     @field:NotBlank(message = "O e-mail é obrigatório")
     @field:Email(regexp = RegexPatterns.EMAIL, message = "Formato de e-mail inválido")
+    @field:ValidEmail
     @field:Size(max = 254, message = "O e-mail deve ter no máximo 254 caracteres")
     var email: String?,
 
     @field:Schema(
         description = "Nova senha opcional do usuário",
-        example = "usuario@123",
+        example = "Usuario@123",
         accessMode = Schema.AccessMode.WRITE_ONLY
     )
     @field:Size(min = 8, max = 72, message = "A senha deve ter entre 8 e 72 caracteres")
@@ -57,5 +60,6 @@ data class UsuarioUpdateDTO(
         regexp = RegexPatterns.SENHA,
         message = "A senha deve ter entre 8 e 72 caracteres e conter ao menos uma letra maiúscula, uma minúscula, um número e um caractere especial"
     )
+    @field:ValidSenha
     var password: String?,
 ) {}
