@@ -24,12 +24,14 @@ import java.util.*
 interface URLHistoricoRepository : JpaRepository<URLHistorico, UUID> {
 
     /**
-     * Busca histórico de URL associado a uma relação [UsuarioURL].
+     * Busca o histórico associado ao identificador de uma relação [UsuarioURL].
      *
-     * @param usuarioURL relação [UsuarioURL] critério de busca.
-     * @return [Optional] contendo a entidade encontrada ou vazio.
+     * @param usuarioUrlId identificador da associação [UsuarioURL] usada como
+     * critério de busca.
+     * @return [Optional] contendo a entidade encontrada ou vazio quando não
+     * existe histórico para a associação informada.
      */
-    fun findByUsuarioUrl(usuarioURL: UsuarioURL): Optional<URLHistorico>
+    fun findByUsuarioUrlId(usuarioUrlId: UUID): Optional<URLHistorico>
 
     /**
      * Busca histórico de URL pela data e hora do acesso com paginação.
