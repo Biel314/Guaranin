@@ -11,6 +11,13 @@ import java.util.*
 
 /**
  * Repositório responsável pelo acesso e persistência das entidades [UsuarioURL].
+ *
+ * Estende [JpaRepository] e declara consultas derivadas por usuário, URL
+ * monitorada e tempo ativo mínimo.
+ *
+ * @see UsuarioURL
+ * @see Usuario
+ * @see URLMonitorada
  */
 @Repository
 interface UsuarioURLRepository : JpaRepository<UsuarioURL, UUID> {

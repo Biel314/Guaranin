@@ -5,7 +5,17 @@ import jakarta.validation.constraints.NotNull
 import java.util.*
 
 /**
- * DTO de entrada para criação de [br.edu.fatec.tcc.guaranin.model.UsuarioURL].
+ * DTO de entrada para criação de
+ * [br.edu.fatec.tcc.guaranin.model.UsuarioURL].
+ *
+ * Os identificadores são resolvidos para entidades pelo service antes da
+ * persistência. Quantidade de acessos e tempo ativo não podem ser negativos.
+ *
+ * @property usuarioId identificador do usuário associado; obrigatório.
+ * @property urlMonitoradaId identificador da URL monitorada associada;
+ * obrigatório.
+ * @property qtdAcesso quantidade de acessos; deve ser maior ou igual a zero.
+ * @property tempoAtivo tempo ativo em segundos; deve ser maior ou igual a zero.
  */
 data class UsuarioURLCreateDTO(
 

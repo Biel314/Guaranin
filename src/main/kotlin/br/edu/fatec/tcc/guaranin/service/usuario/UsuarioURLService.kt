@@ -19,6 +19,15 @@ import java.util.*
 
 /**
  * Serviço de regras de negócio para [UsuarioURL] (CRUD).
+ *
+ * Resolve as entidades [Usuario] e
+ * [br.edu.fatec.tcc.guaranin.model.URLMonitorada] antes de criar ou atualizar
+ * associações, garantindo que os identificadores informados existam.
+ *
+ * @property usuarioURLRepository repositório de associações.
+ * @property usuarioRepository repositório usado para resolver usuários.
+ * @property urlMonitoradaRepository repositório usado para resolver URLs monitoradas.
+ * @property usuarioURLMapper mapper entre entidade e DTOs.
  */
 @Service
 class UsuarioURLService(
@@ -28,12 +37,25 @@ class UsuarioURLService(
     private val usuarioURLMapper: UsuarioURLMapper
 ) {
 
+    /**
+     * Lista associações de forma paginada.
+     *
+     * @param pageable parâmetros de paginação e ordenação.
+     * @return página de DTOs de resposta.
+     */
     @Transactional(readOnly = true)
     fun findAll(pageable: Pageable): Page<UsuarioURLResponseDTO> {
         return usuarioURLRepository.findAll(pageable)
             .map { usuarioURLMapper.toResponseDTO(it) }
     }
 
+    /**
+     * Busca uma associação pelo identificador.
+     *
+     * @param id identificador único da associação.
+     * @return DTO da associação encontrada.
+     * @throws UsuarioURLNotFoundException quando a associação não existe.
+     */
     @Transactional(readOnly = true)
     fun findById(id: UUID): UsuarioURLResponseDTO {
         return usuarioURLMapper.toResponseDTO(
@@ -42,6 +64,14 @@ class UsuarioURLService(
         )
     }
 
+    /**
+     * Lista associações de um usuário de forma paginada.
+     *
+     * @param usuarioId identificador único do usuário.
+     * @param pageable parâmetros de paginação e ordenação.
+     * @return página de DTOs das associações encontradas.
+     * @throws UsuarioNotFoundException quando o usuário não existe.
+     */
     @Transactional(readOnly = true)
     fun findByUsuarioId(usuarioId: UUID, pageable: Pageable): Page<UsuarioURLResponseDTO> {
         val usuario = usuarioRepository.findById(usuarioId)
@@ -50,6 +80,14 @@ class UsuarioURLService(
             .map { usuarioURLMapper.toResponseDTO(it) }
     }
 
+    /**
+     * Lista associações de uma URL monitorada de forma paginada.
+     *
+     * @param urlMonitoradaId identificador único da URL monitorada.
+     * @param pageable parâmetros de paginação e ordenação.
+     * @return página de DTOs das associações encontradas.
+     * @throws URLMonitoradaNotFoundException quando a URL monitorada não existe.
+     */
     @Transactional(readOnly = true)
     fun findByUrlMonitoradaId(urlMonitoradaId: UUID, pageable: Pageable): Page<UsuarioURLResponseDTO> {
         val urlMonitorada = urlMonitoradaRepository.findById(urlMonitoradaId)
@@ -58,6 +96,14 @@ class UsuarioURLService(
             .map { usuarioURLMapper.toResponseDTO(it) }
     }
 
+    /**
+     * Cria uma associação entre usuário e URL monitorada.
+     *
+     * @param createDTO dados da associação a ser criada.
+     * @return DTO da associação persistida.
+     * @throws UsuarioNotFoundException quando o usuário não existe.
+     * @throws URLMonitoradaNotFoundException quando a URL monitorada não existe.
+     */
     @Transactional
     fun create(createDTO: UsuarioURLCreateDTO): UsuarioURLResponseDTO {
         val usuario = usuarioRepository.findById(createDTO.usuarioId)
@@ -75,6 +121,20 @@ class UsuarioURLService(
         )
     }
 
+    /**
+     * Atualiza parcialmente uma associação existente.
+     *
+     * Campos nulos no DTO preservam os valores atuais. Quando um novo
+     * identificador de usuário ou de URL monitorada é informado, a entidade
+     * correspondente é resolvida antes da persistência.
+     *
+     * @param id identificador único da associação.
+     * @param updateDTO dados a serem atualizados.
+     * @return DTO da associação após a atualização.
+     * @throws UsuarioURLNotFoundException quando a associação não existe.
+     * @throws UsuarioNotFoundException quando o novo usuário não existe.
+     * @throws URLMonitoradaNotFoundException quando a nova URL monitorada não existe.
+     */
     @Transactional
     fun update(updateDTO: UsuarioURLUpdateDTO): UsuarioURLResponseDTO {
         val usuarioURL = usuarioURLRepository.findById(updateDTO.id)
@@ -97,6 +157,13 @@ class UsuarioURLService(
         )
     }
 
+    /**
+     * Remove uma associação pelo identificador.
+     *
+     * @param id identificador único da associação.
+     * @return DTO da associação removida.
+     * @throws UsuarioURLNotFoundException quando a associação não existe.
+     */
     @Transactional
     fun delete(id: UUID): UsuarioURLResponseDTO {
         val usuarioURL = usuarioURLRepository.findById(id)

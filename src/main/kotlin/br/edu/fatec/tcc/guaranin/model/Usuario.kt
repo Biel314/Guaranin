@@ -19,10 +19,12 @@ import kotlin.collections.mutableListOf
  * e senha reutilizam os padrões definidos em [RegexPatterns].
  *
  * @property id identificador único do usuário, gerado automaticamente.
+ * @property mascotes mascotes associados ao usuário.
  * @property apelido apelido do usuário, com 3 a 26 caracteres.
  * @property email e-mail único do usuário, usado como login.
  * @property password senha de acesso, write-only, com 8 a 72 caracteres.
  * @property usuarioURLs URLs monitoradas associadas ao usuário.
+ * @property login alias de conveniência para [email], ignorado no JSON.
  */
 @Entity
 @Table(name = "tb_usuario")

@@ -31,7 +31,8 @@ import java.util.*
  * [JacksonJsonHttpMessageConverter] para serialização compatível com Jackson 3
  * e os handlers [br.edu.fatec.tcc.guaranin.controller.usuario.UsuarioAPIExceptionHandler]
  * e [br.edu.fatec.tcc.guaranin.controller.GlobalAPIExceptionHandler] para o contrato de erros.
- * Cobre criação, consulta, listagem paginada, atualização e remoção de usuários.
+ * Cobre criação, consulta, listagem paginada, atualização completa, atualização
+ * de apelido e remoção de usuários.
  */
 class UsuarioAPIControllerTest {
 

@@ -28,6 +28,7 @@ import java.util.*
  * regras de negócio ao [UsuarioService]. Respostas de erro usam [ApiErrorDTO]
  * e são produzidas por [UsuarioAPIExceptionHandler].
  *
+ * @property usuarioService service de regras de negócio de usuários.
  * @see UsuarioService
  * @see UsuarioAPIExceptionHandler
  */

@@ -15,7 +15,16 @@ import java.util.*
 
 /**
  * Serviço de regras de negócio para gerenciamento de [Usuario] (CRUD).
- * Orquestra as operações de persistência, mapeamento de DTOs e validações de domínio.
+ *
+ * Orquestra persistência, mapeamento de DTOs e validações de domínio. A
+ * anotação [Validated] habilita a validação de restrições declaradas nos
+ * parâmetros dos métodos, como [ValidApelido].
+ *
+ * @property usuarioRepository repositório de persistência de usuários.
+ * @property usuarioMapper mapper entre entidade e DTOs.
+ * @see Usuario
+ * @see UsuarioRepository
+ * @see UsuarioMapper
  */
 @Service
 class UsuarioService(
