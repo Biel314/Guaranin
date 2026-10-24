@@ -6,11 +6,18 @@ import java.time.LocalDateTime
 import java.util.*
 
 /**
- * Entidade JPA que representa o histórico de acesso a URLs por usuários.
+ * Entidade JPA que representa um registro do histórico de acesso a URLs.
+ *
+ * Cada instância corresponde a um acesso registrado para uma associação
+ * [UsuarioURL] e é persistida na tabela `tb_url_historico`. A data/hora do
+ * acesso deve ser presente ou passada e, por padrão, é inicializada no
+ * instante da criação do registro.
  *
  * @property id identificador único do histórico, gerado automaticamente.
- * @property usuarioUrl associação com a relação [UsuarioURL].
- * @property dataHoraAcesso data e hora em que o acesso ocorreu.
+ * @property usuarioUrl associação [UsuarioURL] que originou o acesso.
+ * @property dataHoraAcesso data e hora em que o acesso ocorreu; deve ser
+ * presente ou passada.
+ * @see UsuarioURL
  */
 @Entity
 @Table(name = "tb_url_historico")
