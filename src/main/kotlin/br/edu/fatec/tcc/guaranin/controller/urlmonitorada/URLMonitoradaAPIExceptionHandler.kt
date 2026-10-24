@@ -29,8 +29,8 @@ class URLMonitoradaAPIExceptionHandler {
      * @return [ApiErrorDTO] com a mensagem "URL monitorada não encontrada".
      */
     @ExceptionHandler(URLMonitoradaNotFoundException::class)
-    fun handleURLMonitoradaNotFound(): ResponseEntity<ApiErrorDTO> {
+    fun handleURLMonitoradaNotFound(ex: URLMonitoradaNotFoundException): ResponseEntity<ApiErrorDTO> {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-            .body(ApiErrorDTO("URL monitorada não encontrada"))
+            .body(ApiErrorDTO(ex.localizedMessage))
     }
 }
