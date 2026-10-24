@@ -213,4 +213,24 @@ class UsuarioURLService(
         usuarioURLRepository.delete(usuarioURL)
         return usuarioURLMapper.toResponseDTO(usuarioURL)
     }
+
+    /**
+     * Converte um [UsuarioURLCreateDTO] em uma entidade [UsuarioURL].
+     *
+     * @param dto DTO de criação.
+     * @return Entidade [UsuarioURL] mapeada.
+     */
+    fun toEntity(dto: UsuarioURLCreateDTO): UsuarioURL {
+        return usuarioURLMapper.toEntity(dto)
+    }
+
+    /**
+     * Converte um [UsuarioURLUpdateDTO] em uma entidade [UsuarioURL].
+     *
+     * @param dto DTO de atualização.
+     * @return Entidade [UsuarioURL] mapeada.
+     */
+    fun toEntity(dto: UsuarioURLUpdateDTO): UsuarioURL {
+        return usuarioURLMapper.toEntity(dto)
+    }
 }

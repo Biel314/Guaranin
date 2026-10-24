@@ -54,6 +54,20 @@ interface UsuarioURLMapper {
     fun toEntity(dto: UsuarioURLCreateDTO): UsuarioURL
 
     /**
+     * Converte um [UsuarioURLUpdateDTO] em uma nova entidade [UsuarioURL].
+     *
+     * O `id` e as associações são ignorados; o service atribui `usuario` e
+     * `urlMonitorada` após resolver os identificadores informados.
+     *
+     * @param dto dados de entrada para criação.
+     * @return nova entidade ainda não persistida.
+     */
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "usuario", ignore = true)
+    @Mapping(target = "urlMonitorada", ignore = true)
+    fun toEntity(dto: UsuarioURLUpdateDTO): UsuarioURL
+
+    /**
      * Atualiza in-place uma entidade [UsuarioURL] com os dados de
      * [UsuarioURLUpdateDTO].
      *
