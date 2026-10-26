@@ -5,6 +5,7 @@ import br.edu.fatec.tcc.guaranin.dto.usuario.UsuarioCreateDTO
 import br.edu.fatec.tcc.guaranin.dto.usuario.UsuarioResponseDTO
 import br.edu.fatec.tcc.guaranin.dto.usuario.UsuarioUpdateDTO
 import br.edu.fatec.tcc.guaranin.service.usuario.UsuarioService
+import br.edu.fatec.tcc.guaranin.validation.usuario.ValidApelido
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Content
@@ -28,6 +29,7 @@ import java.util.*
  * regras de negócio ao [UsuarioService]. Respostas de erro usam [ApiErrorDTO]
  * e são produzidas por [UsuarioAPIExceptionHandler].
  *
+ * @property usuarioService service de regras de negócio de usuários.
  * @see UsuarioService
  * @see UsuarioAPIExceptionHandler
  */
@@ -208,6 +210,64 @@ class UsuarioAPIController(
         @Valid @RequestBody dto: UsuarioUpdateDTO
     ): UsuarioResponseDTO {
         return usuarioService.update(id, dto)
+    }
+
+    /**
+     * Atualiza apenas o apelido de um usuário existente.
+     *
+     * O apelido é validado por [ValidApelido] antes de ser repassado ao
+     * [UsuarioService]. Retorna `200 OK` com os dados públicos atualizados.
+     *
+     * @param id identificador único ([UUID]) do usuário.
+     * @param apelido novo apelido, com 3 a 26 caracteres.
+     * @return dados públicos do usuário após a atualização.
+     * @throws br.edu.fatec.tcc.guaranin.exception.usuario.UsuarioNotFoundException
+     * quando o usuário não existe; convertida em `404` pelo
+     * [UsuarioAPIExceptionHandler].
+     */
+    @PatchMapping("/{id}/apelido/{apelido}")
+    @Operation(
+        summary = "Atualizar apelido do usuário",
+        description = "Atualiza o apelido do usuário."
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Usuário atualizado com sucesso",
+                content = [Content(schema = Schema(implementation = UsuarioResponseDTO::class))]
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Apelido inválido",
+                content = [Content(schema = Schema(implementation = ApiErrorDTO::class))]
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Usuário não encontrado",
+                content = [Content(schema = Schema(implementation = ApiErrorDTO::class))]
+            ),
+            ApiResponse(
+                responseCode = "500",
+                description = "Erro interno",
+                content = [Content(schema = Schema(implementation = ApiErrorDTO::class))]
+            )
+        ]
+    )
+    fun atualizarApelido(
+        @Parameter(
+            description = "ID do usuário",
+            example = "550e8400-e29b-41d4-a716-446655440000"
+        )
+        @PathVariable id: UUID,
+        @Parameter(
+            description = "Apelido do usuário",
+            example = "Apelido"
+        )
+        @ValidApelido
+        @PathVariable apelido: String
+    ): UsuarioResponseDTO {
+        return usuarioService.updateApelido(id, apelido)
     }
 
     /**

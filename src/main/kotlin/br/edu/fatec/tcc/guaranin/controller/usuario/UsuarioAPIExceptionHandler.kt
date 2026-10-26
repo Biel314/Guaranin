@@ -29,8 +29,8 @@ class UsuarioAPIExceptionHandler {
      * @return [ApiErrorDTO] com a mensagem "Usuário não encontrado".
      */
     @ExceptionHandler(UsuarioNotFoundException::class)
-    fun handleUsuarioNotFound(): ResponseEntity<ApiErrorDTO> {
+    fun handleUsuarioNotFound(ex: UsuarioNotFoundException): ResponseEntity<ApiErrorDTO> {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-            .body(ApiErrorDTO("Usuário não encontrado"))
+            .body(ApiErrorDTO(ex.localizedMessage))
     }
 }

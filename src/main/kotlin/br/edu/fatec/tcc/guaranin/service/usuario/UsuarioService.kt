@@ -7,16 +7,28 @@ import br.edu.fatec.tcc.guaranin.exception.usuario.UsuarioNotFoundException
 import br.edu.fatec.tcc.guaranin.mapper.usuario.UsuarioMapper
 import br.edu.fatec.tcc.guaranin.model.Usuario
 import br.edu.fatec.tcc.guaranin.repository.usuario.UsuarioRepository
+import br.edu.fatec.tcc.guaranin.validation.usuario.ValidApelido
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.validation.annotation.Validated
 import java.util.*
 
 /**
  * Serviço de regras de negócio para gerenciamento de [Usuario] (CRUD).
- * Orquestra as operações de persistência, mapeamento de DTOs e validações de domínio.
+ *
+ * Orquestra persistência, mapeamento de DTOs e validações de domínio. A
+ * anotação [Validated] habilita a validação de restrições declaradas nos
+ * parâmetros dos métodos, como [ValidApelido].
+ *
+ * @property usuarioRepository repositório de persistência de usuários.
+ * @property usuarioMapper mapper entre entidade e DTOs.
+ * @see Usuario
+ * @see UsuarioRepository
+ * @see UsuarioMapper
  */
+@Validated
 @Service
 class UsuarioService(
     private val usuarioRepository: UsuarioRepository,
@@ -65,9 +77,7 @@ class UsuarioService(
 
         //TODO Define password criptography
         //usuario.password = passwordEncoder.encode(usuario.password);
-        return usuarioMapper.toResponseDTO(
-            usuarioRepository.save(usuarioSalvo)
-        )
+        return usuarioMapper.toResponseDTO(usuarioSalvo)
     }
 
     /**
@@ -88,6 +98,34 @@ class UsuarioService(
             //TODO Define password criptography
             // usuario.password = passwordEncoder.encode(usuarioUpdateDTO.password)
         }
+        return usuarioMapper.toResponseDTO(
+            usuarioRepository.save(usuario)
+        )
+    }
+
+    /**
+     * Atualiza apenas o apelido de um usuário existente.
+     *
+     * O apelido é validado por [ValidApelido], que aplica o padrão
+     * [br.edu.fatec.tcc.guaranin.validation.RegexPatterns.USUARIO] e rejeita
+     * valores nulos, em branco ou fora do formato permitido.
+     *
+     * @param id identificador único do usuário.
+     * @param apelido novo apelido, com 3 a 26 caracteres.
+     * @return DTO do usuário após a atualização.
+     * @throws jakarta.validation.ConstraintViolationException quando o apelido
+     * não atende às regras de validação.
+     * @throws UsuarioNotFoundException quando o usuário não existe.
+     */
+    @Transactional
+    fun updateApelido(
+        id: UUID,
+        @ValidApelido
+        apelido: String
+    ): UsuarioResponseDTO {
+        val usuario = usuarioRepository.findById(id)
+            .orElseThrow { UsuarioNotFoundException() }
+        usuario.apelido = apelido
         return usuarioMapper.toResponseDTO(
             usuarioRepository.save(usuario)
         )
@@ -155,5 +193,4 @@ class UsuarioService(
     fun toUsuario(usuarioCreateDTO: UsuarioCreateDTO): Usuario {
         return usuarioMapper.toEntity(usuarioCreateDTO)
     }
-
 }

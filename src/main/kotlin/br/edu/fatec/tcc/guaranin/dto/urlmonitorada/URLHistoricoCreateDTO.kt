@@ -7,6 +7,14 @@ import java.util.*
 
 /**
  * DTO de entrada para criação de [br.edu.fatec.tcc.guaranin.model.URLHistorico].
+ *
+ * Todos os campos são validados pelo Bean Validation antes de chegarem ao
+ * serviço. Quando `dataHoraAcesso` é omitida, assume o instante atual.
+ *
+ * @property usuarioUrlId identificador da associação
+ * [br.edu.fatec.tcc.guaranin.model.UsuarioURL]; obrigatório.
+ * @property dataHoraAcesso data e hora do acesso; obrigatória e não pode
+ * estar no futuro.
  */
 data class URLHistoricoCreateDTO(
 
