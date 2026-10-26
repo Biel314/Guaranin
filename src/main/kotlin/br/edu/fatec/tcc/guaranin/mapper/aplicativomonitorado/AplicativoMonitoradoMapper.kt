@@ -1,12 +1,9 @@
 package br.edu.fatec.tcc.guaranin.mapper.aplicativomonitorado
 
+import br.edu.fatec.tcc.guaranin.dto.aplicativomonitorado.AplicativoMonitoradoCreateDTO
 import br.edu.fatec.tcc.guaranin.dto.aplicativomonitorado.AplicativoMonitoradoResponseDTO
 import br.edu.fatec.tcc.guaranin.dto.aplicativomonitorado.AplicativoMonitoradoUpdateDTO
-import br.edu.fatec.tcc.guaranin.dto.usuario.UsuarioCreateDTO
-import br.edu.fatec.tcc.guaranin.dto.usuario.UsuarioResponseDTO
-import br.edu.fatec.tcc.guaranin.dto.usuario.UsuarioUpdateDTO
 import br.edu.fatec.tcc.guaranin.model.AplicativoMonitorado
-import br.edu.fatec.tcc.guaranin.model.Usuario
 import org.mapstruct.*
 
 /**
@@ -60,7 +57,7 @@ interface AplicativoMonitoradoMapper {
      * @return nova instância de [AplicativoMonitorado], ainda não persistida.
      */
     @Mapping(target = "id", ignore = true)
-    fun toEntity(aplicativoMonitorado: AplicativoMonitorado): AplicativoMonitorado
+    fun toEntity(aplicativoMonitoradoCreateDTO: AplicativoMonitoradoCreateDTO): AplicativoMonitorado
 
     /**
      * Converte um [AplicativoMonitoradoUpdateDTO] em uma entidade [AplicativoMonitorado].
