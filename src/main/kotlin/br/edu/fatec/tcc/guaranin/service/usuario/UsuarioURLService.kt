@@ -147,8 +147,8 @@ class UsuarioURLService(
      * @throws URLMonitoradaNotFoundException quando a URL monitorada não existe.
      */
     @Transactional
-    fun create(createDTO: UsuarioURLCreateDTO): UsuarioURLResponseDTO {
-        val usuario = usuarioRepository.findById(createDTO.usuarioId)
+    fun create(id: UUID, createDTO: UsuarioURLCreateDTO): UsuarioURLResponseDTO {
+        val usuario = usuarioRepository.findById(id)
             .orElseThrow { UsuarioNotFoundException() }
         val urlMonitorada = urlMonitoradaRepository.findById(createDTO.urlMonitoradaId)
             .orElseThrow { URLMonitoradaNotFoundException() }
@@ -183,16 +183,6 @@ class UsuarioURLService(
             .orElseThrow { UsuarioURLNotFoundException() }
 
         usuarioURLMapper.updateEntityFromDTO(updateDTO, usuarioURL)
-
-        if (updateDTO.usuarioId != null) {
-            usuarioURL.usuario = usuarioRepository.findById(updateDTO.usuarioId)
-                .orElseThrow { UsuarioNotFoundException() }
-        }
-
-        if (updateDTO.urlMonitoradaId != null) {
-            usuarioURL.urlMonitorada = urlMonitoradaRepository.findById(updateDTO.urlMonitoradaId)
-                .orElseThrow { URLMonitoradaNotFoundException() }
-        }
 
         return usuarioURLMapper.toResponseDTO(
             usuarioURLRepository.save(usuarioURL)
