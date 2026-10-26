@@ -18,9 +18,8 @@
         </ul>
     </div>
 
-    <form th:action="@{/url-monitorado}" method="post" th:object="${urlMonitoradaUpdateDTO}">
+    <form th:action="@{/url-monitorado/{id}(id=${id})}" method="post" th:object="${urlMonitoradaUpdateDTO}">
         <input type="hidden" name="_method" value="put">
-        <input type="hidden" name="id" th:value="*{id}">
 
         <div class="form-group">
             <label for="link">Link:</label>

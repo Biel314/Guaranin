@@ -1,5 +1,6 @@
 package br.edu.fatec.tcc.guaranin.controller
 
+import br.edu.fatec.tcc.guaranin.controller.GlobalAPIExceptionHandler
 import br.edu.fatec.tcc.guaranin.controller.usuario.UsuarioAPIController
 import br.edu.fatec.tcc.guaranin.controller.usuario.UsuarioAPIExceptionHandler
 import br.edu.fatec.tcc.guaranin.dto.usuario.UsuarioCreateDTO
@@ -28,8 +29,10 @@ import java.util.*
  *
  * Utiliza [MockMvc] em modo standalone, com [UsuarioService] mockado,
  * [JacksonJsonHttpMessageConverter] para serialização compatível com Jackson 3
- * e [br.edu.fatec.tcc.guaranin.controller.usuario.UsuarioAPIExceptionHandler] para o contrato de erros.
- * Cobre criação, consulta, listagem paginada, atualização e remoção de usuários.
+ * e os handlers [br.edu.fatec.tcc.guaranin.controller.usuario.UsuarioAPIExceptionHandler]
+ * e [br.edu.fatec.tcc.guaranin.controller.GlobalAPIExceptionHandler] para o contrato de erros.
+ * Cobre criação, consulta, listagem paginada, atualização completa, atualização
+ * de apelido e remoção de usuários.
  */
 class UsuarioAPIControllerTest {
 
@@ -56,7 +59,8 @@ class UsuarioAPIControllerTest {
      *
      * Cria o mock de [UsuarioService], instancia o [br.edu.fatec.tcc.guaranin.controller.usuario.UsuarioAPIController] e configura
      * o [MockMvc] com o resolver de `Pageable`, o conversor JSON do Jackson 3 e
-     * o [br.edu.fatec.tcc.guaranin.controller.usuario.UsuarioAPIExceptionHandler].
+     * os handlers [br.edu.fatec.tcc.guaranin.controller.usuario.UsuarioAPIExceptionHandler]
+     * e [br.edu.fatec.tcc.guaranin.controller.GlobalAPIExceptionHandler].
      */
     @BeforeEach
     fun setup() {
@@ -65,7 +69,7 @@ class UsuarioAPIControllerTest {
         mockMvc = MockMvcBuilders.standaloneSetup(controller)
             .setCustomArgumentResolvers(PageableHandlerMethodArgumentResolver())
             .setMessageConverters(JacksonJsonHttpMessageConverter(objectMapper))
-            .setControllerAdvice(UsuarioAPIExceptionHandler())
+            .setControllerAdvice(UsuarioAPIExceptionHandler(), GlobalAPIExceptionHandler())
             .build()
     }
 
@@ -220,7 +224,6 @@ class UsuarioAPIControllerTest {
     fun `deve atualizar usuario com sucesso`() {
         val id = UUID.randomUUID()
         val updateDTO = UsuarioUpdateDTO(
-            id = id,
             apelido = "updateduser",
             email = "updated@fatec.br",
             password = "NewPassword@123"
@@ -231,10 +234,10 @@ class UsuarioAPIControllerTest {
             email = "updated@fatec.br"
         )
 
-        `when`(usuarioService.update(any())).thenReturn(responseDTO)
+        `when`(usuarioService.update(any(), any())).thenReturn(responseDTO)
 
         mockMvc.perform(
-            put("/api/usuarios")
+            put("/api/usuarios/$id")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updateDTO))
         )
@@ -243,7 +246,89 @@ class UsuarioAPIControllerTest {
             .andExpect(jsonPath("$.apelido").value("updateduser"))
             .andExpect(jsonPath("$.email").value("updated@fatec.br"))
 
-        verify(usuarioService).update(updateDTO)
+        verify(usuarioService).update(id, updateDTO)
+    }
+
+    /**
+     * Verifica se a atualização de apelido com valor válido retorna `200 OK`
+     * e repassa os parâmetros ao serviço.
+     */
+    @Test
+    fun `deve atualizar apelido com sucesso`() {
+        val id = UUID.randomUUID()
+        val apelido = "novoapelido"
+        val responseDTO = UsuarioResponseDTO(
+            id = id,
+            apelido = apelido,
+            email = "test@fatec.br"
+        )
+
+        `when`(usuarioService.updateApelido(any(), any())).thenReturn(responseDTO)
+
+        mockMvc.perform(
+            patch("/api/usuarios/{id}/apelido/{apelido}", id, apelido)
+                .accept(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.id").value(id.toString()))
+            .andExpect(jsonPath("$.apelido").value(apelido))
+
+        verify(usuarioService).updateApelido(id, apelido)
+    }
+
+    /**
+     * Verifica se a atualização de apelido de um usuário inexistente retorna
+     * `404 Not Found`.
+     */
+    @Test
+    fun `deve retornar not found ao atualizar apelido de usuario inexistente`() {
+        val id = UUID.randomUUID()
+
+        `when`(usuarioService.updateApelido(any(), any()))
+            .thenThrow(UsuarioNotFoundException())
+
+        mockMvc.perform(
+            patch("/api/usuarios/{id}/apelido/{apelido}", id, "novoapelido")
+                .accept(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isNotFound)
+            .andExpect(jsonPath("$.error").value("Usuário não encontrado"))
+
+        verify(usuarioService).updateApelido(id, "novoapelido")
+    }
+
+    /**
+     * Verifica se um ID de usuário inválido na atualização de apelido retorna
+     * `400 Bad Request` sem acionar o serviço.
+     */
+    @Test
+    fun `deve retornar bad request ao atualizar apelido com ID invalido`() {
+        mockMvc.perform(
+            patch("/api/usuarios/{id}/apelido/{apelido}", "id-invalido", "novoapelido")
+                .accept(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.error").value("Parâmetro inválido"))
+
+        verify(usuarioService, never()).updateApelido(any(), any())
+    }
+
+    /**
+     * Verifica se um apelido fora do padrão retorna `400 Bad Request` sem
+     * acionar o serviço.
+     */
+    @Test
+    fun `deve retornar bad request ao atualizar apelido invalido`() {
+        val id = UUID.randomUUID()
+
+        mockMvc.perform(
+            patch("/api/usuarios/{id}/apelido/{apelido}", id, "ab")
+                .accept(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.error").value("Apelido de Usuário inválido."))
+
+        verify(usuarioService, never()).updateApelido(any(), any())
     }
 
     /**

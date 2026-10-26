@@ -13,18 +13,25 @@ import java.util.*
  * Repositório responsável pelo acesso e persistência das entidades [URLHistorico].
  *
  * Estende [JpaRepository] para operações CRUD padrão e fornece consultas
- * personalizadas por associação [UsuarioURL] e data/hora de acesso.
+ * personalizadas por associação [UsuarioURL], usuário e data/hora de acesso.
+ * As consultas derivadas por usuário atravessam a associação
+ * `usuarioUrl.usuario` da entidade.
+ *
+ * @see URLHistorico
+ * @see UsuarioURL
  */
 @Repository
 interface URLHistoricoRepository : JpaRepository<URLHistorico, UUID> {
 
     /**
-     * Busca histórico de URL associado a uma relação [UsuarioURL].
+     * Busca o histórico associado ao identificador de uma relação [UsuarioURL].
      *
-     * @param usuarioURL relação [UsuarioURL] critério de busca.
-     * @return [Optional] contendo a entidade encontrada ou vazio.
+     * @param usuarioUrlId identificador da associação [UsuarioURL] usada como
+     * critério de busca.
+     * @return [Optional] contendo a entidade encontrada ou vazio quando não
+     * existe histórico para a associação informada.
      */
-    fun findByUsuarioUrl(usuarioURL: UsuarioURL): Optional<URLHistorico>
+    fun findByUsuarioUrlId(usuarioUrlId: UUID): Optional<URLHistorico>
 
     /**
      * Busca histórico de URL pela data e hora do acesso com paginação.
@@ -34,4 +41,16 @@ interface URLHistoricoRepository : JpaRepository<URLHistorico, UUID> {
      * @return [Page] contendo as entidades encontradas.
      */
     fun findByDataHoraAcesso(dataHoraAcesso: LocalDateTime, pageable: Pageable): Page<URLHistorico>
+
+    /**
+     * Busca históricos de acesso pertencentes a um usuário, com paginação.
+     *
+     * A consulta é derivada a partir da associação `usuarioUrl.usuario`,
+     * permitindo localizar todos os acessos registrados para o usuário.
+     *
+     * @param usuarioId identificador único do usuário.
+     * @param pageable parâmetros de paginação e ordenação.
+     * @return [Page] contendo os históricos encontrados.
+     */
+    fun findByUsuarioId(usuarioId: UUID, pageable: Pageable): Page<URLHistorico>
 }

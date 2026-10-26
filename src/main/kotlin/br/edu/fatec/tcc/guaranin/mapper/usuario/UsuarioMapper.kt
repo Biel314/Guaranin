@@ -7,18 +7,18 @@ import br.edu.fatec.tcc.guaranin.model.Usuario
 import org.mapstruct.*
 
 /**
- * Mapper responsável pela conversão entre a entidade [Usuario] e seus respectivos DTOs.
+ * Mapper MapStruct para conversão entre a entidade [Usuario] e seus DTOs.
  *
- * A implementação desta interface é gerada automaticamente em tempo de compilação
- * pelo MapStruct (via kapt) e registrada como um bean Spring, graças a
- * `componentModel = "spring"`.
+ * A implementação é gerada em tempo de compilação pelo MapStruct via kapt e
+ * registrada como bean Spring por `componentModel = "spring"`. Destinos sem
+ * correspondência na origem são ignorados ([ReportingPolicy.IGNORE]) e
+ * propriedades nulas não sobrescrevem valores existentes
+ * ([NullValuePropertyMappingStrategy.IGNORE]).
  *
- * Campos do DTO de destino que não possuem correspondência na origem são
- * silenciosamente ignorados ([ReportingPolicy.IGNORE]), evitando warnings
- * de compilação para mapeamentos parciais intencionais (ex.: `id`, `password`).
- */
-/**
- * Mapper MapStruct para conversão entre entidade [Usuario] e DTOs.
+ * @see Usuario
+ * @see UsuarioCreateDTO
+ * @see UsuarioUpdateDTO
+ * @see UsuarioResponseDTO
  */
 @Mapper(
     componentModel = "spring",

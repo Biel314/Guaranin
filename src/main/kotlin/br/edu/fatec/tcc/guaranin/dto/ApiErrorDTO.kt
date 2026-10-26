@@ -5,9 +5,9 @@ import io.swagger.v3.oas.annotations.media.Schema
 /**
  * Envelope padrão de erro da API.
  *
- * Usado pelo [br.edu.fatec.tcc.guaranin.controller.usuario.UsuarioAPIExceptionHandler]
- * para respostas no formato `{"error": "..."}`. Mantém o contrato estável para
- * consumidores da API.
+ * Usado pelo [br.edu.fatec.tcc.guaranin.controller.GlobalAPIExceptionHandler] e
+ * pelos handlers de domínio das APIs para respostas no formato
+ * `{"error": "..."}`. Mantém o contrato estável para consumidores da API.
  *
  * Exemplo:
  * ```json
@@ -15,8 +15,9 @@ import io.swagger.v3.oas.annotations.media.Schema
  * ```
  *
  * @property error mensagem legível sobre o erro ocorrido.
- * @see br.edu.fatec.tcc.guaranin.controller.usuario.UsuarioAPIController
+ * @see br.edu.fatec.tcc.guaranin.controller.GlobalAPIExceptionHandler
  * @see br.edu.fatec.tcc.guaranin.controller.usuario.UsuarioAPIExceptionHandler
+ * @see br.edu.fatec.tcc.guaranin.controller.urlmonitorada.URLMonitoradaAPIExceptionHandler
  */
 @Schema(description = "Erro retornado pela API")
 data class ApiErrorDTO(

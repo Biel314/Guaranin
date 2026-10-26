@@ -1,6 +1,8 @@
 package br.edu.fatec.tcc.guaranin.dto.usuario
 
 import br.edu.fatec.tcc.guaranin.validation.RegexPatterns
+import br.edu.fatec.tcc.guaranin.validation.usuario.ValidEmail
+import br.edu.fatec.tcc.guaranin.validation.usuario.ValidSenha
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
@@ -13,7 +15,7 @@ import jakarta.validation.constraints.Size
  *
  * Os campos são validados com Jakarta Bean Validation antes da conversão
  * para entidade. Os padrões de apelido, e-mail e senha são centralizados
- * em [RegexPatterns].
+ * em [RegexPatterns] e aplicados também por [ValidEmail] e [ValidSenha].
  *
  * @property apelido apelido do usuário, com 3 a 26 caracteres.
  * @property email e-mail único do usuário, com até 254 caracteres.
@@ -42,20 +44,23 @@ data class UsuarioCreateDTO(
     )
     @field:NotBlank(message = "O e-mail é obrigatório")
     @field:Email(regexp = RegexPatterns.EMAIL, message = "Formato de e-mail inválido")
+    @field:ValidEmail
     @field:Size(max = 254, message = "O e-mail deve ter no máximo 254 caracteres")
     val email: String,
 
     @field:Schema(
         description = "Senha de acesso",
-        example = "usuario@123",
+        example = "Usuario@123",
         minLength = 8,
         maxLength = 72,
         accessMode = Schema.AccessMode.WRITE_ONLY
     )
+    @field:NotBlank(message = "A senha é obrigatória")
     @field:Size(min = 8, max = 72, message = "A senha deve ter entre 8 e 72 caracteres")
     @field:Pattern(
         regexp = RegexPatterns.SENHA,
         message = "A senha deve ter entre 8 e 72 caracteres e conter ao menos uma letra maiúscula, uma minúscula, um número e um caractere especial"
     )
+    @field:ValidSenha
     val password: String,
 ) {}

@@ -6,11 +6,12 @@ import jakarta.persistence.EntityNotFoundException
  * Exceção lançada quando uma entidade [br.edu.fatec.tcc.guaranin.model.URLMonitorada]
  * não é encontrada no repositório.
  *
- * Herda de [EntityNotFoundException] para mapeamento automático em respostas HTTP apropriadas.
+ * Herda de [EntityNotFoundException] e é convertida em resposta HTTP pelo
+ * [br.edu.fatec.tcc.guaranin.controller.urlmonitorada.URLMonitoradaAPIExceptionHandler].
  *
- * @property message mensagem descritiva do erro (padrão "URL not found").
+ * @property message mensagem descritiva do erro.
  */
 class URLMonitoradaNotFoundException(
-    message: String = "URL not found",
+    message: String = "URL monitorada não encontrada",
 ) : EntityNotFoundException(message) {
 }

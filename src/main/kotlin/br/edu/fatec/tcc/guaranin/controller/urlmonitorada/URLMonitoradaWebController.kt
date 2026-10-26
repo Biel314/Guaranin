@@ -2,7 +2,6 @@ package br.edu.fatec.tcc.guaranin.controller.urlmonitorada
 
 import br.edu.fatec.tcc.guaranin.dto.urlmonitorada.URLMonitoradaCreateDTO
 import br.edu.fatec.tcc.guaranin.dto.urlmonitorada.URLMonitoradaUpdateDTO
-import br.edu.fatec.tcc.guaranin.mapper.urlmonitorada.URLMonitoradaMapper
 import br.edu.fatec.tcc.guaranin.service.urlmonitorada.URLMonitoradaService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -25,8 +24,7 @@ import java.util.*
 @RequestMapping("/url-monitorado")
 @Tag(name = "URL Monitorado", description = "Endpoints web para gerenciamento e cadastro de URLs monitoradas")
 class URLMonitoradaWebController(
-    private val urlMonitoradaService: URLMonitoradaService,
-    private val urlMonitoradaMapper: URLMonitoradaMapper
+    private val urlMonitoradaService: URLMonitoradaService
 ) {
 
     /**
@@ -86,11 +84,11 @@ class URLMonitoradaWebController(
     ): String {
         val responseDTO = urlMonitoradaService.findById(id)
         val updateDTO = URLMonitoradaUpdateDTO(
-            id = responseDTO.id,
             link = responseDTO.link,
             ip = responseDTO.ip,
             padrao = responseDTO.padrao
         )
+        model.addAttribute("id", id)
         model.addAttribute("urlMonitoradaUpdateDTO", updateDTO)
         return "url-monitorado/editar"
     }
@@ -125,27 +123,30 @@ class URLMonitoradaWebController(
     /**
      * Processa a atualização de uma URL monitorada existente.
      *
+     * @param id Identificador único ([UUID]) da URL.
      * @param dto DTO contendo os dados de atualização ([URLMonitoradaUpdateDTO]).
      * @param result Resultado da validação bean validation.
      * @param model Modelo Thymeleaf.
      * @return Redirecionamento para listagem ou retorno ao formulário em caso de erro.
      */
-    @PutMapping("")
+    @PutMapping("/{id}")
     @Operation(summary = "Atualizar URL", description = "Valida e atualiza URL monitorada existente.")
     @ApiResponses(value = [
         ApiResponse(responseCode = "302", description = "URL atualizada com sucesso, redireciona para listagem"),
         ApiResponse(responseCode = "200", description = "Erro de validação, retorna ao formulário")
     ])
     fun atualizar(
+        @Parameter(description = "ID da URL monitorada") @PathVariable id: UUID,
         @Valid @ModelAttribute("urlMonitoradaUpdateDTO") dto: URLMonitoradaUpdateDTO,
         result: BindingResult,
         model: Model
     ): String {
         if (result.hasErrors()) {
+            model.addAttribute("id", id)
             model.addAttribute("errors", result.allErrors)
             return "url-monitorado/editar"
         }
-        urlMonitoradaService.update(dto)
+        urlMonitoradaService.update(id, dto)
         return "redirect:/url-monitorado"
     }
 
