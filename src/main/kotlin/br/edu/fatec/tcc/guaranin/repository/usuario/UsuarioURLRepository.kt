@@ -1,0 +1,57 @@
+package br.edu.fatec.tcc.guaranin.repository.usuario
+
+import br.edu.fatec.tcc.guaranin.model.URLMonitorada
+import br.edu.fatec.tcc.guaranin.model.Usuario
+import br.edu.fatec.tcc.guaranin.model.UsuarioURL
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
+import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.stereotype.Repository
+import java.util.*
+
+/**
+ * Repositório responsável pelo acesso e persistência das entidades [UsuarioURL].
+ *
+ * Estende [JpaRepository] e declara consultas derivadas por usuário, URL
+ * monitorada e tempo ativo mínimo.
+ *
+ * @see UsuarioURL
+ * @see Usuario
+ * @see URLMonitorada
+ */
+@Repository
+interface UsuarioURLRepository : JpaRepository<UsuarioURL, UUID> {
+
+    /**
+     * Busca associações de URL por ID do usuário com paginação.
+     *
+     * @param usuarioId identificador único do usuário.
+     * @param pageable parâmetros de paginação.
+     * @return [Page] contendo as associações encontradas.
+     */
+    fun findByUsuarioId(usuarioId: UUID, pageable: Pageable): Page<UsuarioURL>
+
+    /**
+     * Busca associações de URL por URL monitorada com paginação.
+     *
+     * @param urlMonitorada URL monitorada critério de busca.
+     * @param pageable parâmetros de paginação.
+     * @return [Page] contendo as associações encontradas.
+     */
+    fun findByUrlMonitorada(urlMonitorada: URLMonitorada, pageable: Pageable): Page<UsuarioURL>
+
+    /**
+     * Busca associações de URL por ID do usuário e tempo ativo mínimo com
+     * paginação.
+     *
+     * @param usuarioId identificador único do usuário.
+     * @param tempoAtivo tempo ativo mínimo.
+     * @param pageable parâmetros de paginação.
+     * @return [Page] contendo as associações encontradas.
+     */
+    fun findByUsuarioIdAndTempoAtivoGreaterThanEqual(
+        usuarioId: UUID,
+        tempoAtivo: Int,
+        pageable: Pageable
+    ): Page<UsuarioURL>
+}

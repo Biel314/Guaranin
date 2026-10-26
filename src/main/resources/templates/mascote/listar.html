@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Mascotes</title>
+</head>
+
+<body>
+
+<div class="box">
+    <h1>Mascotes</h1>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Nome</th>
+            <th>Nivel</th>
+            <th>Estado</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="mascote : ${mascotes}">
+            <td th:text="${mascote.nome}">https://example.com</td>
+            <td th:text="${mascote.nivel}">127.0.0.1</td>
+            <td th:text="${mascote.estado}">estado</td>
+            <td>
+                <button type="submit">
+                    <a th:href="@{/mascote/usuario/{usuarioId}/editar/{mascoteId}
+                    (usuarioId=${mascote.usuarioId},
+                    mascoteId=${mascote.id})}">Editar</a>
+                </button>
+                <button type="submit">
+                    <a th:href="@{/mascote/usuario/{usuarioId}/visualizar/{mascoteId}
+                    (usuarioId=${mascote.usuarioId},
+                    mascoteId=${mascote.id})}">
+                        Visualizar Informações
+                    </a>
+                </button>
+                <form th:if="${mascote.estado.name() != 'MORTO'}"
+                      th:action="@{/mascote/usuario/{usuarioId}/matar/{mascoteId}(usuarioId=${mascote.usuarioId},
+                       mascoteId=${mascote.id})}"
+                      method="post" style="display:inline">
+                    <button type="submit">Matar</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div class="bottom">
+   <button type="submit">
+       <a href="/usuario">Voltar para o Usuario</a>
+   </button>
+</div>
+<div th:if="${!possuiMascoteVivo}">
+    <form th:action="@{/mascote/usuario/{usuarioId}/novo(usuarioId=${usuarioId})}"
+          method="GET">
+        <button type="submit">
+            Novo Mascote
+        </button>
+    </form>
+</div>
+
+</body>
+</html>
