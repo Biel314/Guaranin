@@ -14,5 +14,7 @@ class AplicativoMonitoradoCreateDTO(
 
     val pacote: String,
 
-    val nome: String
+    val nome: String,
+
+    val padrao: Boolean
 )

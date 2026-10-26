@@ -25,7 +25,7 @@ class AplicativoHistorico (
     @Column(name="id_usuario_aplicativo", nullable = false)
     var usuarioAplicativo: UsuarioAplicativo,
 
-    @Column(name="data_hora_acesso", nullabe = true)
+    @Column(name="data_hora_acesso", nullable = true)
     var dataHoraAcesso: LocalDateTime
 
 ) {
