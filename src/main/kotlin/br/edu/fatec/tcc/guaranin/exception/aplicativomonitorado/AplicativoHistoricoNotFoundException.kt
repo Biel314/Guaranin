@@ -2,7 +2,7 @@ package br.edu.fatec.tcc.guaranin.exception.aplicativomonitorado
 
 import jakarta.persistence.EntityNotFoundException
 
-class AplicativoHistorico (
+class AplicativoHistoricoNotFoundException (
     message: String = "Historico de Aplicativo not found!"
     ) : EntityNotFoundException(message)
 {

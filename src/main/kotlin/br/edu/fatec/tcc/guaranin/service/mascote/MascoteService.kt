@@ -49,7 +49,6 @@ class MascoteService (
                 .orElseThrow { MascoteNotFoundException() }
         )
     }
-
     @Transactional(readOnly = true)
     fun findAllByUsuarioId(
         usuarioId: UUID,
