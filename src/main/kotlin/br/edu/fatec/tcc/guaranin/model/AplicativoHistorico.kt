@@ -8,6 +8,7 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.OneToOne
+import jakarta.persistence.PrimaryKeyJoinColumn
 import jakarta.persistence.Table
 import java.time.LocalDateTime
 import java.util.UUID
@@ -22,7 +23,6 @@ class AplicativoHistorico (
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_usuario_aplicativo", nullable = false)
-    @Column(name="id_usuario_aplicativo", nullable = false)
     var usuarioAplicativo: UsuarioAplicativo,
 
     @Column(name="data_hora_acesso", nullable = true)
