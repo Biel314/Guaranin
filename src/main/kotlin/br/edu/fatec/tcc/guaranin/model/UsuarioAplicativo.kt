@@ -7,7 +7,7 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
-import jakarta.persistence.OneToMany
+import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
 import java.util.UUID
 
@@ -19,11 +19,11 @@ class UsuarioAplicativo (
     @GeneratedValue(strategy = GenerationType.AUTO)
     var id: UUID? = null,
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_usuario", nullable = false)
     var usuario: Usuario,
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_aplicativo_monitorado", nullable = false)
     var aplicativoMonitorado: AplicativoMonitorado,
 
