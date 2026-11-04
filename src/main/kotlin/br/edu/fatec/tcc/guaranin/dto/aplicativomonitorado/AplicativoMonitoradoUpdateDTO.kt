@@ -17,9 +17,7 @@ class AplicativoMonitoradoUpdateDTO(
 
     val pacote: String,
 
-    val nome: String,
-
-    val padrao: Boolean
-)
+    val nome: String
+    )
 {
 }

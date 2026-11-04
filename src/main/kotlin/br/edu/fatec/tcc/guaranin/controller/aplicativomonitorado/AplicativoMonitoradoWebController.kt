@@ -70,7 +70,6 @@ class AplicativoMonitoradoWebController (
         val updateDTO = AplicativoMonitoradoUpdateDTO(
             pacote = responseDTO.pacote,
             nome = responseDTO.nome,
-            padrao = responseDTO.padrao
         )
         model.addAttribute("id", id)
         model.addAttribute("aplicativoMonitoradoUpdateDTO", updateDTO)
