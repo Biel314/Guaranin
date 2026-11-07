@@ -3,6 +3,7 @@ package br.edu.fatec.tcc.guaranin.service.usuario
 import br.edu.fatec.tcc.guaranin.dto.usuario.UsuarioCreateDTO
 import br.edu.fatec.tcc.guaranin.dto.usuario.UsuarioResponseDTO
 import br.edu.fatec.tcc.guaranin.dto.usuario.UsuarioUpdateDTO
+import br.edu.fatec.tcc.guaranin.exception.InvalidDTOException
 import br.edu.fatec.tcc.guaranin.exception.usuario.UsuarioNotFoundException
 import br.edu.fatec.tcc.guaranin.mapper.usuario.UsuarioMapper
 import br.edu.fatec.tcc.guaranin.model.Usuario
@@ -10,6 +11,7 @@ import br.edu.fatec.tcc.guaranin.repository.usuario.UsuarioRepository
 import br.edu.fatec.tcc.guaranin.validation.usuario.ValidApelido
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.validation.annotation.Validated
@@ -33,7 +35,7 @@ import java.util.*
 class UsuarioService(
     private val usuarioRepository: UsuarioRepository,
     private val usuarioMapper: UsuarioMapper,
-    //private val passwordEncoder: Encoder
+    private val passwordEncoder: PasswordEncoder
 ) {
 
     /**
@@ -75,8 +77,10 @@ class UsuarioService(
 
         val usuarioSalvo = usuarioRepository.save(usuario)
 
-        //TODO Define password criptography
-        //usuario.password = passwordEncoder.encode(usuario.password);
+        if (usuario.password.isEmpty())
+            throw InvalidDTOException()
+
+        usuario.password = passwordEncoder.encode(usuario.password).toString();
         return usuarioMapper.toResponseDTO(usuarioSalvo)
     }
 
@@ -92,11 +96,11 @@ class UsuarioService(
     fun update(id: UUID, usuarioUpdateDTO: UsuarioUpdateDTO): UsuarioResponseDTO {
         val usuario = usuarioRepository.findById(id)
             .orElseThrow { UsuarioNotFoundException() }
+
         usuarioMapper.updateEntityFromDTO(usuarioUpdateDTO, usuario)
 
         if (!usuarioUpdateDTO.password.isNullOrEmpty()) {
-            //TODO Define password criptography
-            // usuario.password = passwordEncoder.encode(usuarioUpdateDTO.password)
+            usuario.password = passwordEncoder.encode(usuarioUpdateDTO.password).toString()
         }
         return usuarioMapper.toResponseDTO(
             usuarioRepository.save(usuario)
