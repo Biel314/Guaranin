@@ -150,6 +150,6 @@ class GlobalAPIExceptionHandler {
     fun handleUnexpected(ex: Exception, request: HttpServletRequest): ResponseEntity<ApiErrorDTO> {
         log.error("Erro inesperado em {} {}", request.method, request.requestURI, ex)
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .body(ApiErrorDTO("Erro interno"))
+            .body(ApiErrorDTO(ex.localizedMessage))
     }
 }
