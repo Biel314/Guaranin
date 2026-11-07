@@ -52,5 +52,5 @@ interface URLHistoricoRepository : JpaRepository<URLHistorico, UUID> {
      * @param pageable parâmetros de paginação e ordenação.
      * @return [Page] contendo os históricos encontrados.
      */
-    fun findByUsuarioId(usuarioId: UUID, pageable: Pageable): Page<URLHistorico>
+    fun findByUsuarioUrlUsuarioId(usuarioId: UUID, pageable: Pageable): Page<URLHistorico>
 }

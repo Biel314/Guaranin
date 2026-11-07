@@ -83,7 +83,7 @@ class URLHistoricoService(
      */
     @Transactional(readOnly = true)
     fun findAllByUsuarioId(usuarioId: UUID, pageable: Pageable): Page<URLHistoricoResponseDTO> {
-        return urlHistoricoRepository.findByUsuarioId(usuarioId, pageable)
+        return urlHistoricoRepository.findByUsuarioUrlUsuarioId(usuarioId, pageable)
             .map { urlHistoricoMapper.toResponseDTO(it) }
     }
 
