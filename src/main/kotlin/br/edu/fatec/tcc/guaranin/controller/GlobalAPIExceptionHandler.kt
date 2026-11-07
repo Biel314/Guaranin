@@ -1,6 +1,8 @@
 package br.edu.fatec.tcc.guaranin.controller
 
 import br.edu.fatec.tcc.guaranin.dto.ApiErrorDTO
+import br.edu.fatec.tcc.guaranin.exception.APIKeyInvalidException
+import br.edu.fatec.tcc.guaranin.exception.APIKeyNotProvidedException
 import br.edu.fatec.tcc.guaranin.exception.InvalidDTOException
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.ConstraintViolationException
@@ -43,6 +45,30 @@ class GlobalAPIExceptionHandler {
     fun handleInvalidDTO(): ResponseEntity<ApiErrorDTO> {
         return ResponseEntity.badRequest()
             .body(ApiErrorDTO("DTO inválido ou ID ausente"))
+    }
+
+    /**
+     * Converte [APIKeyNotProvidedException] em `401 Unauthorized`.
+     *
+     * @param ex exceção com a mensagem de API key ausente.
+     * @return [ApiErrorDTO] com a mensagem da exceção.
+     */
+    @ExceptionHandler(APIKeyNotProvidedException::class)
+    fun handleAPIKeyNotProvided(ex: APIKeyNotProvidedException): ResponseEntity<ApiErrorDTO> {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+            .body(ApiErrorDTO(ex.localizedMessage))
+    }
+
+    /**
+     * Converte [APIKeyInvalidException] em `401 Unauthorized`.
+     *
+     * @param ex exceção com a mensagem de API key inválida.
+     * @return [ApiErrorDTO] com a mensagem da exceção.
+     */
+    @ExceptionHandler(APIKeyInvalidException::class)
+    fun handleAPIKeyInvalid(ex: APIKeyInvalidException): ResponseEntity<ApiErrorDTO> {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+            .body(ApiErrorDTO(ex.localizedMessage))
     }
 
     /**
@@ -150,6 +176,6 @@ class GlobalAPIExceptionHandler {
     fun handleUnexpected(ex: Exception, request: HttpServletRequest): ResponseEntity<ApiErrorDTO> {
         log.error("Erro inesperado em {} {}", request.method, request.requestURI, ex)
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .body(ApiErrorDTO(ex.localizedMessage))
+            .body(ApiErrorDTO("Erro interno"))
     }
 }
