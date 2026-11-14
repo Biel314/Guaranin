@@ -42,13 +42,12 @@ class ApiKeyInterceptor (private var redisTemplate: StringRedisTemplate
     ): Boolean {
         val apiKey = request.getHeader(HEADER_NAME)
 
-        if (apiKey == null || apiKey.isBlank() || !isValidApiKey(apiKey)) {
-            //System.out.println("API-Key= " +apiKey);
+        if (apiKey == null || apiKey.isBlank()) {
+            throw APIKeyNotProvidedException()
+        }
 
-            response.setStatus(HttpStatus.UNAUTHORIZED.value())
-            response.setContentType("application/json")
-            response.getWriter().write("{\"erro\":\"API Keyyyy inválida\"}")
-            return false
+        if (!isValidApiKey(apiKey)) {
+            throw APIKeyInvalidException()
         }
 
         return true
