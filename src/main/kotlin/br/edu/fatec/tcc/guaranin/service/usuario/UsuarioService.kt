@@ -75,12 +75,14 @@ class UsuarioService(
     fun create(usuarioCreateDTO: UsuarioCreateDTO): UsuarioResponseDTO {
         val usuario = usuarioMapper.toEntity(usuarioCreateDTO)
 
-        val usuarioSalvo = usuarioRepository.save(usuario)
-
         if (usuario.password.isEmpty())
             throw InvalidDTOException()
 
-        usuario.password = passwordEncoder.encode(usuario.password).toString();
+        usuario.password = requireNotNull(passwordEncoder.encode(usuario.password)) {
+            "Falha ao codificar a senha"
+        }
+        val usuarioSalvo = usuarioRepository.save(usuario)
+
         return usuarioMapper.toResponseDTO(usuarioSalvo)
     }
 
@@ -100,7 +102,9 @@ class UsuarioService(
         usuarioMapper.updateEntityFromDTO(usuarioUpdateDTO, usuario)
 
         if (!usuarioUpdateDTO.password.isNullOrEmpty()) {
-            usuario.password = passwordEncoder.encode(usuarioUpdateDTO.password).toString()
+            usuario.password = requireNotNull(passwordEncoder.encode(usuarioUpdateDTO.password)) {
+                "Falha ao codificar a senha"
+            }
         }
         return usuarioMapper.toResponseDTO(
             usuarioRepository.save(usuario)
