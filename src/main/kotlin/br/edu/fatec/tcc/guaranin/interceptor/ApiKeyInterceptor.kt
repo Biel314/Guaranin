@@ -4,8 +4,12 @@ import br.edu.fatec.tcc.guaranin.exception.APIKeyInvalidException
 import br.edu.fatec.tcc.guaranin.exception.APIKeyNotProvidedException
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.HandlerInterceptor
+import org.springframework.data.redis.core.StringRedisTemplate
+
+
 
 /**
  * Interceptor responsável por validar o header `X-API-KEY` das requisições.
@@ -20,50 +24,39 @@ import org.springframework.web.servlet.HandlerInterceptor
  * @see br.edu.fatec.tcc.guaranin.exception.APIException
  */
 @Component
-class ApiKeyInterceptor : HandlerInterceptor {
-    /** Caminhos públicos previstos para dispensa da validação da API key. */
-    val publicPaths: List<String> = mutableListOf(
-        "/public/**",
-        "/auth/login",
-        "/auth/register",
-        "/api/v1/produtos"
-    )
+class ApiKeyInterceptor (private var redisTemplate: StringRedisTemplate
+) : HandlerInterceptor {
 
-    /** Chaves de API aceitas pelo interceptor. */
-    val CHAVES_VALIDAS: Set<String> = mutableSetOf(
-        "cco123",
-        "azul123"
-    )
+    private val REDIS_KEY_PREFIX: String = "api:key:"
+    private val HEADER_NAME: String = "X-API-KEY"
 
-    /**
-     * Valida a API key antes da execução do handler.
-     *
-     * @param request requisição HTTP recebida.
-     * @param response resposta HTTP, não utilizada neste interceptor.
-     * @param handler handler que processará a requisição.
-     * @return `true` quando a API key é válida.
-     * @throws APIKeyNotProvidedException se o header `X-API-KEY` estiver ausente.
-     * @throws APIKeyInvalidException se a API key informada não for válida.
-     */
-    override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
-        var apiKey: String? = request.getHeader("X-API-KEY")
+    fun ApiKeyInterceptor(redisTemplate: StringRedisTemplate) {
+        this.redisTemplate = redisTemplate
+    }
 
-        if (apiKey == null)
-            throw APIKeyNotProvidedException()
+    @Throws(Exception::class)
+    override fun preHandle(
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+        handler: Any
+    ): Boolean {
+        val apiKey = request.getHeader(HEADER_NAME)
 
-        if (!isValidApiKey(apiKey))
-            throw APIKeyInvalidException()
+        if (apiKey == null || apiKey.isBlank() || !isValidApiKey(apiKey)) {
+            //System.out.println("API-Key= " +apiKey);
+
+            response.setStatus(HttpStatus.UNAUTHORIZED.value())
+            response.setContentType("application/json")
+            response.getWriter().write("{\"erro\":\"API Keyyyy inválida\"}")
+            return false
+        }
 
         return true
     }
 
-    /**
-     * Verifica se a API key informada está entre as chaves válidas.
-     *
-     * @param apiKey valor recebido no header `X-API-KEY`.
-     * @return `true` se a chave for válida; `false` caso contrário.
-     */
-    fun isValidApiKey(apiKey: String): Boolean {
-        return CHAVES_VALIDAS.contains(apiKey)
+    private fun isValidApiKey(apiKey: String?): Boolean {
+        //System.out.println("Chave= "+ redisTemplate.opsForValue().get("api:key"));
+        val existe: Boolean? = redisTemplate.hasKey(REDIS_KEY_PREFIX + apiKey)
+        return java.lang.Boolean.TRUE == existe
     }
 }
