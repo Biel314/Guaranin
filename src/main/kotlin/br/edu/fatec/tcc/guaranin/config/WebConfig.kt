@@ -23,7 +23,7 @@ class WebConfig(val apiKeyInterceptor: ApiKeyInterceptor) : WebMvcConfigurer {
      */
     override fun addInterceptors(registry: InterceptorRegistry) {
         registry.addInterceptor(apiKeyInterceptor)
-            .addPathPatterns("/**")
+            .addPathPatterns("/api/**")
             .excludePathPatterns("/**/public/**")
     }
 }
