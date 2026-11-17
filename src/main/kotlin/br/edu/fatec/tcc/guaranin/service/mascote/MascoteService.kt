@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.nio.file.AccessDeniedException
 import java.time.LocalDate
 import java.util.*
 
@@ -30,7 +31,6 @@ class MascoteService (
     private val usuarioRepository: UsuarioRepository,
     private val mascoteMapper: MascoteMapper,
 ) {
-
     @Transactional(readOnly = true)
     fun findById(id: UUID): MascoteResponseDTO {
         val mascote = mascoteRepository.findById(id)
@@ -49,6 +49,13 @@ class MascoteService (
                 .orElseThrow { MascoteNotFoundException() }
         )
     }
+
+    @Transactional(readOnly = true)
+    fun findAllByUsuarioIdAndNomeContainingIgnoreCase(usuarioId: UUID, nome: String, pageable: Pageable): Page<MascoteResponseDTO> {
+        return mascoteRepository.findAllByUsuarioIdAndNomeContainingIgnoreCase(usuarioId, nome, pageable)
+            .map { mascoteMapper.toResponseDTO(it) }
+    }
+
     @Transactional(readOnly = true)
     fun findAllByUsuarioId(
         usuarioId: UUID,

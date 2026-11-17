@@ -28,6 +28,8 @@ interface MascoteRepository : JpaRepository<Mascote, UUID> {
 
     fun findByNome(nome: String?): Optional<Mascote>
 
+    fun findAllByUsuarioIdAndNomeContainingIgnoreCase(usuarioId: UUID, nome: String, pageable: Pageable): Page<Mascote>
+
     fun findByUsuarioId(usuarioId: UUID): Optional<Mascote>
 
     fun findByUsuarioId(usuarioId: UUID, pageable: Pageable): Page<Mascote>
