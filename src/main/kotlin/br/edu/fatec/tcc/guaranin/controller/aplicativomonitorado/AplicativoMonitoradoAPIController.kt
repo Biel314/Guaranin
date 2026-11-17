@@ -30,7 +30,7 @@ import java.util.*
  * ao [AplicativoMonitoradoService].
  */
 @RestController
-@RequestMapping("/api/usuarios/{usuarioId}/aplicativos-monitorados")
+@RequestMapping("/api/v1/usuarios/{usuarioId}/aplicativos-monitorados")
 @Tag(name = "Aplicativo Monitorado", description = "Operações REST para gerenciamento de AplicativoMonitorado")
 class AplicativoMonitoradoAPIController (
     private val aplicativoMonitoradoService: AplicativoMonitoradoService
@@ -95,7 +95,7 @@ class AplicativoMonitoradoAPIController (
      */
     @GetMapping("")
     @Operation(
-        summary = "Buscar Aplicativo monitorado por nome",
+        summary = "Buscar Aplicativo monitorado por nome, ou se vazio, busca todos os aplicativos",
         description = "Retorna os dados do Aplicativo Monitorado"
     )
     @ApiResponses(
@@ -123,7 +123,6 @@ class AplicativoMonitoradoAPIController (
         ]
     )
     fun buscarPorNome(
-        @NotBlank
         @Parameter(
             description = "Nome do AplicativoMonitorado",
             example = "Instagram"
