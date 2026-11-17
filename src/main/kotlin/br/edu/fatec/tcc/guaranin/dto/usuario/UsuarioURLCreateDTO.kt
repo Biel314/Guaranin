@@ -11,17 +11,12 @@ import java.util.*
  * Os identificadores são resolvidos para entidades pelo service antes da
  * persistência. Quantidade de acessos e tempo ativo não podem ser negativos.
  *
- * @property usuarioId identificador do usuário associado; obrigatório.
  * @property urlMonitoradaId identificador da URL monitorada associada;
  * obrigatório.
  * @property qtdAcesso quantidade de acessos; deve ser maior ou igual a zero.
  * @property tempoAtivo tempo ativo em segundos; deve ser maior ou igual a zero.
  */
 data class UsuarioURLCreateDTO(
-
-    @field:NotNull(message = "O ID do usuário é obrigatório")
-    val usuarioId: UUID,
-
     @field:NotNull(message = "O ID da URL monitorada é obrigatório")
     val urlMonitoradaId: UUID,
 
@@ -32,4 +27,4 @@ data class UsuarioURLCreateDTO(
     @field:NotNull(message = "O tempo ativo é obrigatório")
     @field:Min(value = 0, message = "O tempo ativo deve ser maior ou igual a zero")
     val tempoAtivo: Int = 0
-) {}
+)

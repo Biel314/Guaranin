@@ -236,7 +236,7 @@ class UsuarioURLAPIController(
      * @throws br.edu.fatec.tcc.guaranin.exception.usuario.UsuarioNotFoundException se o usuário não existir.
      * @throws br.edu.fatec.tcc.guaranin.exception.urlmonitorada.URLMonitoradaNotFoundException se a URL não existir.
      */
-    @PostMapping("")
+    @PostMapping("/usuario/{id}")
     @Operation(
         summary = "Criar associação",
         description = "Cria uma associação entre usuário e URL monitorada e retorna 201."
@@ -266,10 +266,15 @@ class UsuarioURLAPIController(
         ]
     )
     fun criar(
+        @Parameter(
+            description = "ID do Usuário",
+            example = "550e8400-e29b-41d4-a716-446655440000"
+        )
+        @PathVariable id: UUID,
         @Valid @RequestBody dto: UsuarioURLCreateDTO
     ): ResponseEntity<UsuarioURLResponseDTO> {
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(usuarioURLService.create(dto))
+            .body(usuarioURLService.create(id, dto))
     }
 
     /**

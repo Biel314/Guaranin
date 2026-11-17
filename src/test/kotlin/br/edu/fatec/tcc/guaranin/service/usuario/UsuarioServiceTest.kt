@@ -8,7 +8,8 @@ import br.edu.fatec.tcc.guaranin.repository.usuario.UsuarioRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.*
-import java.util.UUID
+import org.springframework.security.crypto.password.PasswordEncoder
+import java.util.*
 
 /**
  * Testes unitários de [UsuarioService], com repositório e mapper mockados.
@@ -17,7 +18,8 @@ class UsuarioServiceTest {
 
     private val usuarioRepository = mock(UsuarioRepository::class.java)
     private val usuarioMapper = mock(UsuarioMapper::class.java)
-    private val service = UsuarioService(usuarioRepository, usuarioMapper)
+    private val passwordEncoder = mock(PasswordEncoder::class.java)
+    private val service = UsuarioService(usuarioRepository, usuarioMapper, passwordEncoder)
 
     /**
      * Verifica se a criação persiste a entidade uma única vez e retorna o DTO
@@ -48,6 +50,7 @@ class UsuarioServiceTest {
         )
 
         `when`(usuarioMapper.toEntity(createDTO)).thenReturn(entity)
+        `when`(passwordEncoder.encode("Password@123")).thenReturn("encoded-password")
         `when`(usuarioRepository.save(entity)).thenReturn(savedEntity)
         `when`(usuarioMapper.toResponseDTO(savedEntity)).thenReturn(responseDTO)
 
