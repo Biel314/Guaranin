@@ -4,8 +4,12 @@ import br.edu.fatec.tcc.guaranin.dto.aplicativomonitorado.AplicativoMonitoradoCr
 import br.edu.fatec.tcc.guaranin.dto.aplicativomonitorado.AplicativoMonitoradoResponseDTO
 import br.edu.fatec.tcc.guaranin.dto.aplicativomonitorado.AplicativoMonitoradoUpdateDTO
 import br.edu.fatec.tcc.guaranin.exception.aplicativomonitorado.AplicativoMonitoradoNotFoundException
+import br.edu.fatec.tcc.guaranin.exception.usuario.UsuarioNotFoundException
 import br.edu.fatec.tcc.guaranin.mapper.aplicativomonitorado.AplicativoMonitoradoMapper
+import br.edu.fatec.tcc.guaranin.model.UsuarioAplicativo
 import br.edu.fatec.tcc.guaranin.repository.aplicativomonitorado.AplicativoMonitoradoRepository
+import br.edu.fatec.tcc.guaranin.repository.usuario.UsuarioAplicativoRepository
+import br.edu.fatec.tcc.guaranin.repository.usuario.UsuarioRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -35,6 +39,8 @@ import java.util.UUID
 @Service
 class AplicativoMonitoradoService(
     private val aplicativoMonitoradoRepository: AplicativoMonitoradoRepository,
+    private val usuarioAplicativoRepository: UsuarioAplicativoRepository,
+    private val usuarioRepository: UsuarioRepository,
     private val aplicativoMonitoradoMapper: AplicativoMonitoradoMapper
 ) {
     /**
@@ -46,10 +52,22 @@ class AplicativoMonitoradoService(
      * @param dto dados utilizados para criação do aplicativo monitorado.
      * @return aplicativo criado e persistido.
      */
-    fun create(dto: AplicativoMonitoradoCreateDTO): AplicativoMonitoradoResponseDTO {
+    fun create(usuarioId: UUID, dto: AplicativoMonitoradoCreateDTO): AplicativoMonitoradoResponseDTO {
         val aplicativoMonitorado = aplicativoMonitoradoMapper.toEntity(dto)
 
+        val usuario = usuarioRepository.findById(usuarioId)
+            .orElseThrow { UsuarioNotFoundException() }
+
         val aplicativoMonitoradoSalvo = aplicativoMonitoradoRepository.save(aplicativoMonitorado)
+
+        // Salva na associativa
+
+        usuarioAplicativoRepository.save(
+            UsuarioAplicativo(
+                usuario = usuario,
+                aplicativoMonitorado = aplicativoMonitoradoSalvo,
+            )
+        )
 
         return aplicativoMonitoradoMapper.toResponseDTO(aplicativoMonitoradoSalvo)
     }
@@ -129,6 +147,11 @@ class AplicativoMonitoradoService(
         return aplicativoMonitoradoMapper.toResponseDTO(aplicativoMonitorado)
     }
 
+    fun findAllByNomeContainingIgnoreCase(nome: String, page: Pageable): Page<AplicativoMonitoradoResponseDTO> {
+        return aplicativoMonitoradoRepository.findAllByNomeContainingIgnoreCase(nome, page)
+            .map { aplicativoMonitoradoMapper.toResponseDTO(it) }
+    }
+
     /**
      * Busca um aplicativo monitorado pelo nome do pacote.
      *
@@ -150,9 +173,14 @@ class AplicativoMonitoradoService(
      * @param pageable parâmetros de paginação e ordenação.
      * @return página contendo os aplicativos monitorados encontrados.
      */
-    fun findAll(pageable: Pageable): Page<AplicativoMonitoradoResponseDTO> {
-        return aplicativoMonitoradoRepository.findAll(pageable)
-            .map { aplicativoMonitoradoMapper.toResponseDTO(it) }
+    fun findAllByUsuarioId(usuarioId: UUID, pageable: Pageable): Page<AplicativoMonitoradoResponseDTO> {
+        return usuarioAplicativoRepository
+            .findAllByUsuarioId(usuarioId, pageable)
+            .map { usuarioAplicativo ->
+                aplicativoMonitoradoMapper.toResponseDTO(
+                    usuarioAplicativo.aplicativoMonitorado
+                )
+            }
     }
 
     /**

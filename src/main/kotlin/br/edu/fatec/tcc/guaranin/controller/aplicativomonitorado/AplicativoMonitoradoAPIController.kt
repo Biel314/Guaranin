@@ -30,38 +30,11 @@ import java.util.*
  * ao [AplicativoMonitoradoService].
  */
 @RestController
-@RequestMapping("/api/aplicativomonitorado")
+@RequestMapping("/api/usuarios/{usuarioId}/aplicativos-monitorados")
 @Tag(name = "Aplicativo Monitorado", description = "Operações REST para gerenciamento de AplicativoMonitorado")
 class AplicativoMonitoradoAPIController (
     private val aplicativoMonitoradoService: AplicativoMonitoradoService
 ) {
-    /**
-     * Lista Aplicativos monitorados de forma paginada.
-     *
-     * @param pageable parâmetros de paginação e ordenação.
-     * @return página de Aplicativos monitorados.
-     */
-    @GetMapping("")
-    @Operation(
-        summary = "Listar Aplicativos monitorados",
-        description = "Retorna uma página de Aplicativos monitorados com paginação e ordenação"
-    )
-    @ApiResponses(
-        value = [
-            ApiResponse(
-                responseCode = "200",
-                description = "Página de Aplicativos Monitorados retornada com sucesso"
-            ),
-            ApiResponse(
-                responseCode = "500",
-                description = "Erro Interno",
-                content = [Content(schema = Schema(implementation = ApiErrorDTO::class))]
-            )
-        ]
-    )
-    fun listarTodos(@ParameterObject pageable: Pageable): Page<AplicativoMonitoradoResponseDTO> {
-        return aplicativoMonitoradoService.findAll(pageable)
-    }
 
     /**
      * Busca um AplicativoMonitorado pelo identificador.
@@ -71,7 +44,7 @@ class AplicativoMonitoradoAPIController (
      * @throws br.edu.fatec.tcc.guaranin.exception.aplicativomonitorado.AplicativoMonitoradoNotFoundException
      * quando o Aplicativo não existe.
      */
-    @GetMapping("/{id}")
+    @GetMapping("/{aplicativoId}")
     @Operation(
         summary = "Buscar Aplicativo monitorado por ID",
         description = "Retorna os dados do Aplicativo monitorado"
@@ -105,13 +78,13 @@ class AplicativoMonitoradoAPIController (
             description = "ID do Aplicativo Monitorado",
             example = "550e8400-e29b-41d4-a716-446655440000"
         )
-        @PathVariable id: UUID
+        @PathVariable aplicativoId: UUID
     ): AplicativoMonitoradoResponseDTO {
-        return aplicativoMonitoradoService.findById(id)
+        return aplicativoMonitoradoService.findById(aplicativoId)
     }
 
     /**
-     * Busca um Aplicativo monitorado pelo nome informado.
+     * Busca um Aplicativo monitorado pelo nome informado, ou busca todos os aplicativos
      *
      * O nome é normalizado antes da consulta pelo [AplicativoMonitoradoService].
      *
@@ -120,9 +93,9 @@ class AplicativoMonitoradoAPIController (
      * @throws br.edu.fatec.tcc.guaranin.exception.aplicativomonitorado.AplicativoMonitoradoNotFoundException
      * quando o Aplicativo não existe.
      */
-    @GetMapping("/nome")
+    @GetMapping("")
     @Operation(
-        summary = "Buscar Aplicativo monitorada por nome",
+        summary = "Buscar Aplicativo monitorado por nome",
         description = "Retorna os dados do Aplicativo Monitorado"
     )
     @ApiResponses(
@@ -155,9 +128,19 @@ class AplicativoMonitoradoAPIController (
             description = "Nome do AplicativoMonitorado",
             example = "Instagram"
         )
-        @RequestParam nome: String
-    ): AplicativoMonitoradoResponseDTO {
-        return aplicativoMonitoradoService.findByNome(nome)
+        @PathVariable usuarioId: UUID,
+        @RequestParam(required = false)
+        nome: String?,
+        page: Pageable
+    ): Page<AplicativoMonitoradoResponseDTO> {
+
+        if (nome != null) {
+            return aplicativoMonitoradoService.findAllByNomeContainingIgnoreCase(nome, page)
+        }
+        else {
+            return aplicativoMonitoradoService.findAllByUsuarioId(usuarioId, page)
+        }
+
     }
 
     /**
@@ -191,10 +174,11 @@ class AplicativoMonitoradoAPIController (
         ]
     )
     fun criar(
+        @PathVariable usuarioId: UUID,
         @Valid @RequestBody dto: AplicativoMonitoradoCreateDTO
     ): ResponseEntity<AplicativoMonitoradoResponseDTO> {
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(aplicativoMonitoradoService.create(dto))
+            .body(aplicativoMonitoradoService.create(usuarioId, dto))
     }
 
     /**
@@ -208,7 +192,7 @@ class AplicativoMonitoradoAPIController (
      * @throws br.edu.fatec.tcc.guaranin.exception.aplicativomonitorado.AplicativoMonitoradoNotFoundException
      * quando o Aplicativo Monitorado não existe.
      */
-    @PutMapping("/{id}")
+    @PutMapping("/{aplicativoId}")
     @Operation(
         summary = "Atualizar Aplicativo monitorado",
         description = "Atualizar Aplicativo monitorado"
@@ -242,10 +226,10 @@ class AplicativoMonitoradoAPIController (
             description = "Id do Aplicativo Monitorado",
             example = "550e8400-e29b-41d4-a716-446655440000"
         )
-        @PathVariable id: UUID,
+        @PathVariable aplicativoId: UUID,
         @Valid @RequestBody dto: AplicativoMonitoradoUpdateDTO
     ): AplicativoMonitoradoResponseDTO {
-        return aplicativoMonitoradoService.update(id, dto)
+        return aplicativoMonitoradoService.update(aplicativoId, dto)
     }
 
     /**
@@ -255,7 +239,7 @@ class AplicativoMonitoradoAPIController (
      * @throws br.edu.fatec.tcc.guaranin.exception.aplicativomonitorado.AplicativoMonitoradoNotFoundException
      * quando o AplicativoMonitorado não existe.
      */
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{aplicativoId}")
     @Operation(
         summary = "Remover Aplicativo monitorado",
         description = "Remover Aplicativo monitorado e retorna 204 sem corpo"
@@ -287,9 +271,9 @@ class AplicativoMonitoradoAPIController (
             description = "Id do AplicativoMonitorado",
             example = "550e8400-e29b-41d4-a716-446655440000"
         )
-        @PathVariable id: UUID
+        @PathVariable aplicativoId: UUID
     ): ResponseEntity<Void> {
-        aplicativoMonitoradoService.delete(id)
+        aplicativoMonitoradoService.delete(aplicativoId)
         return ResponseEntity.noContent().build()
     }
 }

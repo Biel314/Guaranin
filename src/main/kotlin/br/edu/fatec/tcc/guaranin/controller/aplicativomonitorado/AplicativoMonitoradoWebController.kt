@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import java.util.UUID
 
 @Controller
-@RequestMapping("/aplicativo-monitorado")
+@RequestMapping("usuario/{usuarioId}/aplicativo-monitorado")
 @Tag(name = "Aplicativo Monitorado", description = "Endpoints web para gerenciamento e cadastro de Aplicativos monitorados")
 class AplicativoMonitoradoWebController (
     private val aplicativoMonitoradoService : AplicativoMonitoradoService
@@ -35,10 +35,11 @@ class AplicativoMonitoradoWebController (
             ApiResponse(responseCode = "200", description = "Listagem carregada com sucesso"),
         ])
     fun listarTodos(
+        @PathVariable usuarioId: UUID,
         model: Model,
         pageable: Pageable
     ): String {
-        val page = aplicativoMonitoradoService.findAll(pageable)
+        val page = aplicativoMonitoradoService.findAllByUsuarioId(usuarioId, pageable)
         model.addAttribute("aplicativos", page.content)
         model.addAttribute("page", page)
         return "aplicativo-monitorado/"
@@ -84,6 +85,7 @@ class AplicativoMonitoradoWebController (
     ])
     fun salvar(
         @Valid @ModelAttribute("form") dto: AplicativoMonitoradoCreateDTO,
+        @PathVariable usuarioId: UUID,
         result: BindingResult,
         model: Model
     ): String {
@@ -91,41 +93,41 @@ class AplicativoMonitoradoWebController (
             model.addAttribute("errors", result.allErrors)
             return "aplicativo-monitorado/novo"
         }
-        aplicativoMonitoradoService.create(dto)
+        aplicativoMonitoradoService.create(usuarioId, dto)
         return "redirect:/aplicativo-monitorado"
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{aplicativoId}")
     @Operation(summary = "Atualizar Aplicativo", description = "Valida e atualiza Aplicativo monitorado existente.")
     @ApiResponses(value = [
         ApiResponse(responseCode = "302", description = "Aplicativo atualizado com sucesso, redirecionando para listagem"),
         ApiResponse(responseCode = "200", description = "Erro de validação, retornando ao formulário")
     ])
     fun atualizar(
-        @Parameter(description = "ID Aplicativo monitorado") @PathVariable id: UUID,
+        @Parameter(description = "ID Aplicativo monitorado") @PathVariable aplicativoId: UUID,
         @Valid @ModelAttribute("form") dto: AplicativoMonitoradoUpdateDTO,
         result: BindingResult,
         model: Model
     ): String {
         if (result.hasErrors()) {
-            model.addAttribute("id", id)
+            model.addAttribute("aplicativoId", aplicativoId)
             model.addAttribute("errors", result.allErrors)
             return "aplicativo-monitorado/editar"
         }
-        aplicativoMonitoradoService.update(id, dto)
+        aplicativoMonitoradoService.update(aplicativoId, dto)
         return "redirect:/aplicativo-monitorado"
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{aplicativoId}")
     @Operation(summary = "Deletar Aplicativo", description = "Remove Aplicativo monitorado do sistema.")
     @ApiResponses(value = [
         ApiResponse(responseCode = "302", description = "Aplicativo removido com sucesso, redirecionando para listagem"),
         ApiResponse(responseCode = "404", description = "Aplicativo monitorado não encontrado")
     ])
     fun deletar(
-        @Parameter(description = "ID Aplicativo monitorado") @PathVariable id: UUID
+        @Parameter(description = "ID Aplicativo monitorado") @PathVariable aplicativoId: UUID
     ): String {
-        aplicativoMonitoradoService.delete(id)
+        aplicativoMonitoradoService.delete(aplicativoId)
         return "redirect:/aplicativo-monitorado"
     }
 

@@ -47,6 +47,7 @@ interface UsuarioAplicativoRepository : JpaRepository<UsuarioAplicativo, UUID> {
         pageable: Pageable
     ): Page<UsuarioAplicativo>
 
+
     /**
      * Busca todas as associações pertencentes ao usuário informado.
      *

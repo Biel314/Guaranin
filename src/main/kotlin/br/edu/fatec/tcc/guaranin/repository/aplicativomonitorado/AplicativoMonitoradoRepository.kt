@@ -1,7 +1,6 @@
 package br.edu.fatec.tcc.guaranin.repository.aplicativomonitorado
 
 import br.edu.fatec.tcc.guaranin.model.AplicativoMonitorado
-import br.edu.fatec.tcc.guaranin.model.URLHistorico
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
@@ -73,7 +72,8 @@ interface AplicativoMonitoradoRepository : JpaRepository<AplicativoMonitorado, U
      * @param pageable parâmetros de paginação.
      * @return [Page] contendo os aplicativos encontra.
      */
-    fun findAllByNomeContainingIgnoreCase(nome: String, pageable: Pageable): Page<URLHistorico>
+    fun findAllByNomeContainingIgnoreCase(nome: String, pageable: Pageable): Page<AplicativoMonitorado>
+
 
     /**
      * Busca todos os aplicativos marcados como padrão.
