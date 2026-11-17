@@ -1,0 +1,277 @@
+package br.edu.fatec.tcc.guaranin.controller.mascote
+
+import br.edu.fatec.tcc.guaranin.dto.ApiErrorDTO
+import br.edu.fatec.tcc.guaranin.dto.mascote.MascoteCreateDTO
+import br.edu.fatec.tcc.guaranin.dto.mascote.MascoteResponseDTO
+import br.edu.fatec.tcc.guaranin.dto.mascote.MascoteUpdateDTO
+import br.edu.fatec.tcc.guaranin.service.mascote.MascoteService
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.tags.Tag
+import jakarta.validation.Valid
+import jakarta.validation.constraints.NotBlank
+import org.springdoc.core.annotations.ParameterObject
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.*
+import java.util.*
+
+/**
+ * Controller REST para gerenciamento de
+ * [br.edu.fatec.tcc.guaranin.model.Mascote].
+ *
+ * Expõe operações CRUD em `/api/v1/mascotes` e delega as regras de negócio
+ * ao [MascoteService].
+ */
+@RestController
+@RequestMapping("/api/v1/usuarios/{usuarioId}/mascotes")
+@Tag(name = "Mascotes", description = "Operações REST para gerenciamento de Mascotes")
+class MascoteAPIController (
+    private val mascoteService: MascoteService
+) {
+    /**
+     * Busca um AplicativoMonitorado pelo identificador.
+     *
+     * @param id identificador único do AplicativoMonitorado.
+     * @return dados do AplicativoMonitorado encontrado.
+     * @throws br.edu.fatec.tcc.guaranin.exception.aplicativomonitorado.AplicativoMonitoradoNotFoundException
+     * quando o Aplicativo não existe.
+     */
+    @GetMapping("/{aplicativoId}")
+    @Operation(
+        summary = "Buscar Aplicativo monitorado por ID",
+        description = "Retorna os dados do Aplicativo monitorado"
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Aplicativo monitorado encontrado com sucesso",
+                content = [Content(schema = Schema(implementation = AplicativoMonitoradoResponseDTO::class))]
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "ID do Aplicativo monitorado inválido",
+                content = [Content(schema = Schema(implementation = ApiErrorDTO::class))]
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Aplicativo monitorado Não encontrada",
+                content = [Content(schema = Schema(implementation = ApiErrorDTO::class))]
+            ),
+            ApiResponse(
+                responseCode = "500",
+                description = "Erro interno",
+                content = [Content(schema = Schema(implementation = ApiErrorDTO::class))]
+            )
+        ]
+    )
+    fun buscarPorId(
+        @Parameter(
+            description = "ID do Aplicativo Monitorado",
+            example = "550e8400-e29b-41d4-a716-446655440000"
+        )
+        @PathVariable aplicativoId: UUID
+    ): AplicativoMonitoradoResponseDTO {
+        return aplicativoMonitoradoService.findById(aplicativoId)
+    }
+
+    /**
+     * Busca um Aplicativo monitorado pelo nome informado, ou busca todos os aplicativos
+     *
+     * O nome é normalizado antes da consulta pelo [AplicativoMonitoradoService].
+     *
+     * @param nome do Aplicativo monitorado.
+     * @return dados do Aplicativo monitorado encontrado.
+     * @throws br.edu.fatec.tcc.guaranin.exception.aplicativomonitorado.AplicativoMonitoradoNotFoundException
+     * quando o Aplicativo não existe.
+     */
+    @GetMapping("")
+    @Operation(
+        summary = "Buscar Aplicativo monitorado por nome, ou se vazio, busca todos os aplicativos",
+        description = "Retorna os dados do Aplicativo Monitorado"
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Aplicativo monitorado encontrado com sucesso",
+                content = [Content(schema = Schema(implementation = AplicativoMonitoradoResponseDTO::class))]
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Nome do Aplicativo monitorado inválido",
+                content = [Content(schema = Schema(implementation = ApiErrorDTO::class))]
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Aplicativo Monitorado não encontrado",
+                content = [Content(schema = Schema(implementation = ApiErrorDTO::class))]
+            ),
+            ApiResponse(
+                responseCode = "500",
+                description = "Erro interno",
+                content = [Content(schema = Schema(implementation = ApiErrorDTO::class))]
+            )
+        ]
+    )
+    fun buscarPorNome(
+        @Parameter(
+            description = "Nome do AplicativoMonitorado",
+            example = "Instagram"
+        )
+        @PathVariable usuarioId: UUID,
+        @RequestParam(required = false)
+        nome: String?,
+        page: Pageable
+    ): Page<AplicativoMonitoradoResponseDTO> {
+
+        if (nome != null) {
+            return aplicativoMonitoradoService.findAllByNomeContainingIgnoreCase(nome, page)
+        }
+        else {
+            return aplicativoMonitoradoService.findAllByUsuarioId(usuarioId, page)
+        }
+
+    }
+
+    /**
+     * Cria um AplicativoMonitorado.
+     *
+     * @param dto dados do Aplicativo a ser criada.
+     * @return resposta `201 Created` com a Aplicativo persistido.
+     */
+    @PostMapping("")
+    @Operation(
+        summary = "Criar Aplicativo monitorado",
+        description = "Cria uma Aplicativo monitorado e retorna 201 com os dados."
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "201",
+                description = "Aplicativo monitorado criado com sucesso",
+                content = [Content(schema = Schema(implementation = AplicativoMonitoradoResponseDTO::class))]
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Dados inválidos",
+                content = [Content(schema = Schema(implementation = ApiErrorDTO::class))]
+            ),
+            ApiResponse(
+                responseCode = "500",
+                description = "Erro interno",
+                content = [Content(schema = Schema(implementation = ApiErrorDTO::class))]
+            )
+        ]
+    )
+    fun criar(
+        @PathVariable usuarioId: UUID,
+        @Valid @RequestBody dto: AplicativoMonitoradoCreateDTO
+    ): ResponseEntity<AplicativoMonitoradoResponseDTO> {
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(aplicativoMonitoradoService.create(usuarioId, dto))
+    }
+
+    /**
+     * Atualiza parcialmente um AplicativoMonitorado.
+     *
+     * Campos nulos no DTO preservam os valores atuais da entidade.
+     *
+     * @param id identificador único do Aplicativo Monitorado.
+     * @param dto dados a serem atualizados.
+     * @return dados da Aplicativo Monitorado após a atualização.
+     * @throws br.edu.fatec.tcc.guaranin.exception.aplicativomonitorado.AplicativoMonitoradoNotFoundException
+     * quando o Aplicativo Monitorado não existe.
+     */
+    @PutMapping("/{aplicativoId}")
+    @Operation(
+        summary = "Atualizar Aplicativo monitorado",
+        description = "Atualizar Aplicativo monitorado"
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Aplicativo monitorado atualizado com sucesso",
+                content = [Content(schema = Schema(implementation = AplicativoMonitoradoResponseDTO::class))]
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Dados inválidos ou ID inválido",
+                content = [Content(schema = Schema(implementation = ApiErrorDTO::class))]
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "AplicativoMonitorado Não encontrado",
+                content = [Content(schema = Schema(implementation = ApiErrorDTO::class))]
+            ),
+            ApiResponse(
+                responseCode = "500",
+                description = "Erro interno",
+                content = [Content(schema = Schema(implementation = ApiErrorDTO::class))]
+            )
+        ]
+    )
+    fun atualizar(
+        @Parameter(
+            description = "Id do Aplicativo Monitorado",
+            example = "550e8400-e29b-41d4-a716-446655440000"
+        )
+        @PathVariable aplicativoId: UUID,
+        @Valid @RequestBody dto: AplicativoMonitoradoUpdateDTO
+    ): AplicativoMonitoradoResponseDTO {
+        return aplicativoMonitoradoService.update(aplicativoId, dto)
+    }
+
+    /**
+     * Remove um AplicativoMonitorado.
+     *
+     * @param id identificador único do AplicativoMonitorado.
+     * @throws br.edu.fatec.tcc.guaranin.exception.aplicativomonitorado.AplicativoMonitoradoNotFoundException
+     * quando o AplicativoMonitorado não existe.
+     */
+    @DeleteMapping("/{aplicativoId}")
+    @Operation(
+        summary = "Remover Aplicativo monitorado",
+        description = "Remover Aplicativo monitorado e retorna 204 sem corpo"
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "204",
+                description = "Aplicativo monitorado removido com sucesso",
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Id do AplicativoMonitorado inválido",
+                content = [Content(schema = Schema(implementation = ApiErrorDTO::class))]
+            ), ApiResponse(
+                responseCode = "404",
+                description = "AplicativoMonitorado não encontrado",
+                content = [Content(schema = Schema(implementation = ApiErrorDTO::class))]
+            ),
+            ApiResponse(
+                responseCode = "500",
+                description = "Erro interno",
+                content = [Content(schema = Schema(implementation = ApiErrorDTO::class))]
+            )
+        ]
+    )
+    fun deletar(
+        @Parameter(
+            description = "Id do AplicativoMonitorado",
+            example = "550e8400-e29b-41d4-a716-446655440000"
+        )
+        @PathVariable aplicativoId: UUID
+    ): ResponseEntity<Void> {
+        aplicativoMonitoradoService.delete(aplicativoId)
+        return ResponseEntity.noContent().build()
+    }
+}
