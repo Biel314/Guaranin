@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import java.util.UUID
 
 @Controller
-@RequestMapping("usuario/{usuarioId}/aplicativo-monitorado")
+@RequestMapping("/aplicativo-monitorado")
 @Tag(name = "Aplicativo Monitorado", description = "Endpoints web para gerenciamento e cadastro de Aplicativos monitorados")
 class AplicativoMonitoradoWebController (
     private val aplicativoMonitoradoService : AplicativoMonitoradoService
@@ -35,11 +35,10 @@ class AplicativoMonitoradoWebController (
             ApiResponse(responseCode = "200", description = "Listagem carregada com sucesso"),
         ])
     fun listarTodos(
-        @PathVariable usuarioId: UUID,
         model: Model,
         pageable: Pageable
     ): String {
-        val page = aplicativoMonitoradoService.findAllByUsuarioId(usuarioId, pageable)
+        val page = aplicativoMonitoradoService.findAllByUsuarioId(pageable)
         model.addAttribute("aplicativos", page.content)
         model.addAttribute("page", page)
         return "aplicativo-monitorado/"
@@ -85,7 +84,6 @@ class AplicativoMonitoradoWebController (
     ])
     fun salvar(
         @Valid @ModelAttribute("form") dto: AplicativoMonitoradoCreateDTO,
-        @PathVariable usuarioId: UUID,
         result: BindingResult,
         model: Model
     ): String {
@@ -93,7 +91,7 @@ class AplicativoMonitoradoWebController (
             model.addAttribute("errors", result.allErrors)
             return "aplicativo-monitorado/novo"
         }
-        aplicativoMonitoradoService.create(usuarioId, dto)
+        aplicativoMonitoradoService.create(dto)
         return "redirect:/aplicativo-monitorado"
     }
 

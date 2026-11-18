@@ -9,11 +9,22 @@ import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
+import jakarta.persistence.UniqueConstraint
 import java.util.Optional
 import java.util.UUID
 
 @Entity
-@Table(name = "tb_usuario_aplicativo")
+@Table(
+    name = "tb_usuario_aplicativo",
+    uniqueConstraints = [
+        UniqueConstraint(
+            columnNames = [
+                "id_usuario",
+                "id_aplicativo_monitorado"
+            ]
+        )
+    ]
+)
 class UsuarioAplicativo (
     @Id
     @Column(name="id_usuario_aplicativo", nullable = false)

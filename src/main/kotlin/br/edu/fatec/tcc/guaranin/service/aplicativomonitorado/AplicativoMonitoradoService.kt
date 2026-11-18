@@ -4,15 +4,19 @@ import br.edu.fatec.tcc.guaranin.dto.aplicativomonitorado.AplicativoMonitoradoCr
 import br.edu.fatec.tcc.guaranin.dto.aplicativomonitorado.AplicativoMonitoradoResponseDTO
 import br.edu.fatec.tcc.guaranin.dto.aplicativomonitorado.AplicativoMonitoradoUpdateDTO
 import br.edu.fatec.tcc.guaranin.exception.aplicativomonitorado.AplicativoMonitoradoNotFoundException
+import br.edu.fatec.tcc.guaranin.exception.usuario.UsuarioAplicativoJaExisteException
 import br.edu.fatec.tcc.guaranin.exception.usuario.UsuarioNotFoundException
 import br.edu.fatec.tcc.guaranin.mapper.aplicativomonitorado.AplicativoMonitoradoMapper
 import br.edu.fatec.tcc.guaranin.model.UsuarioAplicativo
 import br.edu.fatec.tcc.guaranin.repository.aplicativomonitorado.AplicativoMonitoradoRepository
 import br.edu.fatec.tcc.guaranin.repository.usuario.UsuarioAplicativoRepository
 import br.edu.fatec.tcc.guaranin.repository.usuario.UsuarioRepository
+import br.edu.fatec.tcc.guaranin.security.SecurityService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 
 /**
@@ -41,7 +45,8 @@ class AplicativoMonitoradoService(
     private val aplicativoMonitoradoRepository: AplicativoMonitoradoRepository,
     private val usuarioAplicativoRepository: UsuarioAplicativoRepository,
     private val usuarioRepository: UsuarioRepository,
-    private val aplicativoMonitoradoMapper: AplicativoMonitoradoMapper
+    private val aplicativoMonitoradoMapper: AplicativoMonitoradoMapper,
+    private val securityService: SecurityService
 ) {
     /**
      * Cria um novo aplicativo monitorado.
@@ -52,24 +57,47 @@ class AplicativoMonitoradoService(
      * @param dto dados utilizados para criação do aplicativo monitorado.
      * @return aplicativo criado e persistido.
      */
-    fun create(usuarioId: UUID, dto: AplicativoMonitoradoCreateDTO): AplicativoMonitoradoResponseDTO {
-        val aplicativoMonitorado = aplicativoMonitoradoMapper.toEntity(dto)
+    @Transactional
+    fun create(
+        dto: AplicativoMonitoradoCreateDTO
+    ): AplicativoMonitoradoResponseDTO {
+
+        val usuarioId = securityService.getUsuarioLogadoId()
 
         val usuario = usuarioRepository.findById(usuarioId)
             .orElseThrow { UsuarioNotFoundException() }
 
-        val aplicativoMonitoradoSalvo = aplicativoMonitoradoRepository.save(aplicativoMonitorado)
+        val aplicativoMonitorado =
+            aplicativoMonitoradoRepository
+                .findByPacote(dto.pacote)
+                .orElseGet {
 
-        // Salva na associativa
+                    aplicativoMonitoradoRepository.save(
+                        aplicativoMonitoradoMapper
+                            .toEntity(dto)
+                    )
+                }
+
+        // Verifica se o vínculo já existe
+        if (
+            usuarioAplicativoRepository
+                .existsByUsuarioIdAndAplicativoMonitoradoId(
+                    usuario.id!!,
+                    aplicativoMonitorado.id!!
+                )
+        ) {
+            throw UsuarioAplicativoJaExisteException()
+        }
 
         usuarioAplicativoRepository.save(
             UsuarioAplicativo(
                 usuario = usuario,
-                aplicativoMonitorado = aplicativoMonitoradoSalvo,
+                aplicativoMonitorado = aplicativoMonitorado
             )
         )
 
-        return aplicativoMonitoradoMapper.toResponseDTO(aplicativoMonitoradoSalvo)
+        return aplicativoMonitoradoMapper
+            .toResponseDTO(aplicativoMonitorado)
     }
 
     /**
@@ -84,6 +112,7 @@ class AplicativoMonitoradoService(
      * @throws AplicativoMonitoradoNotFoundException caso o aplicativo não
      * seja encontrado.
      */
+    @Transactional
     fun update(
         id: UUID,
         dto: AplicativoMonitoradoUpdateDTO
@@ -108,6 +137,7 @@ class AplicativoMonitoradoService(
      * @throws AplicativoMonitoradoNotFoundException caso o aplicativo não
      * seja encontrado.
      */
+    @Transactional
     fun delete(id: UUID): AplicativoMonitoradoResponseDTO {
         val aplicativoMonitorado = aplicativoMonitoradoRepository.findById(id)
             .orElseThrow {  AplicativoMonitoradoNotFoundException() }
@@ -125,6 +155,7 @@ class AplicativoMonitoradoService(
      * @throws AplicativoMonitoradoNotFoundException caso o aplicativo não
      * exista.
      */
+    @Transactional(readOnly = true)
     fun findById(id: UUID): AplicativoMonitoradoResponseDTO {
         val aplicativoMonitorado = aplicativoMonitoradoRepository.findById(id)
             .orElseThrow { AplicativoMonitoradoNotFoundException() }
@@ -140,6 +171,7 @@ class AplicativoMonitoradoService(
      * @throws AplicativoMonitoradoNotFoundException caso nenhum registro
      * corresponda ao nome informado.
      */
+    @Transactional(readOnly = true)
     fun findByNome(nome: String): AplicativoMonitoradoResponseDTO {
         val aplicativoMonitorado = aplicativoMonitoradoRepository.findByNome(nome)
             .orElseThrow {  AplicativoMonitoradoNotFoundException() }
@@ -147,6 +179,7 @@ class AplicativoMonitoradoService(
         return aplicativoMonitoradoMapper.toResponseDTO(aplicativoMonitorado)
     }
 
+    @Transactional(readOnly = true)
     fun findAllByNomeContainingIgnoreCase(nome: String, page: Pageable): Page<AplicativoMonitoradoResponseDTO> {
         return aplicativoMonitoradoRepository.findAllByNomeContainingIgnoreCase(nome, page)
             .map { aplicativoMonitoradoMapper.toResponseDTO(it) }
@@ -160,6 +193,7 @@ class AplicativoMonitoradoService(
      * @throws AplicativoMonitoradoNotFoundException caso nenhum registro
      * corresponda ao pacote informado.
      */
+    @Transactional(readOnly = true)
     fun findByPacote(pacote: String): AplicativoMonitoradoResponseDTO {
         val aplicativoMonitorado = aplicativoMonitoradoRepository.findByPacote(pacote)
             .orElseThrow {  AplicativoMonitoradoNotFoundException() }
@@ -173,7 +207,13 @@ class AplicativoMonitoradoService(
      * @param pageable parâmetros de paginação e ordenação.
      * @return página contendo os aplicativos monitorados encontrados.
      */
-    fun findAllByUsuarioId(usuarioId: UUID, pageable: Pageable): Page<AplicativoMonitoradoResponseDTO> {
+    @EntityGraph(
+        attributePaths = ["aplicativoMonitorado"]
+    )
+    @Transactional(readOnly = true)
+    fun findAllByUsuarioId(pageable: Pageable): Page<AplicativoMonitoradoResponseDTO> {
+        val usuarioId = securityService.getUsuarioLogadoId()
+
         return usuarioAplicativoRepository
             .findAllByUsuarioId(usuarioId, pageable)
             .map { usuarioAplicativo ->
@@ -191,6 +231,7 @@ class AplicativoMonitoradoService(
      *
      * @return lista contendo os aplicativos padrão encontrados.
      */
+    @Transactional(readOnly = true)
     fun findPadrao(): List<AplicativoMonitoradoResponseDTO> {
         return aplicativoMonitoradoRepository.findByPadraoTrue()
             .map { aplicativoMonitoradoMapper.toResponseDTO(it) }
@@ -201,6 +242,7 @@ class AplicativoMonitoradoService(
      *
      * @return lista contendo os aplicativos não padrão encontrados.
      */
+    @Transactional(readOnly = true)
     fun findNaoPadrao(): List<AplicativoMonitoradoResponseDTO> {
         return aplicativoMonitoradoRepository.findByPadraoFalse()
             .map { aplicativoMonitoradoMapper.toResponseDTO(it) }

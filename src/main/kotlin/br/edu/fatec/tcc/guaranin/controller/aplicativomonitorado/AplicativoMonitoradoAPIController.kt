@@ -30,7 +30,7 @@ import java.util.*
  * ao [AplicativoMonitoradoService].
  */
 @RestController
-@RequestMapping("/api/v1/usuarios/{usuarioId}/aplicativos-monitorados")
+@RequestMapping("/api/v1/aplicativos-monitorados")
 @Tag(name = "Aplicativo Monitorado", description = "Operações REST para gerenciamento de AplicativoMonitorado")
 class AplicativoMonitoradoAPIController (
     private val aplicativoMonitoradoService: AplicativoMonitoradoService
@@ -39,7 +39,7 @@ class AplicativoMonitoradoAPIController (
     /**
      * Busca um AplicativoMonitorado pelo identificador.
      *
-     * @param id identificador único do AplicativoMonitorado.
+     * @param aplicativoId identificador único do AplicativoMonitorado.
      * @return dados do AplicativoMonitorado encontrado.
      * @throws br.edu.fatec.tcc.guaranin.exception.aplicativomonitorado.AplicativoMonitoradoNotFoundException
      * quando o Aplicativo não existe.
@@ -127,7 +127,6 @@ class AplicativoMonitoradoAPIController (
             description = "Nome do AplicativoMonitorado",
             example = "Instagram"
         )
-        @PathVariable usuarioId: UUID,
         @RequestParam(required = false)
         nome: String?,
         page: Pageable
@@ -137,7 +136,7 @@ class AplicativoMonitoradoAPIController (
             return aplicativoMonitoradoService.findAllByNomeContainingIgnoreCase(nome, page)
         }
         else {
-            return aplicativoMonitoradoService.findAllByUsuarioId(usuarioId, page)
+            return aplicativoMonitoradoService.findAllByUsuarioId(page)
         }
 
     }
@@ -173,11 +172,10 @@ class AplicativoMonitoradoAPIController (
         ]
     )
     fun criar(
-        @PathVariable usuarioId: UUID,
         @Valid @RequestBody dto: AplicativoMonitoradoCreateDTO
     ): ResponseEntity<AplicativoMonitoradoResponseDTO> {
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(aplicativoMonitoradoService.create(usuarioId, dto))
+            .body(aplicativoMonitoradoService.create(dto))
     }
 
     /**
@@ -185,7 +183,7 @@ class AplicativoMonitoradoAPIController (
      *
      * Campos nulos no DTO preservam os valores atuais da entidade.
      *
-     * @param id identificador único do Aplicativo Monitorado.
+     * @param aplicativoId identificador único do Aplicativo Monitorado.
      * @param dto dados a serem atualizados.
      * @return dados da Aplicativo Monitorado após a atualização.
      * @throws br.edu.fatec.tcc.guaranin.exception.aplicativomonitorado.AplicativoMonitoradoNotFoundException
@@ -234,7 +232,7 @@ class AplicativoMonitoradoAPIController (
     /**
      * Remove um AplicativoMonitorado.
      *
-     * @param id identificador único do AplicativoMonitorado.
+     * @param aplicativoId identificador único do AplicativoMonitorado.
      * @throws br.edu.fatec.tcc.guaranin.exception.aplicativomonitorado.AplicativoMonitoradoNotFoundException
      * quando o AplicativoMonitorado não existe.
      */

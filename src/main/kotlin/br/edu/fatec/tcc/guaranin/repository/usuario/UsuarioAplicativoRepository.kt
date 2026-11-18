@@ -122,4 +122,9 @@ interface UsuarioAplicativoRepository : JpaRepository<UsuarioAplicativo, UUID> {
         aplicativoMonitorado: AplicativoMonitorado,
         pageable: Pageable
     ): Page<UsuarioAplicativo>
+
+    fun existsByUsuarioIdAndAplicativoMonitoradoId(
+        usuarioId: UUID,
+        aplicativoId: UUID
+    ): Boolean
 }
