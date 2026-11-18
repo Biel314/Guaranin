@@ -47,6 +47,33 @@ interface UsuarioAplicativoRepository : JpaRepository<UsuarioAplicativo, UUID> {
         pageable: Pageable
     ): Page<UsuarioAplicativo>
 
+    fun findAllByUsuarioIdAndAplicativoMonitoradoNomeContainingIgnoreCase(
+        usuarioId: UUID,
+        nome: String,
+        pageable: Pageable
+    ): Page<UsuarioAplicativo>
+
+    fun findAllByUsuarioIdAndAplicativoMonitoradoPacoteContainingIgnoreCase(
+        usuarioId: UUID,
+        pacote: String,
+        pageable: Pageable
+    ): Page<UsuarioAplicativo>
+
+    fun findAllByUsuarioIdAndAplicativoMonitoradoPadrao(
+        usuarioId: UUID,
+        padrao: Boolean,
+        pageable: Pageable
+    ): Page<UsuarioAplicativo>
+
+    fun existsByUsuarioIdAndAplicativoMonitoradoId(
+        usuarioId: UUID,
+        aplicativoMonitorado: AplicativoMonitorado
+    ): Boolean
+
+    fun existsByUsuarioAndAplicativoMonitorado(
+        usuario: Usuario,
+        aplicativoMonitorado: AplicativoMonitorado
+    ): Boolean
 
     /**
      * Busca todas as associações pertencentes ao usuário informado.

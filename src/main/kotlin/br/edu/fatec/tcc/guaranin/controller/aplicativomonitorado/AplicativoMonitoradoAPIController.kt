@@ -124,7 +124,7 @@ class AplicativoMonitoradoAPIController (
     )
     fun buscarPorNome(
         @Parameter(
-            description = "Nome do AplicativoMonitorado",
+            description = "Nome dos Aplicativo Monitorados do Usuario",
             example = "Instagram"
         )
         @RequestParam(required = false)
