@@ -53,9 +53,16 @@ class AplicativoMonitoradoService(
     private val usuarioRepository: UsuarioRepository,
     private val aplicativoMonitoradoMapper: AplicativoMonitoradoMapper,
     private val securityService: SecurityService,
-    private val authorizationService: AuthorizationService,
     private val debugConfig: DebugConfig
 ) {
+
+    private fun isDebugMode(): Boolean {
+
+        if (!debugConfig.enabled) return false
+
+        return securityService.getUsuarioLogadoId() ==
+                UUID.fromString(debugConfig.adminUserId)
+    }
 
     private fun validarDonoAplicativo(aplicativoMonitoradoId: UUID) {
 
@@ -244,34 +251,28 @@ class AplicativoMonitoradoService(
     }
 
     @Transactional(readOnly = true)
-    fun findAllByNomeContainingIgnoreCase(nome: String, page: Pageable): Page<AplicativoMonitoradoResponseDTO> {
+    fun findAllByNomeContainingIgnoreCase(nome: String, pageable: Pageable): Page<AplicativoMonitoradoResponseDTO> {
         val usuarioId = securityService.getUsuarioLogadoId()
+
+        if (isDebugMode()) {
+            return aplicativoMonitoradoRepository
+                .findAllByNomeContainingIgnoreCase(nome, pageable)
+                .map {
+                    aplicativoMonitoradoMapper
+                        .toResponseDTO(it)
+                }
+        }
 
 
         return usuarioAplicativoRepository
             .findAllByUsuarioIdAndAplicativoMonitoradoNomeContainingIgnoreCase(
                 usuarioId,
                 nome,
-                page
+                pageable
             )
             .map (::toResponseDTO)
     }
 
-    fun findAllByNomeContainingIgnoreCaseDEBUG(nome: String, pageable: Pageable): Page<AplicativoMonitoradoResponseDTO> {
-
-        if (!debugConfig.enabled) {
-            throw IllegalStateException(
-                "Funcao debug desabilitada"
-            )
-        }
-
-        return aplicativoMonitoradoRepository
-                .findAllByNomeContainingIgnoreCase(nome, pageable)
-            .map {
-                aplicativoMonitoradoMapper
-                    .toResponseDTO(it)
-            }
-    }
 
     /**
      * Busca aplicativos monitorados pelo nome do pacote.
@@ -285,6 +286,16 @@ class AplicativoMonitoradoService(
     fun findAllByPacote(pacote: String, pageable: Pageable): Page<AplicativoMonitoradoResponseDTO> {
         val usuarioId = securityService.getUsuarioLogadoId()
 
+        if (isDebugMode()) {
+            return aplicativoMonitoradoRepository.findAllByPacote(
+                pacote,
+                pageable
+            )
+                .map {
+                    aplicativoMonitoradoMapper.toResponseDTO(it)
+                }
+        }
+
         return usuarioAplicativoRepository.findAllByUsuarioIdAndAplicativoMonitoradoPacoteContainingIgnoreCase(
             usuarioId,
             pacote,
@@ -293,21 +304,6 @@ class AplicativoMonitoradoService(
             .map(::toResponseDTO)
     }
 
-    fun findAllByPacoteDEBUG(pacote: String, pageable: Pageable): Page<AplicativoMonitoradoResponseDTO> {
-        if (!debugConfig.enabled) {
-            throw IllegalStateException(
-                "Funcao debug desabilitada"
-            )
-        }
-
-        return aplicativoMonitoradoRepository.findAllByPacote(
-            pacote,
-            pageable
-        )
-            .map {
-                aplicativoMonitoradoMapper.toResponseDTO(it)
-            }
-    }
 
     /**
      * Retorna todos os aplicativos monitorados de forma paginada.
@@ -340,38 +336,18 @@ class AplicativoMonitoradoService(
     fun findAllPadrao(pageable: Pageable): Page<AplicativoMonitoradoResponseDTO> {
         val usuarioId = securityService.getUsuarioLogadoId()
 
+        if (isDebugMode()) {
+            return aplicativoMonitoradoRepository.findAllByPadraoTrue(pageable)
+                .map {
+                    aplicativoMonitoradoMapper.toResponseDTO(it)
+                }
+        }
+
         return usuarioAplicativoRepository.findAllByUsuarioIdAndAplicativoMonitoradoPadraoTrue(
             usuarioId,
             pageable
         )
             .map(::toResponseDTO)
-    }
-
-    fun findAllPadraoDEBUG(pageable: Pageable): Page<AplicativoMonitoradoResponseDTO> {
-        if (!debugConfig.enabled) {
-            throw IllegalStateException(
-                "Funcao debug desabilitada"
-            )
-        }
-
-        return aplicativoMonitoradoRepository.findAllByPadraoTrue(pageable)
-            .map {
-                aplicativoMonitoradoMapper.toResponseDTO(it)
-            }
-
-    }
-
-    fun findAllNaoPadraoDEBUG(pageable: Pageable): Page<AplicativoMonitoradoResponseDTO> {
-        if (!debugConfig.enabled) {
-            throw IllegalStateException(
-                "Funcao debug desabilitada"
-            )
-        }
-
-        return aplicativoMonitoradoRepository.findAllByPadraoFalse(pageable)
-            .map {
-                aplicativoMonitoradoMapper.toResponseDTO(it)
-            }
     }
 
     /**
@@ -382,6 +358,13 @@ class AplicativoMonitoradoService(
     @Transactional(readOnly = true)
     fun findAllNaoPadrao(pageable: Pageable): Page<AplicativoMonitoradoResponseDTO> {
         val usuarioId = securityService.getUsuarioLogadoId()
+
+        if (isDebugMode()) {
+            return aplicativoMonitoradoRepository.findAllByPadraoFalse(pageable)
+                .map {
+                    aplicativoMonitoradoMapper.toResponseDTO(it)
+                }
+        }
 
         return usuarioAplicativoRepository.findAllByUsuarioIdAndAplicativoMonitoradoPadraoFalse(
             usuarioId,
