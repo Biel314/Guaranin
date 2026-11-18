@@ -40,38 +40,31 @@ class MascoteWebController(
         return "mascote/listar"
     }
 
-    @GetMapping("/usuario/{usuarioId}")
+    @GetMapping("")
     fun listarPorUsuario(
-        @PathVariable("usuarioId") usuarioId: UUID,
         model: Model,
         pageable: Pageable
     ): String {
-        val mascotePage = mascoteService.findAllByUsuarioId(usuarioId, pageable)
+        val mascotePage = mascoteService.findAllByUsuarioId(pageable)
 
-        val possuiMascoteVivo = mascoteService.possuiMascoteVivo(
-            usuarioId,
-        )
+        val possuiMascoteVivo = mascoteService.possuiMascoteVivo()
 
         model.addAttribute("mascotes", mascotePage.content)
 
         model.addAttribute("page", mascotePage)
-
-        model.addAttribute("usuarioId", usuarioId)
 
         model.addAttribute("possuiMascoteVivo", possuiMascoteVivo)
 
         return "mascote/listar"
     }
 
-    @GetMapping("/usuario/{usuarioId}/visualizar/{mascoteId}")
+    @GetMapping("/visualizar/{mascoteId}")
     fun visualizar(
-        @PathVariable usuarioId: UUID,
         @PathVariable mascoteId: UUID,
         model: Model
     ): String {
         val mascote = mascoteService.findById(mascoteId)
 
-        model.addAttribute("usuarioId", usuarioId)
         model.addAttribute("mascote", mascote)
 
         return "mascote/visualizar"
@@ -80,22 +73,16 @@ class MascoteWebController(
     /**
      * Salva um novo mascote.
      */
-    @PostMapping("/usuario/{usuarioId}/novo")
+    @PostMapping("/novo")
     fun novoMascote(
-        @PathVariable usuarioId: UUID,
         @Valid @ModelAttribute("mascote") dto: MascoteCreateDTO,
         result: BindingResult,
         model: Model
     ): String {
         println("CHEGOU NO POST DE CRIACAO FORMULARIO")
-        println("USUARIO = $usuarioId")
 
         if (result.hasErrors()) {
 
-            model.addAttribute(
-                "usuarioId",
-                usuarioId
-            )
 
             model.addAttribute(
                 "errors",
@@ -107,31 +94,27 @@ class MascoteWebController(
         }
 
         mascoteService.create(
-            dto,
-            usuarioId
+            dto
         )
 
-        return "redirect:/usuario/$usuarioId"
+        return ""
     }
 
-    @GetMapping("/usuario/{usuarioId}/novo")
+    @GetMapping("/novo")
     fun novoFormulario(
-        @PathVariable usuarioId: UUID,
         model: Model
     ): String {
-        if (mascoteService.possuiMascoteVivo(usuarioId)) {
-            return "redirect:/mascote/usuario/$usuarioId"
+        if (mascoteService.possuiMascoteVivo()) {
+            return "redirect:"
         }
 
         model.addAttribute("mascote", MascoteCreateDTO(""))
-        model.addAttribute("usuarioId", usuarioId)
 
         return "mascote/novo"
     }
 
-    @GetMapping("/usuario/{usuarioId}/editar/{mascoteId}")
+    @GetMapping("/editar/{mascoteId}")
     fun editar(
-        @PathVariable usuarioId: UUID,
         @PathVariable mascoteId: UUID,
         model: Model
     ): String {
@@ -139,7 +122,6 @@ class MascoteWebController(
         val mascote =
             mascoteService.findByIdForUpdate(mascoteId)
 
-        model.addAttribute("usuarioId", usuarioId)
         model.addAttribute("mascoteUpdateDTO", mascote)
 
         return "mascote/editar"
@@ -167,10 +149,10 @@ class MascoteWebController(
         return "redirect:/mascote"
     }
 
-    @PostMapping("/usuario/{usuarioId}/matar/{mascoteId}")
-    fun matar(@PathVariable usuarioId: UUID, @PathVariable mascoteId: UUID): String {
+    @PostMapping("/matar/{mascoteId}")
+    fun matar(@PathVariable mascoteId: UUID): String {
         mascoteService.matarMascote(mascoteId)
-        return "redirect:/mascote/usuario/$usuarioId"
+        return "redirect:/mascote/usuario/"
     }
 
     @DeleteMapping("deletar/{id}")

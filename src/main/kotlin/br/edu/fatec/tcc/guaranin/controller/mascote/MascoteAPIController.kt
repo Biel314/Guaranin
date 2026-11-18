@@ -30,7 +30,7 @@ import java.util.*
  * ao [MascoteService].
  */
 @RestController
-@RequestMapping("/api/v1/usuarios/{usuarioId}/mascotes")
+@RequestMapping("/api/v1/mascotes")
 @Tag(name = "Mascotes", description = "Operações REST para gerenciamento de Mascotes")
 class MascoteAPIController (
     private val mascoteService: MascoteService
@@ -38,7 +38,6 @@ class MascoteAPIController (
     /**
      * Busca um Mascote pelo identificador.
      *
-     * @param usuarioId identificador único do dono do Mascote
      * @param mascoteId identificador único do Mascote.
      * @return dados do Mascote encontrado.
      * @throws br.edu.fatec.tcc.guaranin.exception.mascote.MascoteNotFoundException
@@ -74,7 +73,6 @@ class MascoteAPIController (
         ]
     )
     fun buscarPorId(
-        @PathVariable usuarioId: UUID,
         @PathVariable mascoteId: UUID
     ): MascoteResponseDTO {
 
@@ -86,7 +84,6 @@ class MascoteAPIController (
      *
      * O nome é normalizado antes da consulta pelo [MascoteService].
      *
-     * @param usuarioId identificador único do dono do Mascote
      * @param nome do Mascote.
      * @return dados do Mascote encontrado.
      * @throws br.edu.fatec.tcc.guaranin.exception.mascote.MascoteNotFoundException
@@ -117,22 +114,20 @@ class MascoteAPIController (
         ]
     )
     fun listarPorUsuario(
-        @PathVariable usuarioId: UUID,
         @ParameterObject pageable: Pageable,
         nome: String?
     ): Page<MascoteResponseDTO> {
 
         if (nome != null) {
-            return mascoteService.findAllByUsuarioIdAndNomeContainingIgnoreCase(usuarioId, nome, pageable)
+            return mascoteService.findAllByUsuarioIdAndNomeContainingIgnoreCase( nome, pageable)
         }
         else {
-            return mascoteService.findAllByUsuarioId(usuarioId, pageable)
+            return mascoteService.findAllByUsuarioId(pageable)
         }
     }
 
     /**
      * Cria um Mascote.
-     * @param usuarioId identificador único do dono do mascote
      * @param dto dados do Mascote a ser criada.
      * @return resposta `201 Created` com a Mascote persistido.
      */
@@ -166,7 +161,6 @@ class MascoteAPIController (
         ]
     )
     fun criar(
-        @PathVariable usuarioId: UUID,
         @Valid @RequestBody dto: MascoteCreateDTO
     ): ResponseEntity<MascoteResponseDTO> {
 
@@ -174,8 +168,7 @@ class MascoteAPIController (
             .status(HttpStatus.CREATED)
             .body(
                 mascoteService.create(
-                    dto,
-                    usuarioId
+                    dto
                 )
             )
     }
