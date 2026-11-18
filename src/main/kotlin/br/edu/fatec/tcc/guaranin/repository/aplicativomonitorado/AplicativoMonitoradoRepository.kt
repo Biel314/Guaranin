@@ -38,6 +38,11 @@ interface AplicativoMonitoradoRepository : JpaRepository<AplicativoMonitorado, U
         pacote: String
     ): Optional<AplicativoMonitorado>
 
+    fun findAllByPacote(
+        pacote: String,
+        pageable: Pageable
+    ): Page<AplicativoMonitorado>
+
     /**
      * Busca um aplicativo monitorado pelo nome.
      *
@@ -84,6 +89,15 @@ interface AplicativoMonitoradoRepository : JpaRepository<AplicativoMonitorado, U
      * @return lista contendo os aplicativos padrão encontrados.
      */
     fun findByPadraoTrue(): List<AplicativoMonitorado>
+
+
+    fun findAllByPadraoTrue(
+        pageable: Pageable
+    ): Page<AplicativoMonitorado>
+
+    fun findAllByPadraoFalse(
+        pageable: Pageable
+    ): Page<AplicativoMonitorado>
 
     /**
      * Busca todos os aplicativos que não estão marcados como padrão.

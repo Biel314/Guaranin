@@ -5,6 +5,7 @@ import br.edu.fatec.tcc.guaranin.model.Usuario
 import br.edu.fatec.tcc.guaranin.model.UsuarioAplicativo
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.JpaRepository
 import java.util.UUID
 
@@ -42,6 +43,9 @@ interface UsuarioAplicativoRepository : JpaRepository<UsuarioAplicativo, UUID> {
      * @param pageable parâmetros de paginação e ordenação.
      * @return [Page] contendo as associações encontradas.
      */
+    @EntityGraph(
+        attributePaths = ["aplicativoMonitorado"]
+    )
     fun findAllByUsuarioId(
         usuarioId: UUID,
         pageable: Pageable
@@ -59,9 +63,13 @@ interface UsuarioAplicativoRepository : JpaRepository<UsuarioAplicativo, UUID> {
         pageable: Pageable
     ): Page<UsuarioAplicativo>
 
-    fun findAllByUsuarioIdAndAplicativoMonitoradoPadrao(
+    fun findAllByUsuarioIdAndAplicativoMonitoradoPadraoTrue(
         usuarioId: UUID,
-        padrao: Boolean,
+        pageable: Pageable
+    ): Page<UsuarioAplicativo>
+
+    fun findAllByUsuarioIdAndAplicativoMonitoradoPadraoFalse(
+        usuarioId: UUID,
         pageable: Pageable
     ): Page<UsuarioAplicativo>
 

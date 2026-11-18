@@ -1,5 +1,6 @@
 package br.edu.fatec.tcc.guaranin.service.aplicativomonitorado
 
+import br.edu.fatec.tcc.guaranin.config.DebugConfig
 import br.edu.fatec.tcc.guaranin.dto.aplicativomonitorado.AplicativoMonitoradoCreateDTO
 import br.edu.fatec.tcc.guaranin.dto.aplicativomonitorado.AplicativoMonitoradoResponseDTO
 import br.edu.fatec.tcc.guaranin.dto.aplicativomonitorado.AplicativoMonitoradoUpdateDTO
@@ -53,6 +54,7 @@ class AplicativoMonitoradoService(
     private val aplicativoMonitoradoMapper: AplicativoMonitoradoMapper,
     private val securityService: SecurityService,
     private val authorizationService: AuthorizationService,
+    private val debugConfig: DebugConfig
 ) {
 
     private fun validarDonoAplicativo(aplicativoMonitoradoId: UUID) {
@@ -101,6 +103,7 @@ class AplicativoMonitoradoService(
             usuarioAplicativo.aplicativoMonitorado
         )
     }
+
     /**
      * Cria um novo aplicativo monitorado.
      *
@@ -254,6 +257,22 @@ class AplicativoMonitoradoService(
             .map (::toResponseDTO)
     }
 
+    fun findAllByNomeContainingIgnoreCaseDEBUG(nome: String, pageable: Pageable): Page<AplicativoMonitoradoResponseDTO> {
+
+        if (!debugConfig.enabled) {
+            throw IllegalStateException(
+                "Funcao debug desabilitada"
+            )
+        }
+
+        return aplicativoMonitoradoRepository
+                .findAllByNomeContainingIgnoreCase(nome, pageable)
+            .map {
+                aplicativoMonitoradoMapper
+                    .toResponseDTO(it)
+            }
+    }
+
     /**
      * Busca aplicativos monitorados pelo nome do pacote.
      *
@@ -263,7 +282,7 @@ class AplicativoMonitoradoService(
      * corresponda ao pacote informado.
      */
     @Transactional(readOnly = true)
-    fun findByPacote(pacote: String, pageable: Pageable): Page<AplicativoMonitoradoResponseDTO> {
+    fun findAllByPacote(pacote: String, pageable: Pageable): Page<AplicativoMonitoradoResponseDTO> {
         val usuarioId = securityService.getUsuarioLogadoId()
 
         return usuarioAplicativoRepository.findAllByUsuarioIdAndAplicativoMonitoradoPacoteContainingIgnoreCase(
@@ -274,15 +293,28 @@ class AplicativoMonitoradoService(
             .map(::toResponseDTO)
     }
 
+    fun findAllByPacoteDEBUG(pacote: String, pageable: Pageable): Page<AplicativoMonitoradoResponseDTO> {
+        if (!debugConfig.enabled) {
+            throw IllegalStateException(
+                "Funcao debug desabilitada"
+            )
+        }
+
+        return aplicativoMonitoradoRepository.findAllByPacote(
+            pacote,
+            pageable
+        )
+            .map {
+                aplicativoMonitoradoMapper.toResponseDTO(it)
+            }
+    }
+
     /**
      * Retorna todos os aplicativos monitorados de forma paginada.
      *
      * @param pageable parâmetros de paginação e ordenação.
      * @return página contendo os aplicativos monitorados encontrados.
      */
-    @EntityGraph(
-        attributePaths = ["aplicativoMonitorado"]
-    )
     @Transactional(readOnly = true)
     fun findAllByUsuarioId(pageable: Pageable): Page<AplicativoMonitoradoResponseDTO> {
         val usuarioId = securityService.getUsuarioLogadoId()
@@ -305,15 +337,41 @@ class AplicativoMonitoradoService(
      * @return lista contendo os aplicativos padrão encontrados.
      */
     @Transactional(readOnly = true)
-    fun findPadrao(pageable: Pageable): Page<AplicativoMonitoradoResponseDTO> {
+    fun findAllPadrao(pageable: Pageable): Page<AplicativoMonitoradoResponseDTO> {
         val usuarioId = securityService.getUsuarioLogadoId()
 
-        return usuarioAplicativoRepository.findAllByUsuarioIdAndAplicativoMonitoradoPadrao(
+        return usuarioAplicativoRepository.findAllByUsuarioIdAndAplicativoMonitoradoPadraoTrue(
             usuarioId,
-            true,
             pageable
         )
             .map(::toResponseDTO)
+    }
+
+    fun findAllPadraoDEBUG(pageable: Pageable): Page<AplicativoMonitoradoResponseDTO> {
+        if (!debugConfig.enabled) {
+            throw IllegalStateException(
+                "Funcao debug desabilitada"
+            )
+        }
+
+        return aplicativoMonitoradoRepository.findAllByPadraoTrue(pageable)
+            .map {
+                aplicativoMonitoradoMapper.toResponseDTO(it)
+            }
+
+    }
+
+    fun findAllNaoPadraoDEBUG(pageable: Pageable): Page<AplicativoMonitoradoResponseDTO> {
+        if (!debugConfig.enabled) {
+            throw IllegalStateException(
+                "Funcao debug desabilitada"
+            )
+        }
+
+        return aplicativoMonitoradoRepository.findAllByPadraoFalse(pageable)
+            .map {
+                aplicativoMonitoradoMapper.toResponseDTO(it)
+            }
     }
 
     /**
@@ -322,12 +380,11 @@ class AplicativoMonitoradoService(
      * @return lista contendo os aplicativos não padrão encontrados.
      */
     @Transactional(readOnly = true)
-    fun findNaoPadrao(pageable: Pageable): Page<AplicativoMonitoradoResponseDTO> {
+    fun findAllNaoPadrao(pageable: Pageable): Page<AplicativoMonitoradoResponseDTO> {
         val usuarioId = securityService.getUsuarioLogadoId()
 
-        return usuarioAplicativoRepository.findAllByUsuarioIdAndAplicativoMonitoradoPadrao(
+        return usuarioAplicativoRepository.findAllByUsuarioIdAndAplicativoMonitoradoPadraoFalse(
             usuarioId,
-            false,
             pageable
         )
             .map(::toResponseDTO)
