@@ -2,7 +2,7 @@ package br.edu.fatec.tcc.guaranin.security
 
 import org.springframework.stereotype.Service
 import java.nio.file.AccessDeniedException
-import java.util.UUID
+import java.util.*
 
 @Service
 class AuthorizationService(
@@ -11,10 +11,11 @@ class AuthorizationService(
 
     @Throws(AccessDeniedException::class)
     fun validarUsuario(
-        usuarioId: UUID
+        usuarioId: UUID?
     ) {
 
         if (
+            usuarioId != null &&
             securityService.getUsuarioLogadoId()
             != usuarioId
         ) {

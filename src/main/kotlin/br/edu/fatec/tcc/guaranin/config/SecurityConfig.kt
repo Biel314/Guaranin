@@ -25,7 +25,7 @@ class SecurityConfig(
 
                 it.requestMatchers(
                     "/api/v1/auth/**",
-                    "/api/usuarios/**",
+                    "/api/v1/usuarios/new",
                     "/usuario/**",
                     "/mascote/**"
                 ).permitAll()
