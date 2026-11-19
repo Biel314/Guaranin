@@ -58,10 +58,18 @@ class AplicativoMonitoradoService(
 
     private fun isDebugMode(): Boolean {
 
-        if (!debugConfig.enabled) return false
+        println("DEBUG ENABLED = ${debugConfig.enabled}")
+        println("ADMIN CONFIG = ${debugConfig.adminUserId}")
+        println("TOKEN USER = ${securityService.getUsuarioLogadoId()}")
 
-        return securityService.getUsuarioLogadoId() ==
-                UUID.fromString(debugConfig.adminUserId)
+        val result =
+            debugConfig.enabled &&
+                    securityService.getUsuarioLogadoId() ==
+                    UUID.fromString(debugConfig.adminUserId)
+
+        println("IS DEBUG = $result")
+
+        return result
     }
 
     private fun validarDonoAplicativo(aplicativoMonitoradoId: UUID) {
@@ -304,6 +312,15 @@ class AplicativoMonitoradoService(
             .map(::toResponseDTO)
     }
 
+    private fun findAll(pageable: Pageable): Page<AplicativoMonitoradoResponseDTO> {
+        return aplicativoMonitoradoRepository.findAll(
+            pageable
+        )
+            .map {
+                aplicativoMonitoradoMapper.toResponseDTO(it)
+            }
+    }
+
 
     /**
      * Retorna todos os aplicativos monitorados de forma paginada.
@@ -314,6 +331,10 @@ class AplicativoMonitoradoService(
     @Transactional(readOnly = true)
     fun findAllByUsuarioId(pageable: Pageable): Page<AplicativoMonitoradoResponseDTO> {
         val usuarioId = securityService.getUsuarioLogadoId()
+
+        if (isDebugMode()) {
+            return findAll(pageable)
+        }
 
         return usuarioAplicativoRepository
             .findAllByUsuarioId(usuarioId, pageable)
