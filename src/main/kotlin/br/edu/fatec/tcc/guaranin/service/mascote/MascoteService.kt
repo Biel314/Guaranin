@@ -1,5 +1,6 @@
 package br.edu.fatec.tcc.guaranin.service.mascote
 
+import br.edu.fatec.tcc.guaranin.config.DebugConfig
 import br.edu.fatec.tcc.guaranin.dto.mascote.MascoteCreateDTO
 import br.edu.fatec.tcc.guaranin.dto.mascote.MascoteResponseDTO
 import br.edu.fatec.tcc.guaranin.dto.mascote.MascoteUpdateDTO
@@ -32,8 +33,25 @@ class MascoteService (
     private val usuarioRepository: UsuarioRepository,
     private val mascoteMapper: MascoteMapper,
     private val authorizationService: AuthorizationService,
-    private val securityService: SecurityService
+    private val securityService: SecurityService,
+    private val debugConfig: DebugConfig
 ) {
+    private fun isDebugMode(): Boolean {
+
+        println("DEBUG ENABLED = ${debugConfig.enabled}")
+        println("ADMIN CONFIG = ${debugConfig.adminUserId}")
+        println("TOKEN USER = ${securityService.getUsuarioLogadoId()}")
+
+        val result =
+            debugConfig.enabled &&
+                    securityService.getUsuarioLogadoId() ==
+                    UUID.fromString(debugConfig.adminUserId)
+
+        println("IS DEBUG = $result")
+
+        return result
+    }
+
     private fun getUsuarioId(mascote: Mascote): UUID {
         val usuarioid = mascote.usuario?.id
             ?: throw IllegalStateException(
@@ -66,6 +84,11 @@ class MascoteService (
     fun findAllByUsuarioIdAndNomeContainingIgnoreCase(nome: String, pageable: Pageable): Page<MascoteResponseDTO> {
         val usuarioId = securityService.getUsuarioLogadoId()
 
+        if (isDebugMode()) {
+            return mascoteRepository.findAllByNomeContainingIgnoreCase(nome, pageable)
+                .map { mascoteMapper.toResponseDTO(it) }
+        }
+
         return mascoteRepository.findAllByUsuarioIdAndNomeContainingIgnoreCase(usuarioId, nome, pageable)
             .map { mascoteMapper.toResponseDTO(it) }
     }
@@ -75,6 +98,10 @@ class MascoteService (
         pageable: Pageable
     ): Page<MascoteResponseDTO> {
         val usuarioId = securityService.getUsuarioLogadoId()
+
+        if (isDebugMode()) {
+            return findAll(pageable)
+        }
 
         val mascotes = mascoteRepository
             .findByUsuarioId(usuarioId, pageable)
@@ -93,18 +120,53 @@ class MascoteService (
             .map { mascoteMapper.toResponseDTO(it) }
     }
 
-    @Transactional
-    fun findByIdAndEstado(): MascoteResponseDTO {
+    @Transactional(readOnly = true)
+    fun findByUsuarioIdAndEstadoVivo(): MascoteResponseDTO {
         val usuarioId = securityService.getUsuarioLogadoId()
 
         authorizationService.validarUsuario(usuarioId)
 
+        if (isDebugMode()) {
+            return mascoteMapper.toResponseDTO(
+                mascoteRepository.findByEstadoNot(
+                    Estado.MORTO
+                ).orElseThrow { MascoteNotFoundException() }
+            )
+        }
+
         return mascoteMapper.toResponseDTO(
-            mascoteRepository.findByUsuarioIdAndEstado(
+            mascoteRepository.findByUsuarioIdAndEstadoNot(
                 usuarioId,
-                Estado.SAUDAVEL
+                Estado.MORTO
             ).orElseThrow { MascoteNotFoundException() }
         )
+    }
+
+    // cemiterio
+    @Transactional(readOnly = true)
+    fun findAllByUsuarioIdAndEstadoMorto(pageable: Pageable): Page<MascoteResponseDTO> {
+        val usuarioId = securityService.getUsuarioLogadoId()
+
+        authorizationService.validarUsuario(usuarioId)
+
+        if (isDebugMode()) {
+            return mascoteRepository.findAllByEstadoMORTO(
+                    Estado.MORTO,
+                    pageable
+                    )
+                .map {
+                    mascoteMapper.toResponseDTO(it)
+                }
+        }
+
+        return mascoteRepository.findAllByUsuarioIdAndEstadoMORTO(
+            usuarioId,
+            Estado.MORTO,
+            pageable
+        )
+            .map {
+                mascoteMapper.toResponseDTO(it)
+            }
     }
 
     @Transactional(readOnly = true)
@@ -168,18 +230,6 @@ class MascoteService (
         validarDonoMascote(mascote)
 
        return mascoteMapper.toResponseDTO(mascoteRepository.save(mascote))
-    }
-
-    @Transactional
-    fun findByUsuarioIdForUpdate(): MascoteUpdateDTO {
-        val usuarioId = securityService.getUsuarioLogadoId()
-        
-        authorizationService.validarUsuario(usuarioId)
-
-        val mascote = mascoteRepository.findByUsuarioId(usuarioId)
-            .orElseThrow { MascoteNotFoundException() }
-
-        return mascoteMapper.toUpdateDTO(mascote)
     }
 
     @Transactional
