@@ -24,7 +24,7 @@ class AuthorizationService(
         }
     }
 
-    fun getUsuarioLogadoId(): UUID {
+    fun getIdUsuarioAutenticado(): UUID {
         return securityService.getUsuarioLogadoId()
     }
 }
