@@ -7,6 +7,8 @@ import java.util.UUID
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
+import java.time.LocalDateTime
+import java.util.Date
 
 /**
  * Repositório responsável pelo acesso e persistência das entidades [AplicativoHistorico].
@@ -52,6 +54,58 @@ interface AplicativoHistoricoRepository : JpaRepository<AplicativoHistorico, UUI
         pageable: Pageable
     ): Page<AplicativoHistorico>
 
+    fun findAllByUsuarioAplicativoUsuarioIdAndDataHoraAcessoBetween(
+        usuarioId: UUID,
+        dataHoraInicial: LocalDateTime,
+        dataHoraFinal: LocalDateTime,
+        pageable: Pageable
+    ): Page<AplicativoHistorico>
+
+    fun findAllByUsuarioAplicativoAplicativoMonitoradoNomeContainingIgnoreCase(
+        nome: String,
+        pageable: Pageable
+    ): Page<AplicativoHistorico>
+
+    fun findAllByUsuarioAplicativoUsuarioIdAndUsuarioAplicativoAplicativoMonitoradoPacoteIgnoreCase(
+        usuarioId: UUID,
+        pacote: String,
+        pageable: Pageable
+    ): Page<AplicativoHistorico>
+
+    fun findAllByUsuarioAplicativoAplicativoMonitoradoPacoteIgnoreCase(
+        pacote: String,
+        pageable: Pageable
+    ): Page<AplicativoHistorico>
+
+    fun findAllByUsuarioAplicativoUsuarioIdAndUsuarioAplicativoAplicativoMonitoradoNomeContainingIgnoreCase(
+        usuarioId: UUID,
+        nome: String,
+        pageable: Pageable
+    ): Page<AplicativoHistorico>
+
+    fun findAllByUsuarioAplicativoUsuarioIdAndUsuarioAplicativoAplicativoMonitoradoIdAndDataHoraAcessoBetween(
+        usuarioId: UUID,
+        aplicativoMonitoradoId: UUID,
+        dataHoraInicial: LocalDateTime,
+        dataHoraFinal: LocalDateTime,
+        pageable: Pageable
+    ): Page<AplicativoHistorico>
+
+    fun findAllByUsuarioAplicativoUsuarioIdAndDataHoraAcessoAfter(
+        usuarioId: UUID,
+        dataHora: LocalDateTime,
+        pageable: Pageable
+    ): Page<AplicativoHistorico>
+
+    fun findAllByUsuarioAplicativoUsuarioIdAndUsuarioAplicativoAplicativoMonitoradoId(
+        usuarioId: UUID,
+        aplicativoMonitoradoId: UUID,
+        pageable: Pageable
+    ): Page<AplicativoHistorico>
+
+    fun findTopByUsuarioAplicativoUsuarioIdOrderByDataHoraAcessoDesc(
+        usuarioId: UUID
+    ): AplicativoHistorico?
     /**
      * Busca todos os históricos associados ao identificador de uma
      * relação [UsuarioAplicativo].
@@ -63,6 +117,17 @@ interface AplicativoHistoricoRepository : JpaRepository<AplicativoHistorico, UUI
     fun findAllByUsuarioAplicativoId(
         usuarioAplicativoId: UUID
     ): List<AplicativoHistorico>
+
+    fun existsByIdAndUsuarioAplicativoUsuarioId(
+        historicoId: UUID,
+        usuarioId: UUID
+    ): Boolean
+
+    fun findAllByUsuarioAplicativoAplicativoMonitoradoId(
+        aplicativoMonitoradoId: UUID,
+        pageable: Pageable
+    ): Page<AplicativoHistorico>
+
 
     /**
      * Busca históricos de aplicativos pertencentes a um usuário
