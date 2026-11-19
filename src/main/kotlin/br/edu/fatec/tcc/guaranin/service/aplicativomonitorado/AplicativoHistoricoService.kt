@@ -1,5 +1,6 @@
 package br.edu.fatec.tcc.guaranin.service.aplicativomonitorado
 
+import br.edu.fatec.tcc.guaranin.config.DebugConfig
 import br.edu.fatec.tcc.guaranin.dto.aplicativomonitorado.AplicativoHistoricoCreateDTO
 import br.edu.fatec.tcc.guaranin.dto.aplicativomonitorado.AplicativoHistoricoResponseDTO
 import br.edu.fatec.tcc.guaranin.exception.aplicativomonitorado.AplicativoHistoricoNotFoundException
@@ -8,9 +9,13 @@ import br.edu.fatec.tcc.guaranin.mapper.aplicativomonitorado.AplicativoHistorico
 import br.edu.fatec.tcc.guaranin.model.AplicativoHistorico
 import br.edu.fatec.tcc.guaranin.repository.aplicativomonitorado.AplicativoHistoricoRepository
 import br.edu.fatec.tcc.guaranin.repository.usuario.UsuarioAplicativoRepository
+import br.edu.fatec.tcc.guaranin.repository.usuario.UsuarioRepository
+import br.edu.fatec.tcc.guaranin.security.SecurityService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
+import java.nio.file.AccessDeniedException
+import java.time.LocalDateTime
 
 import java.util.UUID
 
@@ -42,9 +47,46 @@ import java.util.UUID
 @Service
 class AplicativoHistoricoService(
     private val aplicativoHistoricoRepository: AplicativoHistoricoRepository,
+    private val usuarioRepository: UsuarioRepository,
     private val usuarioAplicativoRepository: UsuarioAplicativoRepository,
-    private val aplicativoHistoricoMapper: AplicativoHistoricoMapper
+    private val aplicativoHistoricoMapper: AplicativoHistoricoMapper,
+    private val securityService: SecurityService,
+    private val debugConfig: DebugConfig
 ) {
+
+    private fun isDebugMode(): Boolean {
+
+        println("DEBUG ENABLED = ${debugConfig.enabled}")
+        println("ADMIN CONFIG = ${debugConfig.adminUserId}")
+        println("TOKEN USER = ${securityService.getUsuarioLogadoId()}")
+
+        val result =
+            debugConfig.enabled &&
+                    securityService.getUsuarioLogadoId() ==
+                    UUID.fromString(debugConfig.adminUserId)
+
+        println("IS DEBUG = $result")
+
+        return result
+    }
+
+    private fun validarDonoDoHistorico(historicoId: UUID) {
+
+        val usuarioId =
+            securityService.getUsuarioLogadoId()
+
+        if (
+            !aplicativoHistoricoRepository
+                .existsByIdAndUsuarioAplicativoUsuarioId(
+                    historicoId,
+                    usuarioId
+                )
+        ) {
+            throw AccessDeniedException(
+                "Acesso negado"
+            )
+        }
+    }
 
     /**
      * Cria um novo registro de histórico de acesso a aplicativo.
@@ -62,75 +104,26 @@ class AplicativoHistoricoService(
     fun create(
         dto: AplicativoHistoricoCreateDTO
     ): AplicativoHistoricoResponseDTO {
+        val usuarioId = securityService.getUsuarioLogadoId()
 
         val usuarioAplicativo =
-            usuarioAplicativoRepository.findById(dto.usuarioAplicativoId)
-                .orElseThrow {
-                    UsuarioAplicativoNotFoundException()
-                }
+            usuarioAplicativoRepository
+                .findByUsuarioIdAndAplicativoMonitoradoPacoteIgnoreCase(
+                    usuarioId,
+                    dto.pacote
+                )
+                ?: throw UsuarioAplicativoNotFoundException()
 
-        val aplicativoHistorico = AplicativoHistorico(
+        val historicoUso = AplicativoHistorico(
             usuarioAplicativo = usuarioAplicativo,
             dataHoraAcesso = dto.dataHoraAcesso
         )
 
         return aplicativoHistoricoMapper.toResponseDTO(
-            aplicativoHistoricoRepository.save(aplicativoHistorico)
+            aplicativoHistoricoRepository.save(historicoUso)
         )
     }
 
-    /**
-     * Remove um registro de histórico de aplicativo.
-     *
-     * Após localizar a entidade, o registro é removido da base de dados
-     * e retornado como DTO de resposta.
-     *
-     * @param id identificador do registro histórico.
-     * @return histórico removido.
-     *
-     * @throws AplicativoHistoricoNotFoundException caso o registro não
-     * exista.
-     */
-    fun delete(
-        id: UUID
-    ): AplicativoHistoricoResponseDTO {
-
-        val aplicativoHistorico =
-            aplicativoHistoricoRepository.findById(id)
-                .orElseThrow {
-                    AplicativoHistoricoNotFoundException()
-                }
-
-        aplicativoHistoricoRepository.delete(aplicativoHistorico)
-
-        return aplicativoHistoricoMapper.toResponseDTO(
-            aplicativoHistorico
-        )
-    }
-
-    /**
-     * Busca um registro de histórico pelo identificador.
-     *
-     * @param id identificador único do histórico.
-     * @return histórico encontrado.
-     *
-     * @throws AplicativoHistoricoNotFoundException caso o registro não
-     * exista.
-     */
-    fun findById(
-        id: UUID
-    ): AplicativoHistoricoResponseDTO {
-
-        val aplicativoHistorico =
-            aplicativoHistoricoRepository.findById(id)
-                .orElseThrow {
-                    AplicativoHistoricoNotFoundException()
-                }
-
-        return aplicativoHistoricoMapper.toResponseDTO(
-            aplicativoHistorico
-        )
-    }
 
     /**
      * Retorna todos os registros de histórico de aplicativos de forma
@@ -139,7 +132,7 @@ class AplicativoHistoricoService(
      * @param pageable parâmetros de paginação e ordenação.
      * @return página contendo os registros encontrados.
      */
-    fun findAll(
+    private fun findAll(
         pageable: Pageable
     ): Page<AplicativoHistoricoResponseDTO> {
 
@@ -148,29 +141,182 @@ class AplicativoHistoricoService(
             .map(aplicativoHistoricoMapper::toResponseDTO)
     }
 
-    /**
-     * Retorna todos os registros históricos associados a uma entidade
-     * [UsuarioAplicativo].
-     *
-     * A consulta é realizada de forma paginada para evitar carregamento
-     * excessivo de dados em memória.
-     *
-     * @param usuarioAplicativoId identificador da associação
-     * usuário-aplicativo.
-     * @param pageable parâmetros de paginação e ordenação.
-     *
-     * @return página contendo os registros históricos encontrados.
-     */
-    fun findByUsuarioAplicativo(
-        usuarioAplicativoId: UUID,
+    // Encontrar todos os históricos de usuário
+    fun findAllByUsuarioId(
+        pageable: Pageable
+    ): Page<AplicativoHistoricoResponseDTO> {
+        val usuarioId = securityService.getUsuarioLogadoId()
+
+        if (isDebugMode()) {
+            return findAll(pageable)
+        }
+
+        return aplicativoHistoricoRepository.
+                findAllByUsuarioAplicativoUsuarioId(
+                    usuarioId,
+                    pageable
+                )
+        .map(aplicativoHistoricoMapper::toResponseDTO)
+    }
+
+    fun findHistoricoById(
+        historicoId: UUID
+    ): AplicativoHistoricoResponseDTO {
+        if (!isDebugMode()) {
+            validarDonoDoHistorico(historicoId)
+        }
+
+        val historico = aplicativoHistoricoRepository
+                            .findById(historicoId)
+            .orElseThrow{ AplicativoHistoricoNotFoundException() }
+
+
+        return aplicativoHistoricoMapper
+            .toResponseDTO(
+                historico
+            )
+    }
+
+    // busca todos os históricos por nome do aplicativo
+    fun findAllByNomeContainingIgnoreCase(
+        nome: String,
+        pageable: Pageable
+    ): Page<AplicativoHistoricoResponseDTO> {
+        val usuarioId = securityService.getUsuarioLogadoId()
+
+        if (isDebugMode()) {
+            return aplicativoHistoricoRepository
+                .findAllByUsuarioAplicativoAplicativoMonitoradoNomeContainingIgnoreCase(
+                    nome,
+                    pageable)
+                .map(aplicativoHistoricoMapper::toResponseDTO)
+        }
+
+        return aplicativoHistoricoRepository
+            .findAllByUsuarioAplicativoUsuarioIdAndUsuarioAplicativoAplicativoMonitoradoNomeContainingIgnoreCase(
+                usuarioId,
+                nome,
+                pageable
+            )
+            .map(aplicativoHistoricoMapper::toResponseDTO)
+    }
+
+    // busca todos os históricos por pacote
+    fun findAllByPacoteIgnoreCase(
+        pacote: String,
+        pageable: Pageable
+    ): Page<AplicativoHistoricoResponseDTO> {
+
+        if (isDebugMode()) {
+            return aplicativoHistoricoRepository
+                .findAllByUsuarioAplicativoAplicativoMonitoradoPacoteIgnoreCase(
+                    pacote,
+                    pageable
+                )
+                .map(aplicativoHistoricoMapper::toResponseDTO)
+        }
+
+        val usuarioId = securityService.getUsuarioLogadoId()
+
+        return aplicativoHistoricoRepository
+            .findAllByUsuarioAplicativoUsuarioIdAndUsuarioAplicativoAplicativoMonitoradoPacoteIgnoreCase(
+                usuarioId,
+                pacote,
+                pageable
+            )
+            .map(aplicativoHistoricoMapper::toResponseDTO)
+    }
+
+    // Encontra todos os registros de historico de um usuario da data inicial
+    // até a data final
+    fun findAllByUsuarioAplicativoUsuarioIdAndDataHoraAcessoBetween(
+        dataHoraInicial: LocalDateTime,
+        dataHoraFinal: LocalDateTime,
+        pageable: Pageable
+    ): Page<AplicativoHistoricoResponseDTO> {
+        val usuarioId = securityService.getUsuarioLogadoId()
+
+        return aplicativoHistoricoRepository
+            .findAllByUsuarioAplicativoUsuarioIdAndDataHoraAcessoBetween(
+                usuarioId,
+                dataHoraInicial,
+                dataHoraFinal,
+                pageable
+            )
+            .map(aplicativoHistoricoMapper::toResponseDTO)
+    }
+
+    fun findAllByUsuarioAplicativoUsuarioIdAndUsuarioAplicativoAplicativoMonitoradoIdAndDataHoraAcessoBetween(
+        aplicativoMonitoradoId: UUID,
+        dataHoraInicial: LocalDateTime,
+        dataHoraFinal: LocalDateTime,
+        pageable: Pageable
+    ): Page<AplicativoHistoricoResponseDTO> {
+        val usuarioId = securityService.getUsuarioLogadoId()
+
+        return aplicativoHistoricoRepository
+            .findAllByUsuarioAplicativoUsuarioIdAndUsuarioAplicativoAplicativoMonitoradoIdAndDataHoraAcessoBetween(
+                usuarioId,
+                aplicativoMonitoradoId,
+                dataHoraInicial,
+                dataHoraFinal,
+                pageable
+            )
+            .map(aplicativoHistoricoMapper::toResponseDTO)
+    }
+
+    fun findAllByUsuarioAplicativoUsuarioIdAndDataHoraAcessoAfter(
+        dataHora: LocalDateTime,
+        pageable: Pageable
+    ): Page<AplicativoHistoricoResponseDTO> {
+        val usuarioId = securityService.getUsuarioLogadoId()
+
+        return aplicativoHistoricoRepository
+            .findAllByUsuarioAplicativoUsuarioIdAndDataHoraAcessoAfter(
+                usuarioId,
+                dataHora,
+                pageable
+            )
+            .map(aplicativoHistoricoMapper::toResponseDTO)
+    }
+
+    private fun findAllByAplicativoMonitoradoId(
+        aplicativoMonitoradoId: UUID,
         pageable: Pageable
     ): Page<AplicativoHistoricoResponseDTO> {
 
         return aplicativoHistoricoRepository
-            .findAllByUsuarioAplicativoId(
-                usuarioAplicativoId,
+            .findAllByUsuarioAplicativoAplicativoMonitoradoId(
+                aplicativoMonitoradoId,
                 pageable
             )
             .map(aplicativoHistoricoMapper::toResponseDTO)
+    }
+
+    fun findAllByUsuarioAplicativoUsuarioIdAndUsuarioAplicativoAplicativoMonitoradoId(
+        aplicativoMonitoradoId: UUID,
+        pageable: Pageable
+    ): Page<AplicativoHistoricoResponseDTO> {
+        val usuarioId = securityService.getUsuarioLogadoId()
+
+        return aplicativoHistoricoRepository
+            .findAllByUsuarioAplicativoUsuarioIdAndUsuarioAplicativoAplicativoMonitoradoId(
+                usuarioId,
+                aplicativoMonitoradoId,
+                pageable
+            )
+            .map(aplicativoHistoricoMapper::toResponseDTO)
+    }
+
+    fun findTopByUsuarioAplicativoUsuarioIdOrderByDataHoraAcessoDesc(): AplicativoHistoricoResponseDTO? {
+        val usuarioId = securityService.getUsuarioLogadoId()
+
+        val historico =
+                    aplicativoHistoricoRepository
+                        .findTopByUsuarioAplicativoUsuarioIdOrderByDataHoraAcessoDesc(
+                            usuarioId
+                        )
+                        ?: throw AplicativoHistoricoNotFoundException()
+        return aplicativoHistoricoMapper.toResponseDTO(historico)
     }
 }

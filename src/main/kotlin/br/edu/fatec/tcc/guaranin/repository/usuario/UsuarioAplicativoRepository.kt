@@ -51,6 +51,11 @@ interface UsuarioAplicativoRepository : JpaRepository<UsuarioAplicativo, UUID> {
         pageable: Pageable
     ): Page<UsuarioAplicativo>
 
+    fun findByUsuarioIdAndAplicativoMonitoradoId(
+        usuarioId: UUID,
+        aplicativoMonitoradoId: UUID
+    ): UsuarioAplicativo?
+
     fun findAllByUsuarioIdAndAplicativoMonitoradoNomeContainingIgnoreCase(
         usuarioId: UUID,
         nome: String,
@@ -62,6 +67,11 @@ interface UsuarioAplicativoRepository : JpaRepository<UsuarioAplicativo, UUID> {
         pacote: String,
         pageable: Pageable
     ): Page<UsuarioAplicativo>
+
+    fun findByUsuarioIdAndAplicativoMonitoradoPacoteIgnoreCase(
+        usuarioId: UUID,
+        pacote: String,
+    ): UsuarioAplicativo?
 
     fun findAllByUsuarioIdAndAplicativoMonitoradoPadraoTrue(
         usuarioId: UUID,

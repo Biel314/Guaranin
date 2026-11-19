@@ -10,13 +10,13 @@ import java.util.UUID
  * Os identificadores recebidos são resolvidos para entidades pelo
  * service antes da persistência.
  *
- * @property usuarioAplicativoId identificador da associação
+ * @property pacote Pacote do AplicativoMonitorado
  * usuário-aplicativo responsável pelo acesso.
  * @property dataHoraAcesso data e hora em que o acesso ocorreu.
  */
 class AplicativoHistoricoCreateDTO(
 
-    val usuarioAplicativoId: UUID,
+    val pacote: String,
 
     val dataHoraAcesso: LocalDateTime
 )
