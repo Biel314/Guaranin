@@ -4,6 +4,7 @@ import br.edu.fatec.tcc.guaranin.config.DebugConfig
 import br.edu.fatec.tcc.guaranin.dto.aplicativomonitorado.AplicativoHistoricoCreateDTO
 import br.edu.fatec.tcc.guaranin.dto.aplicativomonitorado.AplicativoHistoricoResponseDTO
 import br.edu.fatec.tcc.guaranin.exception.aplicativomonitorado.AplicativoHistoricoNotFoundException
+import br.edu.fatec.tcc.guaranin.exception.aplicativomonitorado.DataHoraHistoricoInvalidoException
 import br.edu.fatec.tcc.guaranin.exception.usuario.UsuarioAplicativoNotFoundException
 import br.edu.fatec.tcc.guaranin.mapper.aplicativomonitorado.AplicativoHistoricoMapper
 import br.edu.fatec.tcc.guaranin.model.AplicativoHistorico
@@ -47,12 +48,13 @@ import java.util.UUID
 @Service
 class AplicativoHistoricoService(
     private val aplicativoHistoricoRepository: AplicativoHistoricoRepository,
-    private val usuarioRepository: UsuarioRepository,
     private val usuarioAplicativoRepository: UsuarioAplicativoRepository,
     private val aplicativoHistoricoMapper: AplicativoHistoricoMapper,
     private val securityService: SecurityService,
     private val debugConfig: DebugConfig
 ) {
+
+    private val LIMITE_DIAS_HISTORICO: Long = 90L
 
     private fun isDebugMode(): Boolean {
 
@@ -88,6 +90,23 @@ class AplicativoHistoricoService(
         }
     }
 
+    private fun validarDataHoraHistorico(
+        dataHora: LocalDateTime
+    ) {
+        val agora = LocalDateTime.now()
+
+        if (dataHora.isAfter(agora.plusMinutes(5))) {
+            throw DataHoraHistoricoInvalidoException()
+        }
+
+        if (dataHora.isBefore(
+                agora.minusDays(LIMITE_DIAS_HISTORICO)
+            )
+        ) {
+            throw DataHoraHistoricoInvalidoException()
+        }
+    }
+
     /**
      * Cria um novo registro de histórico de acesso a aplicativo.
      *
@@ -105,6 +124,11 @@ class AplicativoHistoricoService(
         dto: AplicativoHistoricoCreateDTO
     ): AplicativoHistoricoResponseDTO {
         val usuarioId = securityService.getUsuarioLogadoId()
+        val agora = LocalDateTime.now()
+
+        validarDataHoraHistorico(
+            dto.dataHoraAcesso
+        )
 
         val usuarioAplicativo =
             usuarioAplicativoRepository
