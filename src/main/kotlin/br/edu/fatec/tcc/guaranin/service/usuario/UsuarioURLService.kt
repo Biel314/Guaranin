@@ -12,6 +12,7 @@ import br.edu.fatec.tcc.guaranin.model.UsuarioURL
 import br.edu.fatec.tcc.guaranin.repository.urlmonitorada.URLMonitoradaRepository
 import br.edu.fatec.tcc.guaranin.repository.usuario.UsuarioRepository
 import br.edu.fatec.tcc.guaranin.repository.usuario.UsuarioURLRepository
+import br.edu.fatec.tcc.guaranin.security.SecurityService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -36,9 +37,10 @@ class UsuarioURLService(
     private val usuarioURLMapper: UsuarioURLMapper,
 
     private val usuarioRepository: UsuarioRepository,
-    private val urlMonitoradaRepository: URLMonitoradaRepository
-) {
+    private val urlMonitoradaRepository: URLMonitoradaRepository,
 
+    private val securityService: SecurityService,
+) {
     /**
      * Lista associações de forma paginada.
      *
@@ -59,7 +61,6 @@ class UsuarioURLService(
      * entidade [Usuario]. A existência do usuário só é verificada quando a
      * página está vazia.
      *
-     * @param usuarioId identificador único do usuário.
      * @param tempoAtivo tempo ativo mínimo em segundos.
      * @param pageable parâmetros de paginação e ordenação.
      * @return página de DTOs das associações encontradas.
@@ -67,17 +68,17 @@ class UsuarioURLService(
      */
     @Transactional(readOnly = true)
     fun findByUsuarioIdAndTempoAtivoGreaterThanEqual(
-        usuarioId: UUID,
         tempoAtivo: Int,
         pageable: Pageable
     ): Page<UsuarioURLResponseDTO> {
+        val authId: UUID = securityService.getUsuarioLogadoId()
         val page = usuarioURLRepository.findByUsuarioIdAndTempoAtivoGreaterThanEqual(
-            usuarioId,
+            authId,
             tempoAtivo,
             pageable
         )
 
-        if (page.totalElements == 0L && !usuarioRepository.existsById(usuarioId)) {
+        if (page.totalElements == 0L && !usuarioRepository.existsById(authId)) {
             throw UsuarioNotFoundException()
         }
 
@@ -100,22 +101,22 @@ class UsuarioURLService(
     }
 
     /**
-     * Lista associações de um usuário de forma paginada.
+     * Lista associações do usuário logado de forma paginada.
      *
      * Consulta diretamente pelo identificador do usuário, sem carregar a
      * entidade [Usuario]. A existência do usuário só é verificada quando a
      * página está vazia.
      *
-     * @param usuarioId identificador único do usuário.
      * @param pageable parâmetros de paginação e ordenação.
      * @return página de DTOs das associações encontradas.
      * @throws UsuarioNotFoundException quando o usuário não existe.
      */
     @Transactional(readOnly = true)
-    fun findByUsuarioId(usuarioId: UUID, pageable: Pageable): Page<UsuarioURLResponseDTO> {
-        val page = usuarioURLRepository.findByUsuarioId(usuarioId, pageable)
+    fun findByUsuarioId(pageable: Pageable): Page<UsuarioURLResponseDTO> {
+        val authId: UUID = securityService.getUsuarioLogadoId()
+        val page = usuarioURLRepository.findByUsuarioId(authId, pageable)
 
-        if (page.totalElements == 0L && !usuarioRepository.existsById(usuarioId)) {
+        if (page.totalElements == 0L && !usuarioRepository.existsById(authId)) {
             throw UsuarioNotFoundException()
         }
 
@@ -148,7 +149,8 @@ class UsuarioURLService(
      */
     @Transactional
     fun create(createDTO: UsuarioURLCreateDTO): UsuarioURLResponseDTO {
-        val usuario = usuarioRepository.findById(createDTO.usuarioId)
+        val authId: UUID = securityService.getUsuarioLogadoId()
+        val usuario = usuarioRepository.findById(authId)
             .orElseThrow { UsuarioNotFoundException() }
         val urlMonitorada = urlMonitoradaRepository.findById(createDTO.urlMonitoradaId)
             .orElseThrow { URLMonitoradaNotFoundException() }
@@ -184,16 +186,6 @@ class UsuarioURLService(
 
         usuarioURLMapper.updateEntityFromDTO(updateDTO, usuarioURL)
 
-        if (updateDTO.usuarioId != null) {
-            usuarioURL.usuario = usuarioRepository.findById(updateDTO.usuarioId)
-                .orElseThrow { UsuarioNotFoundException() }
-        }
-
-        if (updateDTO.urlMonitoradaId != null) {
-            usuarioURL.urlMonitorada = urlMonitoradaRepository.findById(updateDTO.urlMonitoradaId)
-                .orElseThrow { URLMonitoradaNotFoundException() }
-        }
-
         return usuarioURLMapper.toResponseDTO(
             usuarioURLRepository.save(usuarioURL)
         )
@@ -221,7 +213,11 @@ class UsuarioURLService(
      * @return Entidade [UsuarioURL] mapeada.
      */
     fun toEntity(dto: UsuarioURLCreateDTO): UsuarioURL {
-        return usuarioURLMapper.toEntity(dto)
+        val usuarioUrl: UsuarioURL = usuarioURLMapper.toEntity(dto)
+        usuarioUrl.usuario = usuarioRepository.findById(
+            securityService.getUsuarioLogadoId()
+        ).orElseThrow { UsuarioNotFoundException() }
+        return usuarioUrl
     }
 
     /**
@@ -231,6 +227,10 @@ class UsuarioURLService(
      * @return Entidade [UsuarioURL] mapeada.
      */
     fun toEntity(dto: UsuarioURLUpdateDTO): UsuarioURL {
-        return usuarioURLMapper.toEntity(dto)
+        val usuarioUrl: UsuarioURL = usuarioURLMapper.toEntity(dto)
+        usuarioUrl.usuario = usuarioRepository.findById(
+            securityService.getUsuarioLogadoId()
+        ).orElseThrow { UsuarioNotFoundException() }
+        return usuarioUrl
     }
 }

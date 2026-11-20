@@ -1,12 +1,10 @@
 package br.edu.fatec.tcc.guaranin.dto.mascote
 
 import jakarta.validation.constraints.NotBlank
-import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
 import java.util.UUID
 
 data class MascoteUpdateDTO (
-    @NotNull
     var id: UUID?,
 
     @NotBlank(message = "O nome é obrigatório")

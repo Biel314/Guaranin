@@ -19,7 +19,7 @@ import java.util.*
 @Service
 class URLMonitoradaService(
     private val urlMonitoradaRepository: URLMonitoradaRepository,
-    private val urlMonitoradaMapper: URLMonitoradaMapper
+    private val urlMonitoradaMapper: URLMonitoradaMapper,
 ) {
 
     /**

@@ -14,9 +14,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
-import org.springdoc.core.annotations.ParameterObject
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -34,89 +31,11 @@ import java.util.*
  * @see UsuarioAPIExceptionHandler
  */
 @RestController
-@RequestMapping("/api/usuarios")
+@RequestMapping("/api/v1/usuarios")
 @Tag(name = "Usuários", description = "Operações REST para gerenciamento de usuários.")
 class UsuarioAPIController(
     private val usuarioService: UsuarioService,
 ) {
-
-    /**
-     * Lista os usuários cadastrados de forma paginada.
-     *
-     * A paginação e a ordenação são recebidas via [Pageable] e repassadas ao
-     * [UsuarioService]. Retorna `200 OK` com uma página de [UsuarioResponseDTO].
-     *
-     * @param pageable parâmetros de paginação e ordenação.
-     * @return página com os usuários encontrados.
-     */
-    @GetMapping("")
-    @Operation(
-        summary = "Listar usuários",
-        description = "Retorna uma página de usuários com paginação e ordenação."
-    )
-    @ApiResponses(
-        value = [
-            ApiResponse(responseCode = "200", description = "Página de usuários retornada com sucesso"),
-            ApiResponse(
-                responseCode = "500",
-                description = "Erro interno",
-                content = [Content(schema = Schema(implementation = ApiErrorDTO::class))]
-            )
-        ]
-    )
-    fun listarTodos(@ParameterObject pageable: Pageable): Page<UsuarioResponseDTO> {
-        return usuarioService.findAll(pageable)
-    }
-
-    /**
-     * Busca um usuário pelo identificador.
-     *
-     * Retorna `200 OK` com os dados públicos do usuário ou `404 Not Found`
-     * quando o registro não existe.
-     *
-     * @param id identificador único ([UUID]) do usuário.
-     * @return dados públicos do usuário encontrado.
-     * @throws br.edu.fatec.tcc.guaranin.exception.usuario.UsuarioNotFoundException se o
-     *   usuário não existir; convertida em `404` pelo [UsuarioAPIExceptionHandler].
-     */
-    @GetMapping("/{id}")
-    @Operation(
-        summary = "Buscar usuário por ID",
-        description = "Retorna os dados públicos do usuário."
-    )
-    @ApiResponses(
-        value = [
-            ApiResponse(
-                responseCode = "200",
-                description = "Usuário encontrado com sucesso",
-                content = [Content(schema = Schema(implementation = UsuarioResponseDTO::class))]
-            ),
-            ApiResponse(
-                responseCode = "400",
-                description = "ID do usuário inválido",
-                content = [Content(schema = Schema(implementation = ApiErrorDTO::class))]
-            ),
-            ApiResponse(
-                responseCode = "404",
-                description = "Usuário não encontrado",
-                content = [Content(schema = Schema(implementation = ApiErrorDTO::class))]
-            ),
-            ApiResponse(
-                responseCode = "500",
-                description = "Erro interno",
-                content = [Content(schema = Schema(implementation = ApiErrorDTO::class))]
-            )
-        ]
-    )
-    fun buscarPorId(
-        @Parameter(
-            description = "ID do usuário",
-            example = "550e8400-e29b-41d4-a716-446655440000"
-        )
-        @PathVariable id: UUID
-    ): UsuarioResponseDTO {
-        return usuarioService.findById(id)
-    }
 
     /**
      * Cria um usuário.
@@ -128,7 +47,7 @@ class UsuarioAPIController(
      * @param dto dados de criação do usuário.
      * @return resposta `201 Created` com os dados públicos do usuário criado.
      */
-    @PostMapping("")
+    @PostMapping("/new")
     @Operation(
         summary = "Criar usuário",
         description = "Cria um usuário e retorna 201 com os dados públicos. A senha não é retornada."
@@ -166,13 +85,12 @@ class UsuarioAPIController(
      * e só é considerada quando preenchida. Retorna `200 OK` com
      * [UsuarioResponseDTO].
      *
-     * @param id identificador único ([UUID]) do usuário.
      * @param dto dados de atualização do usuário.
      * @return dados públicos do usuário atualizado.
      * @throws br.edu.fatec.tcc.guaranin.exception.usuario.UsuarioNotFoundException se o
      *   usuário não existir; convertida em `404` pelo [UsuarioAPIExceptionHandler].
      */
-    @PutMapping("/{id}")
+    @PutMapping("", "/")
     @Operation(
         summary = "Atualizar usuário",
         description = "Atualiza os dados do usuário. A senha é opcional."
@@ -206,10 +124,9 @@ class UsuarioAPIController(
             description = "ID do usuário",
             example = "550e8400-e29b-41d4-a716-446655440000"
         )
-        @PathVariable id: UUID,
         @Valid @RequestBody dto: UsuarioUpdateDTO
     ): UsuarioResponseDTO {
-        return usuarioService.update(id, dto)
+        return usuarioService.update(dto)
     }
 
     /**
@@ -267,51 +184,7 @@ class UsuarioAPIController(
         @ValidApelido
         @PathVariable apelido: String
     ): UsuarioResponseDTO {
-        return usuarioService.updateApelido(id, apelido)
+        return usuarioService.updateApelido(apelido)
     }
 
-    /**
-     * Remove um usuário pelo identificador.
-     *
-     * Retorna `204 No Content` sem corpo após a remoção.
-     *
-     * @param id identificador único ([UUID]) do usuário.
-     * @throws br.edu.fatec.tcc.guaranin.exception.usuario.UsuarioNotFoundException se o
-     *   usuário não existir; convertida em `404` pelo [UsuarioAPIExceptionHandler].
-     */
-    @DeleteMapping("/{id}")
-    @Operation(
-        summary = "Remover usuário",
-        description = "Remove o usuário e retorna 204 sem corpo."
-    )
-    @ApiResponses(
-        value = [
-            ApiResponse(responseCode = "204", description = "Usuário removido com sucesso"),
-            ApiResponse(
-                responseCode = "400",
-                description = "ID do usuário inválido",
-                content = [Content(schema = Schema(implementation = ApiErrorDTO::class))]
-            ),
-            ApiResponse(
-                responseCode = "404",
-                description = "Usuário não encontrado",
-                content = [Content(schema = Schema(implementation = ApiErrorDTO::class))]
-            ),
-            ApiResponse(
-                responseCode = "500",
-                description = "Erro interno",
-                content = [Content(schema = Schema(implementation = ApiErrorDTO::class))]
-            )
-        ]
-    )
-    fun deletar(
-        @Parameter(
-            description = "ID do usuário",
-            example = "550e8400-e29b-41d4-a716-446655440000"
-        )
-        @PathVariable id: UUID
-    ): ResponseEntity<Void> {
-        usuarioService.delete(id)
-        return ResponseEntity.noContent().build()
-    }
 }

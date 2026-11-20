@@ -35,7 +35,7 @@ import java.util.*
  * @see URLHistoricoAPIExceptionHandler
  */
 @RestController
-@RequestMapping("/api/urlhistorico")
+@RequestMapping("/api/v1/usuarios/url_historico")
 @Tag(name = "URL Histórico", description = "Operações REST para histórico de acesso a URLs")
 class URLHistoricoAPIController(
     private val urlHistoricoService: URLHistoricoService
@@ -47,7 +47,7 @@ class URLHistoricoAPIController(
      * @param pageable parâmetros de paginação e ordenação.
      * @return página de históricos.
      */
-    @GetMapping("")
+    @GetMapping("/list")
     @Operation(
         summary = "Listar URL Historicos",
         description = "Retorna uma página de URL historicos com paginação e ordenação"
@@ -119,11 +119,10 @@ class URLHistoricoAPIController(
     /**
      * Busca os históricos de um usuário de forma paginada.
      *
-     * @param id identificador único do usuário.
      * @param pageable parâmetros de paginação e ordenação.
      * @return página de históricos do usuário.
      */
-    @GetMapping("usuario/{id}")
+    @GetMapping("")
     @Operation(
         summary = "Buscar página de URL Historico por id de Usuário",
         description = "Retorna página de URL Historico do usuario"
@@ -133,11 +132,6 @@ class URLHistoricoAPIController(
             ApiResponse(
                 responseCode = "200",
                 description = "Página de URL Historico retornada com sucesso"
-            ),
-            ApiResponse(
-                responseCode = "400",
-                description = "Id do usuário inválido",
-                content = [Content(schema = Schema(implementation = ApiErrorDTO::class))]
             ),
             ApiResponse(
                 responseCode = "404",
@@ -152,14 +146,9 @@ class URLHistoricoAPIController(
         ]
     )
     fun buscarPorUsuario(
-        @Parameter(
-            description = "ID do usuário",
-            example = "8f19e7a7-48f6-43e1-b0ba-477afe97f06d"
-        )
-        @PathVariable id: UUID,
         @ParameterObject pageable: Pageable
     ): Page<URLHistoricoResponseDTO> {
-        return urlHistoricoService.findAllByUsuarioId(id, pageable)
+        return urlHistoricoService.findAllByUsuarioLogado(pageable)
     }
 
     /**

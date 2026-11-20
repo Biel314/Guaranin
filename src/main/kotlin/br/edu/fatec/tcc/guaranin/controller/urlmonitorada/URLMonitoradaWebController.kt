@@ -2,7 +2,7 @@ package br.edu.fatec.tcc.guaranin.controller.urlmonitorada
 
 import br.edu.fatec.tcc.guaranin.dto.urlmonitorada.URLMonitoradaCreateDTO
 import br.edu.fatec.tcc.guaranin.dto.urlmonitorada.URLMonitoradaUpdateDTO
-import br.edu.fatec.tcc.guaranin.service.urlmonitorada.URLMonitoradaService
+import br.edu.fatec.tcc.guaranin.legacy.LegacyURLMonitoradaService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -24,7 +24,7 @@ import java.util.*
 @RequestMapping("/url-monitorado")
 @Tag(name = "URL Monitorado", description = "Endpoints web para gerenciamento e cadastro de URLs monitoradas")
 class URLMonitoradaWebController(
-    private val urlMonitoradaService: URLMonitoradaService
+    private val urlMonitoradaService: LegacyURLMonitoradaService
 ) {
 
     /**
@@ -36,9 +36,11 @@ class URLMonitoradaWebController(
      */
     @GetMapping("", "/")
     @Operation(summary = "Listar URLs monitoradas", description = "Exibe listagem paginada das URLs monitoradas.")
-    @ApiResponses(value = [
-        ApiResponse(responseCode = "200", description = "Listagem carregada com sucesso")
-    ])
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "200", description = "Listagem carregada com sucesso")
+        ]
+    )
     fun listarTodos(
         model: Model,
         pageable: Pageable
@@ -56,7 +58,10 @@ class URLMonitoradaWebController(
      * @return Nome da view Thymeleaf `url-monitorado/novo`.
      */
     @GetMapping("/novo")
-    @Operation(summary = "Formulário de nova URL", description = "Exibe formulário para cadastro de nova URL monitorada.")
+    @Operation(
+        summary = "Formulário de nova URL",
+        description = "Exibe formulário para cadastro de nova URL monitorada."
+    )
     @ApiResponse(responseCode = "200", description = "Formulário exibido com sucesso")
     fun novoForm(model: Model): String {
         if (!model.containsAttribute("urlMonitorada")) {
@@ -74,10 +79,12 @@ class URLMonitoradaWebController(
      */
     @GetMapping("/{id}")
     @Operation(summary = "Formulário de edição", description = "Busca URL por ID e exibe formulário de edição.")
-    @ApiResponses(value = [
-        ApiResponse(responseCode = "200", description = "Formulário de edição carregado com sucesso"),
-        ApiResponse(responseCode = "404", description = "URL monitorada não encontrada")
-    ])
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "200", description = "Formulário de edição carregado com sucesso"),
+            ApiResponse(responseCode = "404", description = "URL monitorada não encontrada")
+        ]
+    )
     fun editar(
         @Parameter(description = "ID da URL monitorada") @PathVariable id: UUID,
         model: Model
@@ -103,10 +110,12 @@ class URLMonitoradaWebController(
      */
     @PostMapping("")
     @Operation(summary = "Salvar nova URL", description = "Valida e persiste nova URL monitorada.")
-    @ApiResponses(value = [
-        ApiResponse(responseCode = "302", description = "URL criada com sucesso, redireciona para listagem"),
-        ApiResponse(responseCode = "200", description = "Erro de validação, retorna ao formulário")
-    ])
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "302", description = "URL criada com sucesso, redireciona para listagem"),
+            ApiResponse(responseCode = "200", description = "Erro de validação, retorna ao formulário")
+        ]
+    )
     fun salvar(
         @Valid @ModelAttribute("urlMonitorada") dto: URLMonitoradaCreateDTO,
         result: BindingResult,
@@ -131,10 +140,12 @@ class URLMonitoradaWebController(
      */
     @PutMapping("/{id}")
     @Operation(summary = "Atualizar URL", description = "Valida e atualiza URL monitorada existente.")
-    @ApiResponses(value = [
-        ApiResponse(responseCode = "302", description = "URL atualizada com sucesso, redireciona para listagem"),
-        ApiResponse(responseCode = "200", description = "Erro de validação, retorna ao formulário")
-    ])
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "302", description = "URL atualizada com sucesso, redireciona para listagem"),
+            ApiResponse(responseCode = "200", description = "Erro de validação, retorna ao formulário")
+        ]
+    )
     fun atualizar(
         @Parameter(description = "ID da URL monitorada") @PathVariable id: UUID,
         @Valid @ModelAttribute("urlMonitoradaUpdateDTO") dto: URLMonitoradaUpdateDTO,
@@ -158,10 +169,12 @@ class URLMonitoradaWebController(
      */
     @DeleteMapping("/{id}")
     @Operation(summary = "Deletar URL", description = "Remove URL monitorada do sistema.")
-    @ApiResponses(value = [
-        ApiResponse(responseCode = "302", description = "URL removida com sucesso, redireciona para listagem"),
-        ApiResponse(responseCode = "404", description = "URL monitorada não encontrada")
-    ])
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "302", description = "URL removida com sucesso, redireciona para listagem"),
+            ApiResponse(responseCode = "404", description = "URL monitorada não encontrada")
+        ]
+    )
     fun deletar(
         @Parameter(description = "ID da URL monitorada") @PathVariable id: UUID
     ): String {
