@@ -1,5 +1,6 @@
 package br.edu.fatec.tcc.guaranin.service.mascote
 
+import br.edu.fatec.tcc.guaranin.config.DebugConfig
 import br.edu.fatec.tcc.guaranin.dto.mascote.MascoteCreateDTO
 import br.edu.fatec.tcc.guaranin.dto.mascote.MascoteResponseDTO
 import br.edu.fatec.tcc.guaranin.dto.mascote.MascoteUpdateDTO
@@ -30,7 +31,8 @@ class MascoteService(
     private val mascoteRepository: MascoteRepository,
     private val usuarioRepository: UsuarioRepository,
     private val mascoteMapper: MascoteMapper,
-    private val securityService: SecurityService
+    private val securityService: SecurityService,
+    private val debugConfig: DebugConfig,
 ) {
     private fun isDebugMode(): Boolean {
 
@@ -143,13 +145,13 @@ class MascoteService(
     fun findAllByUsuarioIdAndEstadoMorto(pageable: Pageable): Page<MascoteResponseDTO> {
         val usuarioId = securityService.getUsuarioLogadoId()
 
-        authorizationService.validarUsuario(usuarioId)
+        securityService.validarUsuario(usuarioId)
 
         if (isDebugMode()) {
             return mascoteRepository.findAllByEstadoMORTO(
-                    Estado.MORTO,
-                    pageable
-                    )
+                Estado.MORTO,
+                pageable
+            )
                 .map {
                     mascoteMapper.toResponseDTO(it)
                 }
