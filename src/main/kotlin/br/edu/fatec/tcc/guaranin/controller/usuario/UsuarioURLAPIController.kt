@@ -33,7 +33,7 @@ import java.util.*
  * @see UsuarioURLAPIExceptionHandler
  */
 @RestController
-@RequestMapping("/api/usuarios_url")
+@RequestMapping("/api/v1/usuarios/url_monitorada")
 @Tag(
     name = "Usuários URL",
     description = "Operações REST para gerenciamento de associações entre usuários e URLs monitoradas."
@@ -41,7 +41,6 @@ import java.util.*
 class UsuarioURLAPIController(
     private val usuarioURLService: UsuarioURLService
 ) {
-
     /**
      * Lista as associações cadastradas de forma paginada.
      *
@@ -71,12 +70,11 @@ class UsuarioURLAPIController(
     }
 
     /**
-     * Lista as associações de um usuário específico de forma paginada.
+     * Lista as url monitoradas do usuário logado de forma paginada.
      *
      * Retorna `200 OK` com uma página de [UsuarioURLResponseDTO] ou `404 Not Found`
      * se o usuário não existir.
      *
-     * @param id identificador único ([UUID]) do usuário.
      * @param pageable parâmetros de paginação e ordenação.
      * @return página com as associações encontradas.
      * @throws br.edu.fatec.tcc.guaranin.exception.usuario.UsuarioNotFoundException se o
@@ -95,11 +93,6 @@ class UsuarioURLAPIController(
                 content = [Content(schema = Schema(implementation = UsuarioURLResponseDTO::class))]
             ),
             ApiResponse(
-                responseCode = "400",
-                description = "ID do usuário inválido",
-                content = [Content(schema = Schema(implementation = ApiErrorDTO::class))]
-            ),
-            ApiResponse(
                 responseCode = "404",
                 description = "Usuário não encontrado",
                 content = [Content(schema = Schema(implementation = ApiErrorDTO::class))]
@@ -112,14 +105,9 @@ class UsuarioURLAPIController(
         ]
     )
     fun listarPorUsuarioId(
-        @Parameter(
-            description = "ID do Usuário",
-            example = "550e8400-e29b-41d4-a716-446655440000"
-        )
-        @PathVariable id: UUID,
         @ParameterObject pageable: Pageable
     ): Page<UsuarioURLResponseDTO> {
-        return usuarioURLService.findByUsuarioId(id, pageable)
+        return usuarioURLService.findByUsuarioId(pageable)
     }
 
     /**
@@ -266,15 +254,10 @@ class UsuarioURLAPIController(
         ]
     )
     fun criar(
-        @Parameter(
-            description = "ID do Usuário",
-            example = "550e8400-e29b-41d4-a716-446655440000"
-        )
-        @PathVariable id: UUID,
         @Valid @RequestBody dto: UsuarioURLCreateDTO
     ): ResponseEntity<UsuarioURLResponseDTO> {
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(usuarioURLService.create(id, dto))
+            .body(usuarioURLService.create(dto))
     }
 
     /**
