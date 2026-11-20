@@ -50,7 +50,7 @@ class UsuarioURLAPIController(
      * @param pageable parâmetros de paginação e ordenação.
      * @return página com as associações encontradas.
      */
-    @GetMapping("")
+    @GetMapping("/list")
     @Operation(
         summary = "Listar associações de usuário e URL",
         description = "Retorna uma página de associações com paginação e ordenação."
@@ -80,7 +80,7 @@ class UsuarioURLAPIController(
      * @throws br.edu.fatec.tcc.guaranin.exception.usuario.UsuarioNotFoundException se o
      *   usuário não existir; convertida em `404` pelo [UsuarioURLAPIExceptionHandler].
      */
-    @GetMapping("/usuario/{id}")
+    @GetMapping("")
     @Operation(
         summary = "Listar associações por ID do usuário",
         description = "Retorna uma página de associações de URLs filtrada pelo ID do usuário."
@@ -224,7 +224,7 @@ class UsuarioURLAPIController(
      * @throws br.edu.fatec.tcc.guaranin.exception.usuario.UsuarioNotFoundException se o usuário não existir.
      * @throws br.edu.fatec.tcc.guaranin.exception.urlmonitorada.URLMonitoradaNotFoundException se a URL não existir.
      */
-    @PostMapping("/usuario/{id}")
+    @PostMapping()
     @Operation(
         summary = "Criar associação",
         description = "Cria uma associação entre usuário e URL monitorada e retorna 201."

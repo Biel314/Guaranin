@@ -7,6 +7,7 @@ import br.edu.fatec.tcc.guaranin.exception.urlmonitorada.URLHistoricoNotFoundExc
 import br.edu.fatec.tcc.guaranin.mapper.urlmonitorada.URLHistoricoMapper
 import br.edu.fatec.tcc.guaranin.model.URLHistorico
 import br.edu.fatec.tcc.guaranin.repository.urlmonitorada.URLHistoricoRepository
+import br.edu.fatec.tcc.guaranin.security.SecurityService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -29,7 +30,8 @@ import java.util.*
 @Service
 class URLHistoricoService(
     private val urlHistoricoRepository: URLHistoricoRepository,
-    private val urlHistoricoMapper: URLHistoricoMapper
+    private val urlHistoricoMapper: URLHistoricoMapper,
+    private val securityService: SecurityService,
 ) {
     /**
      * Lista todos os históricos de forma paginada.
@@ -75,15 +77,15 @@ class URLHistoricoService(
     }
 
     /**
-     * Lista os históricos de um usuário de forma paginada.
+     * Lista os históricos do usuário logado de forma paginada.
      *
-     * @param usuarioId identificador único do usuário.
      * @param pageable parâmetros de paginação e ordenação.
      * @return página de DTOs dos históricos encontrados.
      */
     @Transactional(readOnly = true)
-    fun findAllByUsuarioId(usuarioId: UUID, pageable: Pageable): Page<URLHistoricoResponseDTO> {
-        return urlHistoricoRepository.findByUsuarioUrlUsuarioId(usuarioId, pageable)
+    fun findAllByUsuarioLogado(pageable: Pageable): Page<URLHistoricoResponseDTO> {
+        val authId: UUID = securityService.getUsuarioLogadoId()
+        return urlHistoricoRepository.findByUsuarioUrlUsuarioId(authId, pageable)
             .map { urlHistoricoMapper.toResponseDTO(it) }
     }
 
