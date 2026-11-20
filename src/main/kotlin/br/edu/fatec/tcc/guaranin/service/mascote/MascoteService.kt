@@ -14,7 +14,6 @@ import br.edu.fatec.tcc.guaranin.model.Mascote
 import br.edu.fatec.tcc.guaranin.model.Usuario
 import br.edu.fatec.tcc.guaranin.repository.mascote.MascoteRepository
 import br.edu.fatec.tcc.guaranin.repository.usuario.UsuarioRepository
-import br.edu.fatec.tcc.guaranin.security.AuthorizationService
 import br.edu.fatec.tcc.guaranin.security.SecurityService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -27,11 +26,10 @@ import java.util.*
  * Serviço de regras de negócio para [Usuario] (CRUD).
  */
 @Service
-class MascoteService (
+class MascoteService(
     private val mascoteRepository: MascoteRepository,
     private val usuarioRepository: UsuarioRepository,
     private val mascoteMapper: MascoteMapper,
-    private val authorizationService: AuthorizationService,
     private val securityService: SecurityService
 ) {
     private fun getUsuarioId(mascote: Mascote): UUID {
@@ -44,7 +42,7 @@ class MascoteService (
     }
 
     private fun validarDonoMascote(mascote: Mascote) {
-        authorizationService.validarUsuario(
+        securityService.validarUsuario(
             getUsuarioId(mascote)
         )
     }
@@ -97,7 +95,7 @@ class MascoteService (
     fun findByIdAndEstado(): MascoteResponseDTO {
         val usuarioId = securityService.getUsuarioLogadoId()
 
-        authorizationService.validarUsuario(usuarioId)
+        securityService.validarUsuario(usuarioId)
 
         return mascoteMapper.toResponseDTO(
             mascoteRepository.findByUsuarioIdAndEstado(
@@ -117,6 +115,7 @@ class MascoteService (
                 Estado.MORTO
             )
     }
+
     @Transactional
     fun create(
         mascoteCreateDTO: MascoteCreateDTO,
@@ -156,7 +155,7 @@ class MascoteService (
     fun update(mascoteUpdateDTO: MascoteUpdateDTO): MascoteResponseDTO {
         val uuid = mascoteUpdateDTO.id ?: throw InvalidDTOException()
 
-       	return update(uuid, mascoteUpdateDTO)
+        return update(uuid, mascoteUpdateDTO)
     }
 
     @Transactional
@@ -167,14 +166,14 @@ class MascoteService (
 
         validarDonoMascote(mascote)
 
-       return mascoteMapper.toResponseDTO(mascoteRepository.save(mascote))
+        return mascoteMapper.toResponseDTO(mascoteRepository.save(mascote))
     }
 
     @Transactional
     fun findByUsuarioIdForUpdate(): MascoteUpdateDTO {
         val usuarioId = securityService.getUsuarioLogadoId()
-        
-        authorizationService.validarUsuario(usuarioId)
+
+        securityService.validarUsuario(usuarioId)
 
         val mascote = mascoteRepository.findByUsuarioId(usuarioId)
             .orElseThrow { MascoteNotFoundException() }

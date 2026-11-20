@@ -9,7 +9,7 @@ import br.edu.fatec.tcc.guaranin.exception.usuario.UsuarioNotFoundException
 import br.edu.fatec.tcc.guaranin.mapper.usuario.UsuarioMapper
 import br.edu.fatec.tcc.guaranin.model.Usuario
 import br.edu.fatec.tcc.guaranin.repository.usuario.UsuarioRepository
-import br.edu.fatec.tcc.guaranin.security.AuthorizationService
+import br.edu.fatec.tcc.guaranin.security.SecurityService
 import br.edu.fatec.tcc.guaranin.validation.usuario.ValidApelido
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -34,7 +34,7 @@ import org.springframework.validation.annotation.Validated
 class UsuarioService(
     private val usuarioRepository: UsuarioRepository,
     private val usuarioMapper: UsuarioMapper,
-    private val authorizationService: AuthorizationService,
+    private val securityService: SecurityService,
     private val passwordEncoder: PasswordEncoder
 ) {
 
@@ -70,7 +70,7 @@ class UsuarioService(
     @Transactional
     fun update(usuarioUpdateDTO: UsuarioUpdateDTO): UsuarioResponseDTO {
         val usuario = usuarioRepository.findById(
-            authorizationService.getIdUsuarioAutenticado()
+            securityService.getUsuarioLogadoId()
         ).orElseThrow { UsuarioNotFoundException() }
 
         usuarioMapper.updateEntityFromDTO(usuarioUpdateDTO, usuario)
@@ -103,7 +103,7 @@ class UsuarioService(
         apelido: String
     ): UsuarioResponseDTO {
         val usuario = usuarioRepository.findById(
-            authorizationService.getIdUsuarioAutenticado()
+            securityService.getUsuarioLogadoId()
         ).orElseThrow { UsuarioNotFoundException() }
 
         usuario.apelido = apelido
@@ -121,9 +121,9 @@ class UsuarioService(
     @Transactional
     fun delete(): UsuarioResponseDTO {
         val usuario = usuarioRepository.findById(
-            authorizationService.getIdUsuarioAutenticado()
+            securityService.getUsuarioLogadoId()
         ).orElseThrow { UsuarioNotFoundException() }
-        authorizationService.validarUsuario(usuario.id)
+        securityService.validarUsuario(usuario.id)
         usuarioRepository.delete(usuario)
         //TODO setup Logout
         //authorizationService.logoutUsuarioAutenticado()
@@ -138,7 +138,7 @@ class UsuarioService(
      */
     fun toUsuario(usuarioUpdateDTO: UsuarioUpdateDTO): Usuario {
         val usuario: Usuario = usuarioMapper.toEntity(usuarioUpdateDTO)
-        usuario.id = authorizationService.getIdUsuarioAutenticado()
+        usuario.id = securityService.getUsuarioLogadoId()
         return usuario
     }
 

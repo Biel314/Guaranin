@@ -1,10 +1,8 @@
 package br.edu.fatec.tcc.guaranin.security
 
-import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.stereotype.Service
-import java.util.UUID
+import java.util.*
 
-@Service
 interface SecurityService {
     fun getUsuarioLogadoId(): UUID
+    fun validarUsuario(usuarioId: UUID?): Boolean
 }

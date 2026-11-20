@@ -1,10 +1,9 @@
 package br.edu.fatec.tcc.guaranin.security
 
 import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.stereotype.Service
-import java.util.UUID
+import java.nio.file.AccessDeniedException
+import java.util.*
 
-@Service
 class JwtSecurityService : SecurityService {
 
     override fun getUsuarioLogadoId(): UUID {
@@ -20,5 +19,21 @@ class JwtSecurityService : SecurityService {
         return UUID.fromString(
             authentication.name
         )
+    }
+
+    @Throws(java.nio.file.AccessDeniedException::class)
+    override fun validarUsuario(
+        usuarioId: UUID?
+    ): Boolean {
+        if (
+            usuarioId != null &&
+            getUsuarioLogadoId()
+            != usuarioId
+        ) {
+            throw AccessDeniedException(
+                "Acesso negado"
+            )
+        }
+        return true
     }
 }
