@@ -3,7 +3,7 @@ package br.edu.fatec.tcc.guaranin.controller.usuario
 import br.edu.fatec.tcc.guaranin.dto.mascote.MascoteCreateDTO
 import br.edu.fatec.tcc.guaranin.dto.usuario.UsuarioCreateDTO
 import br.edu.fatec.tcc.guaranin.dto.usuario.UsuarioUpdateDTO
-import br.edu.fatec.tcc.guaranin.service.usuario.LegacyUsuarioService
+import br.edu.fatec.tcc.guaranin.legacy.LegacyUsuarioService
 import br.edu.fatec.tcc.guaranin.service.usuario.UsuarioService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter

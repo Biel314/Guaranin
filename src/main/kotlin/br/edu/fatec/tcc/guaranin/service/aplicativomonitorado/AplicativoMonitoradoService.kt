@@ -6,24 +6,20 @@ import br.edu.fatec.tcc.guaranin.dto.aplicativomonitorado.AplicativoMonitoradoRe
 import br.edu.fatec.tcc.guaranin.dto.aplicativomonitorado.AplicativoMonitoradoUpdateDTO
 import br.edu.fatec.tcc.guaranin.exception.aplicativomonitorado.AplicativoMonitoradoNotFoundException
 import br.edu.fatec.tcc.guaranin.exception.usuario.UsuarioAplicativoJaExisteException
-import br.edu.fatec.tcc.guaranin.exception.usuario.UsuarioAplicativoNotFoundException
 import br.edu.fatec.tcc.guaranin.exception.usuario.UsuarioNotFoundException
 import br.edu.fatec.tcc.guaranin.mapper.aplicativomonitorado.AplicativoMonitoradoMapper
 import br.edu.fatec.tcc.guaranin.model.AplicativoMonitorado
-import br.edu.fatec.tcc.guaranin.model.Mascote
 import br.edu.fatec.tcc.guaranin.model.UsuarioAplicativo
 import br.edu.fatec.tcc.guaranin.repository.aplicativomonitorado.AplicativoMonitoradoRepository
 import br.edu.fatec.tcc.guaranin.repository.usuario.UsuarioAplicativoRepository
 import br.edu.fatec.tcc.guaranin.repository.usuario.UsuarioRepository
-import br.edu.fatec.tcc.guaranin.security.AuthorizationService
 import br.edu.fatec.tcc.guaranin.security.SecurityService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
-import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.nio.file.AccessDeniedException
-import java.util.UUID
+import java.util.*
 
 /**
  * Service responsável pelas regras de negócio relacionadas à entidade
@@ -191,7 +187,7 @@ class AplicativoMonitoradoService(
         validarDonoAplicativo(id)
 
         val aplicativoMonitorado = aplicativoMonitoradoRepository.findById(id)
-            .orElseThrow {  AplicativoMonitoradoNotFoundException() }
+            .orElseThrow { AplicativoMonitoradoNotFoundException() }
         aplicativoMonitoradoMapper.updateEntityFromDTO(dto, aplicativoMonitorado)
 
         return aplicativoMonitoradoMapper.toResponseDTO(
@@ -215,7 +211,7 @@ class AplicativoMonitoradoService(
         validarDonoAplicativo(id)
 
         val aplicativoMonitorado = aplicativoMonitoradoRepository.findById(id)
-            .orElseThrow {  AplicativoMonitoradoNotFoundException() }
+            .orElseThrow { AplicativoMonitoradoNotFoundException() }
 
         aplicativoMonitoradoRepository.delete(aplicativoMonitorado)
 
@@ -251,7 +247,7 @@ class AplicativoMonitoradoService(
     @Transactional(readOnly = true)
     fun findByNome(nome: String): AplicativoMonitoradoResponseDTO {
         val aplicativoMonitorado = aplicativoMonitoradoRepository.findByNome(nome)
-            .orElseThrow {  AplicativoMonitoradoNotFoundException() }
+            .orElseThrow { AplicativoMonitoradoNotFoundException() }
 
         validarDonoAplicativo(aplicativoMonitorado)
 
@@ -278,7 +274,7 @@ class AplicativoMonitoradoService(
                 nome,
                 pageable
             )
-            .map (::toResponseDTO)
+            .map(::toResponseDTO)
     }
 
 

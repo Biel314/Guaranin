@@ -2,7 +2,7 @@ package br.edu.fatec.tcc.guaranin.controller.urlmonitorada
 
 import br.edu.fatec.tcc.guaranin.dto.urlmonitorada.URLMonitoradaCreateDTO
 import br.edu.fatec.tcc.guaranin.dto.urlmonitorada.URLMonitoradaUpdateDTO
-import br.edu.fatec.tcc.guaranin.legacy.LegacyURLMonitoradaService.LegacyURLMonitoradaService
+import br.edu.fatec.tcc.guaranin.legacy.LegacyURLMonitoradaService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse

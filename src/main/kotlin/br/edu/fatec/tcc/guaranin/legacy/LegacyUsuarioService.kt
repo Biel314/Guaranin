@@ -1,4 +1,4 @@
-package br.edu.fatec.tcc.guaranin.service.usuario
+package br.edu.fatec.tcc.guaranin.legacy
 
 import br.edu.fatec.tcc.guaranin.dto.usuario.UsuarioCreateDTO
 import br.edu.fatec.tcc.guaranin.dto.usuario.UsuarioResponseDTO

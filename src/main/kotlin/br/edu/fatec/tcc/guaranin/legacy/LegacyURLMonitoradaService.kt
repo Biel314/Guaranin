@@ -1,4 +1,4 @@
-package br.edu.fatec.tcc.guaranin.legacy.LegacyURLMonitoradaService
+package br.edu.fatec.tcc.guaranin.legacy
 
 import br.edu.fatec.tcc.guaranin.dto.urlmonitorada.URLMonitoradaCreateDTO
 import br.edu.fatec.tcc.guaranin.dto.urlmonitorada.URLMonitoradaResponseDTO
@@ -7,6 +7,7 @@ import br.edu.fatec.tcc.guaranin.exception.urlmonitorada.URLMonitoradaNotFoundEx
 import br.edu.fatec.tcc.guaranin.mapper.urlmonitorada.URLMonitoradaMapper
 import br.edu.fatec.tcc.guaranin.model.URLMonitorada
 import br.edu.fatec.tcc.guaranin.repository.urlmonitorada.URLMonitoradaRepository
+import br.edu.fatec.tcc.guaranin.service.urlmonitorada.URLMonitoradaLinkNormalizer
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
