@@ -216,12 +216,82 @@ DELETE /api/v1/urls-monitoradas/{urlId}
 
 ---
 
-## Exemplo de Autenticação
+## Execução do Projeto
 
-### Requisição
+### Pré-requisitos
+
+- Java 21+
+- Maven 3.9+
+- MySQL
+- Redis (opcional, dependendo da configuração de API Key)
+- Git
+
+### Clonar o Repositório
+
+```bash
+git clone https://github.com/Biel314/Guaranin.git
+cd Guaranin
+```
+
+### Compilar o Projeto
+
+```bash
+mvn clean install
+```
+
+### Executar a Aplicação
+
+```bash
+mvn spring-boot:run
+```
+
+### Executar os Testes
+
+```bash
+mvn test
+```
+
+### Gerar Artefato JAR
+
+```bash
+mvn clean package
+```
+
+O arquivo será gerado em:
+
+```text
+target/guaranin-*.jar
+```
+
+Para executar o JAR:
+
+```bash
+java -jar target/guaranin-*.jar
+```
+
+---
+
+## Documentação da API
+
+Após iniciar a aplicação, a documentação OpenAPI/Swagger estará disponível em:
+
+```text
+http://localhost:8080/swagger-ui.html
+```
+
+ou
+
+```text
+http://localhost:8080/swagger-ui/index.html
+```
+
+---
+
+## Exemplo de Login
 
 ```http
 POST /api/v1/auth/login
+Content-Type: application/json
 ```
 
 ```json
@@ -231,21 +301,19 @@ POST /api/v1/auth/login
 }
 ```
 
-### Resposta
+Resposta:
 
 ```json
 {
-  "token": "jwt-token"
+  "token": "JWT_TOKEN"
 }
 ```
 
-### Utilização do Token
+Utilização do token:
 
 ```http
-Authorization: Bearer <jwt-token>
+Authorization: Bearer JWT_TOKEN
 ```
-
----
 
 ## Objetivo Acadêmico
 
