@@ -232,6 +232,10 @@ DELETE /api/v1/urls-monitoradas/{urlId}
 git clone https://github.com/Biel314/Guaranin.git
 cd Guaranin
 ```
+### Criar banco de dados no MySQL
+```sql
+CREATE DATABASE IF NOT EXISTS guaranin;
+```
 
 ### Compilar o Projeto
 
