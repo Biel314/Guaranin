@@ -232,9 +232,17 @@ DELETE /api/v1/urls-monitoradas/{urlId}
 git clone https://github.com/Biel314/Guaranin.git
 cd Guaranin
 ```
-### Criar banco de dados no MySQL
-```sql
-CREATE DATABASE IF NOT EXISTS guaranin;
+### Modificar o application.propperties para o ambiente
+
+```bash
+cd src/main/resources
+```
+modifique o application.propperties
+
+```text
+spring.datasource.url=jdbc:mysql://localhost:{sua_porta}/guaranin?createDatabaseIfNotExist=true
+spring.datasource.username={seu_username_sql}
+spring.datasource.password={sua_senha_sql}
 ```
 
 ### Compilar o Projeto
